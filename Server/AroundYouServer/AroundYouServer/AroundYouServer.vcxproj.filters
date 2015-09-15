@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Common">
+      <UniqueIdentifier>{f68e0df7-326f-47bc-a215-affc539f7ab3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Default">
+      <UniqueIdentifier>{8de70ab1-ed19-49de-8015-8f31ccdb958f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Server">
+      <UniqueIdentifier>{857142e0-7f32-4e8c-9619-787510d95f5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DataBase">
+      <UniqueIdentifier>{11706f52-d192-4200-9fc5-ef138e22920e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JSON">
+      <UniqueIdentifier>{a5932576-6791-4215-901f-47872c5e1df5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HelpTool">
+      <UniqueIdentifier>{e612132e-776c-4f33-8dfe-6effb99edd72}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ServerMain.cpp">
+      <Filter>Default</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Log.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Server\AYServer.cpp">
+      <Filter>Server</Filter>
+    </ClCompile>
+    <ClCompile Include="Server\AYServerError.cpp">
+      <Filter>Server</Filter>
+    </ClCompile>
+    <ClCompile Include="HelpTool\HelpTool.cpp">
+      <Filter>HelpTool</Filter>
+    </ClCompile>
+    <ClCompile Include="Server\AYWorkerThread.cpp">
+      <Filter>Server</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Common\Common.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Log.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Type.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Server\AYServer.h">
+      <Filter>Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Server\AYServerStruct.h">
+      <Filter>Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Server\AYServerError.h">
+      <Filter>Server</Filter>
+    </ClInclude>
+    <ClInclude Include="HelpTool\HelpTool.h">
+      <Filter>HelpTool</Filter>
+    </ClInclude>
+    <ClInclude Include="Server\AYWorkerThread.h">
+      <Filter>Server</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

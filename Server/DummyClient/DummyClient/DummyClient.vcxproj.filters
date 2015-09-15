@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Default">
+      <UniqueIdentifier>{0748d820-8556-4a87-84c4-4560b87e220c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DummyClient">
+      <UniqueIdentifier>{94b7bbdb-6889-48b2-ad40-ccf979e654f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{7766e864-7f9e-40a5-bdbd-b570126615bc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Common\Log.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientMain.cpp">
+      <Filter>Default</Filter>
+    </ClCompile>
+    <ClCompile Include="DummyClient\DummyClient.cpp">
+      <Filter>DummyClient</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Common\Type.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Log.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Common.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="DummyClient\DummyClient.h">
+      <Filter>DummyClient</Filter>
+    </ClInclude>
+    <ClInclude Include="DummyClient\DummyClientStruct.h">
+      <Filter>DummyClient</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
