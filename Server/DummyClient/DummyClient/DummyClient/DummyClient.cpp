@@ -57,13 +57,14 @@ DWORD CDummyClient::SendMsg(std::string &refstrMsg)
 DWORD CDummyClient::RecvMsg(std::string &refstrMsg)
 {
 	DWORD dwRecv;
-	char szBuf[512];
-	dwRecv = ::recv(m_stClientSock.ConnectToServerSock, szBuf, 512, 0);
+	char szBuf[1024];
+	dwRecv = ::recv(m_stClientSock.ConnectToServerSock, szBuf, 1024, 0);
 	if (dwRecv == SOCKET_ERROR) {
 		return E_RET_FAIL;
 	}
 
 	refstrMsg = szBuf;
+	refstrMsg.resize(dwRecv);
 	DebugLog("Success to recevie to server [%s : %d]", refstrMsg.c_str(), dwRecv);
 	return E_RET_SUCCESS;
 }

@@ -6,5 +6,6 @@
 VOID ShowErrorWSAStartup(DWORD dwErr);
 VOID ShowErrorWSASocket(DWORD dwErr);
 VOID ShowErrorSetSockOpt(DWORD dwErr);
+VOID ShowErrorSend(DWORD dwErr);
 
 #endif

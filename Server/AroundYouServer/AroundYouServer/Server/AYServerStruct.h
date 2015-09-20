@@ -2,7 +2,12 @@
 #define _AY_SERVER_STRUCT_
 
 #include "..\Common\Common.h"
-#include "AYWorkerThread.h"
+
+struct ST_WORKER_THREAD
+{
+	SOCKET		hClientSocket;
+	std::string strReceivedData;
+};
 
 struct ST_CLIENT_SOCKET
 {
@@ -23,6 +28,7 @@ struct ST_SERVER_INIT
 struct ST_SERVER_WORKER_THREAD
 {
 	HANDLE *phWorkerThread;
+	DWORD	dwNumberOfThread;
 };
 
 struct ST_SERVER_IOCP_DATA

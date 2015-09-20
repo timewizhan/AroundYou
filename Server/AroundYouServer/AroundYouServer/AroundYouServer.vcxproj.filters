@@ -39,6 +39,12 @@
     <ClCompile Include="Server\AYWorkerThread.cpp">
       <Filter>Server</Filter>
     </ClCompile>
+    <ClCompile Include="DataBase\DataBase.cpp">
+      <Filter>DataBase</Filter>
+    </ClCompile>
+    <ClCompile Include="DataBase\PostgreSQL.cpp">
+      <Filter>DataBase</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -63,6 +69,18 @@
       <Filter>HelpTool</Filter>
     </ClInclude>
     <ClInclude Include="Server\AYWorkerThread.h">
+      <Filter>Server</Filter>
+    </ClInclude>
+    <ClInclude Include="DataBase\DataBase.h">
+      <Filter>DataBase</Filter>
+    </ClInclude>
+    <ClInclude Include="DataBase\DataBaseType.h">
+      <Filter>DataBase</Filter>
+    </ClInclude>
+    <ClInclude Include="DataBase\PostgreSQL.h">
+      <Filter>DataBase</Filter>
+    </ClInclude>
+    <ClInclude Include="Server\AYProtocol.h">
       <Filter>Server</Filter>
     </ClInclude>
   </ItemGroup>

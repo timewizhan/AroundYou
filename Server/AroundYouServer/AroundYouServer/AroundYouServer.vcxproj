@@ -53,10 +53,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>D:\Develop\AroundYou\Lib\PostgreSQL\x86-32\include;D:\Develop\AroundYou\Lib\jsoncpp\debug\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>D:\Develop\AroundYou\Lib\PostgreSQL\x86-32\lib;D:\Develop\AroundYou\Lib\jsoncpp\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libpq.lib;json_vc71_libmtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -79,6 +82,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Common\Log.cpp" />
+    <ClCompile Include="DataBase\DataBase.cpp" />
+    <ClCompile Include="DataBase\PostgreSQL.cpp" />
     <ClCompile Include="HelpTool\HelpTool.cpp" />
     <ClCompile Include="ServerMain.cpp" />
     <ClCompile Include="Server\AYServer.cpp" />
@@ -89,7 +94,11 @@
     <ClInclude Include="Common\Common.h" />
     <ClInclude Include="Common\Log.h" />
     <ClInclude Include="Common\Type.h" />
+    <ClInclude Include="DataBase\DataBase.h" />
+    <ClInclude Include="DataBase\DataBaseType.h" />
+    <ClInclude Include="DataBase\PostgreSQL.h" />
     <ClInclude Include="HelpTool\HelpTool.h" />
+    <ClInclude Include="Server\AYProtocol.h" />
     <ClInclude Include="Server\AYServer.h" />
     <ClInclude Include="Server\AYServerError.h" />
     <ClInclude Include="Server\AYServerStruct.h" />

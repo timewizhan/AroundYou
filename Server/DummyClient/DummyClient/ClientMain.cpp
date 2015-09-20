@@ -16,8 +16,37 @@ int main()
 			std::exception("Fail to connect to server");
 		}
 
+		/*
+			Msg is JSON
+			{
+			"request" : 0,
+			"size" : 10,
+			"data" : {
+			"clientnumber" : 1,
+			"clientid" : "test",
+			"clientmail" : "test@gmail.com",
+			"clientphonenumber" : "0101112222"
+			}
+			}
+
+			*/
 		std::string strMsg = "Test : Hello World";
-		dwRet = DummyClient.SendMsg(strMsg);
+		std::string strJSON = "										\
+							  		{															\
+											\"request\" : 0,											\
+													\"size\" : 10,												\
+															\"data\" : {												\
+																					\"clientnumber\" : 1,						\
+																											\"clientid\" : \"test\",					\
+																																	\"clientmail\" : \"test@gmail.com\",		\
+																																							\"clientphonenumber\" : \"0101112222\"		\
+																																												}												\
+																																														}";
+		std::string strJSON1 = "{\
+		\"request\" : 0,\
+			  \"size\" : 0\
+	}";
+		dwRet = DummyClient.SendMsg(strJSON1);
 		if (dwRet != E_RET_SUCCESS) {
 			std::exception("Fail to send msg to server");
 		}

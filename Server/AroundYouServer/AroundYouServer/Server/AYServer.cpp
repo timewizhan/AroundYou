@@ -1,5 +1,6 @@
 #include "AYServer.h"
 #include "AYServerError.h"
+#include "AYWorkerThread.h"
 #include "..\Common\Log.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,9 +159,9 @@ DWORD CAYServer::InitWorkerThread()
 
 	DWORD dwNumberOfThread = stSystemInfo.dwNumberOfProcessors;
 	m_stServerWorkerThreads.phWorkerThread = new HANDLE[dwNumberOfThread];
+	m_stServerWorkerThreads.dwNumberOfThread = dwNumberOfThread;
 	DWORD i;
-//	for (i = 0; i < dwNumberOfThread; i++) {
-	for (i = 0; i < 1; i++) {
+	for (i = 0; i < dwNumberOfThread; i++) {
 		HANDLE hThread;
 		hThread = (HANDLE)_beginthreadex(NULL, 0, WorkerCompletionThread, (void *)m_stServerIOCPData.hCompletionPort, 0, NULL);
 		m_stServerWorkerThreads.phWorkerThread[i] = hThread;
@@ -271,8 +272,14 @@ DWORD CAYServer::StartServer(DWORD dwPort, DWORD dwBackLog)
 				Abnormally Exception
 			*/
 			ErrorLog("%s", e.what());
+			return dwRet;
 		}
 	}
+
+	/*
+		All Thread is waiting for stopping their operation
+	*/
+	WaitForMultipleObjects(m_stServerWorkerThreads.dwNumberOfThread, m_stServerWorkerThreads.phWorkerThread, TRUE, INFINITE);
 	
 	return dwRet;
 }
@@ -283,6 +290,10 @@ DWORD CAYServer::StopServer()
 	return E_RET_SUCCESS;
 }
 
+/*
+	Worker thread is operating regardless of main thread
+*/
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 unsigned int WINAPI WorkerCompletionThread(void *pIOCPData)
 {
 	HANDLE hCompletionPort = (HANDLE)pIOCPData;
@@ -297,21 +308,33 @@ unsigned int WINAPI WorkerCompletionThread(void *pIOCPData)
 			(LPOVERLAPPED*)&pstServerConnection,
 			INFINITE);
 
-		if (dwByteTransferred == 0) //EOF Àü¼Û½Ã.
+		/*
+			Data is nothing
+		*/
+		if (dwByteTransferred == 0) 
 		{
-//			closesocket(pstServerConnection->ClientSock);
-	//		free(pstServerConnection);
+			closesocket(pstServerConnection->ClientSock);
+			free(pstServerConnection);
 			continue;
 		}
 
-		std::string strMsg = "Hello IOCP";
-		DWORD dwSize = strMsg.size();
-		DWORD dwSent;
-		dwSent = ::send(pstServerConnection->ClientSock, strMsg.c_str(), dwSize, 0);
-		if (dwSent == 0) {
+		CAYWorkerThread *pWorkerThread = NULL;
+		pWorkerThread = new CAYWorkerThread(pstServerConnection->ClientSock);
+		if (pWorkerThread == NULL) {
+			ErrorLog("[WorkerThread] Fail to allocate memory of thread");
 			continue;
 		}
-		
+
+		DWORD dwRet;
+		dwRet = pWorkerThread->StartWorkerThread(pstServerConnection->szBuf);
+		if (dwRet != E_RET_SUCCESS) {
+			ErrorLog("Fail to operate StartWorkerThread");
+			delete pWorkerThread;
+			continue;
+		}
+
+		DebugLog("Success to operate StartWorkerThread");
+		delete pWorkerThread;
 	}
 
 	return E_RET_SUCCESS;

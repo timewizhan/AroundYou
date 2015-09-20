@@ -4,7 +4,7 @@
 #include "Common.h"
 #include <stdarg.h>
 
-#define MAX_BUF	128
+#define MAX_BUF	1024
 
 enum E_LOG_TYPE
 {
