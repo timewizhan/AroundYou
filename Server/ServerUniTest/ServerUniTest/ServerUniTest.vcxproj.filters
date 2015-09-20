@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="DBTest">
+      <UniqueIdentifier>{cd00dbfc-1b39-4022-b2f1-243e051f146d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Default">
+      <UniqueIdentifier>{9cfd59ba-81ad-4e97-9d78-f5590077fa69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DBTest\Origin">
+      <UniqueIdentifier>{8c580ab6-6105-4190-bf37-aadfc2e1cfb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JSONTest">
+      <UniqueIdentifier>{4e18124d-c542-4469-a154-3e5e84011615}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MainTest.cpp">
+      <Filter>Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AroundYouServer\AroundYouServer\DataBase\DataBase.cpp">
+      <Filter>DBTest\Origin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AroundYouServer\AroundYouServer\DataBase\PostgreSQL.cpp">
+      <Filter>DBTest\Origin</Filter>
+    </ClCompile>
+    <ClCompile Include="DBTest.cpp">
+      <Filter>DBTest</Filter>
+    </ClCompile>
+    <ClCompile Include="JSONTest.cpp">
+      <Filter>JSONTest</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Common.h">
+      <Filter>Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AroundYouServer\AroundYouServer\DataBase\DataBase.h">
+      <Filter>DBTest\Origin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AroundYouServer\AroundYouServer\DataBase\DataBaseType.h">
+      <Filter>DBTest\Origin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AroundYouServer\AroundYouServer\DataBase\PostgreSQL.h">
+      <Filter>DBTest\Origin</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
