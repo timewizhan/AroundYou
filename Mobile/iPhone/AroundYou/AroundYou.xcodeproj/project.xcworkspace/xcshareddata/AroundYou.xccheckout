@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>B6F8F7BF-DF09-4142-94C7-BD51FE818CEC</string>
 	<key>IDESourceControlProjectName</key>
-	<string>project</string>
+	<string>AroundYou</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>792FFF947F51949F14A98DB2C4C3989BFC430B96</key>
 		<string>https://github.com/timewizhan/AroundYou.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>Mobile/iPhone/AroundYou/AroundYou.xcodeproj/project.xcworkspace</string>
+	<string>Mobile/iPhone/AroundYou/AroundYou.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>792FFF947F51949F14A98DB2C4C3989BFC430B96</key>
