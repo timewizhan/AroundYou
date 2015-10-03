@@ -19,6 +19,9 @@
     <Filter Include="HelpTool">
       <UniqueIdentifier>{e612132e-776c-4f33-8dfe-6effb99edd72}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Server\Role">
+      <UniqueIdentifier>{8852167c-4835-4fa6-aa7f-60c45bd85916}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ServerMain.cpp">
@@ -44,6 +47,9 @@
     </ClCompile>
     <ClCompile Include="DataBase\PostgreSQL.cpp">
       <Filter>DataBase</Filter>
+    </ClCompile>
+    <ClCompile Include="Server\SignIn.cpp">
+      <Filter>Server\Role</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -82,6 +88,9 @@
     </ClInclude>
     <ClInclude Include="Server\AYProtocol.h">
       <Filter>Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Server\SignIn.h">
+      <Filter>Server\Role</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

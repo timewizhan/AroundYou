@@ -326,7 +326,8 @@ unsigned int WINAPI WorkerCompletionThread(void *pIOCPData)
 		}
 
 		DWORD dwRet;
-		dwRet = pWorkerThread->StartWorkerThread(pstServerConnection->szBuf);
+		DebugLog("[WorkerThread] Thread received data from client [%s]", pstServerConnection->szBuf);
+		dwRet = pWorkerThread->StartWorkerThread(pstServerConnection->szBuf, dwByteTransferred);
 		if (dwRet != E_RET_SUCCESS) {
 			ErrorLog("Fail to operate StartWorkerThread");
 			delete pWorkerThread;
