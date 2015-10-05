@@ -318,11 +318,11 @@
                                     <constraint firstAttribute="height" constant="478" id="oJE-jM-m7c"/>
                                 </constraints>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CommentCell" rowHeight="80" id="fGZ-js-h2u">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CommentCell" rowHeight="80" id="fGZ-js-h2u" customClass="CommentCell" customModule="AroundYou" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="375" height="80"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="fGZ-js-h2u" id="AQn-Y1-Qh5">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="80"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="79.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ZQA-Bh-eJZ">
@@ -356,6 +356,11 @@
                                                 <constraint firstItem="1hA-wR-Rht" firstAttribute="top" secondItem="AQn-Y1-Qh5" secondAttribute="topMargin" id="zfl-xx-UnV"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="starImage" destination="ZQA-Bh-eJZ" id="Jxh-Nv-xJ1"/>
+                                            <outlet property="textComment" destination="Rmj-HO-1YP" id="98h-KQ-eKh"/>
+                                            <outlet property="userIDLabel" destination="1hA-wR-Rht" id="ZPZ-g7-0qX"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
@@ -412,7 +417,7 @@
         <!--Comment-->
         <scene sceneID="bdz-3d-PeL">
             <objects>
-                <tableViewController id="uHI-h4-OvY" sceneMemberID="viewController">
+                <tableViewController id="uHI-h4-OvY" customClass="CommnetViewController" customModule="AroundYou" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="iq0-ig-THG">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -427,9 +432,9 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="46.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="IaW-dc-bgI">
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" adjustsFontSizeToFit="NO" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="IaW-dc-bgI">
                                                     <rect key="frame" x="8" y="8" width="359" height="30"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
                                             </subviews>
@@ -437,20 +442,34 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection headerTitle="Stars" id="oKa-2w-KqA">
+                            <tableViewSection id="oKa-2w-KqA">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="88" id="jfi-38-HZh">
-                                        <rect key="frame" x="0.0" y="210.5" width="375" height="88"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="Wih-PM-D6r" detailTextLabel="eTc-bR-h3j" rowHeight="47" style="IBUITableViewCellStyleValue1" id="jfi-38-HZh">
+                                        <rect key="frame" x="0.0" y="196.5" width="375" height="47"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="jfi-38-HZh" id="4bV-fD-4Uc">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="87.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="342" height="46.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <pickerView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8G8-Ye-jm0">
-                                                    <rect key="frame" x="24" y="0.0" width="326" height="79.5"/>
-                                                </pickerView>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Star" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Wih-PM-D6r">
+                                                    <rect key="frame" x="15" y="14" width="30" height="19.5"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="eTc-bR-h3j">
+                                                    <rect key="frame" x="298.5" y="14" width="41.5" height="19.5"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <color key="textColor" red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="5Iy-9Q-7mF" kind="show" identifier="selectStar" id="Pn5-Sn-5VW"/>
+                                        </connections>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
@@ -461,14 +480,60 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Comment" id="6o9-BZ-5EQ">
-                        <barButtonItem key="leftBarButtonItem" title="Cancel" id="r8g-cr-nLi"/>
-                        <barButtonItem key="rightBarButtonItem" title="Done" id="4OP-zn-Efv"/>
+                        <barButtonItem key="leftBarButtonItem" title="Cancel" id="r8g-cr-nLi">
+                            <connections>
+                                <segue destination="Z4y-4c-hI9" kind="unwind" unwindAction="cancelComment:" id="HIV-79-XAg"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Done" id="4OP-zn-Efv">
+                            <connections>
+                                <segue destination="Z4y-4c-hI9" kind="unwind" identifier="saveComment" unwindAction="saveComment:" id="Qxd-4y-ymn"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+                    <connections>
+                        <outlet property="selectStart" destination="eTc-bR-h3j" id="bv9-3r-Rlk"/>
+                        <outlet property="textComment" destination="IaW-dc-bgI" id="awT-tX-PQO"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5GM-ON-UJd" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="Z4y-4c-hI9" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="2339.5" y="-159.5"/>
+        </scene>
+        <!--Star View Controller-->
+        <scene sceneID="nzl-fe-jFe">
+            <objects>
+                <tableViewController id="5Iy-9Q-7mF" customClass="StarViewController" customModule="AroundYou" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="Nud-o8-BE3">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="star" id="Msc-vp-rcG">
+                                <rect key="frame" x="0.0" y="92" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Msc-vp-rcG" id="lPL-L1-ZSN">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <segue destination="vp0-F6-vZ6" kind="unwind" identifier="saveSelectStar" unwindAction="backToComment:" id="scO-uT-h2s"/>
+                                </connections>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="5Iy-9Q-7mF" id="OwI-og-H4j"/>
+                            <outlet property="delegate" destination="5Iy-9Q-7mF" id="1zE-HQ-Mhi"/>
+                        </connections>
+                    </tableView>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="euh-BE-DZ4" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="vp0-F6-vZ6" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="2785.5" y="-159.5"/>
         </scene>
     </scenes>
 </document>

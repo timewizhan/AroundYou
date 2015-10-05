@@ -11,7 +11,7 @@ import UIKit
 class MenuDetailViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var commentTableView: UITableView!
-    var swiftBlogs = ["Hi", "Good", "Execellent", "bad"]
+    var comments :[Comment] = [Comment(userId: "TestMan", strComment: "Hello Good store", strStar: "0")]
     let textCellIdentifier = "CommentCell"
     
     override func viewDidLoad() {
@@ -31,30 +31,48 @@ class MenuDetailViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print(swiftBlogs.count)
-        return swiftBlogs.count
+        print(comments.count)
+        return comments.count
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
     {
-        let cell = tableView.dequeueReusableCellWithIdentifier(textCellIdentifier, forIndexPath: indexPath)
+        let cell = tableView.dequeueReusableCellWithIdentifier(textCellIdentifier, forIndexPath: indexPath) as! CommentCell
         
-        let row = indexPath.row
-        cell.textLabel?.text = swiftBlogs[row]
-        
+        let comment = comments[indexPath.row] as Comment
+        cell.comment = comment
         return cell
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         
-        let row = indexPath.row
-        let Input : String = "Test"
-        swiftBlogs.append(Input)
-        print(swiftBlogs[row])
+        //let row = indexPath.row
+        //let Input : String = "Test"
+        //swiftBlogs.append(Input)
+        //print(swiftBlogs[row])
     }
     
+    @IBAction func cancelComment(segue : UIStoryboardSegue) {
+        
+    }
     
+    @IBAction func saveComment(segue : UIStoryboardSegue) {
+        if let commentViewController = segue.sourceViewController as? CommnetViewController {
+            
+            //add the new player to the players array
+            if let comment = commentViewController.comment {
+                comments.append(comment)
+                
+                //update the tableView
+                let indexPath = NSIndexPath(forRow: comments.count-1, inSection: 0)
+                commentTableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+                
+            }
+        }
+        
+        
+    }
 
     /*
     // MARK: - Navigation
