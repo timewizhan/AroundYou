@@ -45,7 +45,7 @@ class LoginViewController: UIViewController {
             textHiddenMsg.hidden = false
             return
         }
-        
+        /*
         // Connet To Server
         let networkRet = networking.connectServer()
         
@@ -81,12 +81,12 @@ class LoginViewController: UIViewController {
             return
         }
         debugPrint("Succeed to receieve Msg")
-        
+        */
         /*
             For swiftyjson, you have to change string to dictionary.
             and then, call JSON.
             finally, extract value.
-        */
+        *//*
         var jsonMethod = JSONMethods()
         var dicData = jsonMethod.convertStringToDictionary(strReceivedData)
         let resHeaderJson = JSON(dicData!)
@@ -132,9 +132,9 @@ class LoginViewController: UIViewController {
         else {
             debugPrint("Invalid response from server")
             return
-        }
+        }*/
         
-        let vc : AnyObject! = self.storyboard?.instantiateViewControllerWithIdentifier("mainview")
+        let vc : AnyObject! = self.storyboard?.instantiateViewControllerWithIdentifier("mainnavi")
         self.showViewController(vc as! UIViewController, sender: sender)
     }
     @IBAction func pressSignUp(sender: AnyObject) {
@@ -153,7 +153,7 @@ class LoginViewController: UIViewController {
             textHiddenMsg.hidden = false
             return
         }
-        
+        /*
         let cNetworkingCommunication = NetworkingCommunication()
         
         var stReqData : BuildJSON = BuildJSON()
@@ -170,10 +170,10 @@ class LoginViewController: UIViewController {
         nRet = cNetworkingCommunication.networkingWithServer(strJsonReqData, nMsgType: E_PROTO_REQ_TYPE.E_PROTO_REQ_HEADER_SIGNUP, strRecvMsg: &strRecvMsg)
         if (nRet > 0) {
             return
-        }
+        }*/
 
         debugPrint("Success to sign up for user account")
-        let vc : AnyObject! = self.storyboard?.instantiateViewControllerWithIdentifier("mainview")
+        let vc : AnyObject! = self.storyboard?.instantiateViewControllerWithIdentifier("mainnavi")
         self.showViewController(vc as! UIViewController, sender: sender)
     }
     

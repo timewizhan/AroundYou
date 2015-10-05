@@ -22,6 +22,7 @@
 		8E0B855C1BC2880400CC5688 /* StarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B855B1BC2880400CC5688 /* StarViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		8E0B85601BC2924500CC5688 /* CommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B855F1BC2924500CC5688 /* CommentCell.swift */; settings = {ASSET_TAGS = (); }; };
 		8E0B85621BC2927B00CC5688 /* StructType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B85611BC2927B00CC5688 /* StructType.swift */; settings = {ASSET_TAGS = (); }; };
+		8E0B85671BC2A37400CC5688 /* TestMainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B85661BC2A37400CC5688 /* TestMainViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		8E8154AD1BAC079700D15B14 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8154AC1BAC079700D15B14 /* AppDelegate.swift */; };
 		8E8154B21BAC079700D15B14 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E8154B01BAC079700D15B14 /* Main.storyboard */; };
 		8E8154B41BAC079700D15B14 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E8154B31BAC079700D15B14 /* Images.xcassets */; };
@@ -56,6 +57,7 @@
 		8E0B855B1BC2880400CC5688 /* StarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StarViewController.swift; sourceTree = "<group>"; };
 		8E0B855F1BC2924500CC5688 /* CommentCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentCell.swift; sourceTree = "<group>"; };
 		8E0B85611BC2927B00CC5688 /* StructType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StructType.swift; sourceTree = "<group>"; };
+		8E0B85661BC2A37400CC5688 /* TestMainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestMainViewController.swift; sourceTree = "<group>"; };
 		8E8154A71BAC079700D15B14 /* AroundYou.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AroundYou.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E8154AB1BAC079700D15B14 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8E8154AC1BAC079700D15B14 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -106,8 +108,16 @@
 				8E08B08A1BBA5DA900A3EB14 /* StoreViewController.swift */,
 				8E0B85591BC282A700CC5688 /* CommentViewController.swift */,
 				8E0B855B1BC2880400CC5688 /* StarViewController.swift */,
+				8E0B85661BC2A37400CC5688 /* TestMainViewController.swift */,
 			);
 			name = Controller;
+			sourceTree = "<group>";
+		};
+		8E0B85631BC29E8E00CC5688 /* Image */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Image;
 			sourceTree = "<group>";
 		};
 		8E81549E1BAC079700D15B14 = {
@@ -131,6 +141,7 @@
 		8E8154A91BAC079700D15B14 /* AroundYou */ = {
 			isa = PBXGroup;
 			children = (
+				8E0B85631BC29E8E00CC5688 /* Image */,
 				8E0B85581BC2827A00CC5688 /* Controller */,
 				8E0B84A01BBE1CF500CC5688 /* SwiftyJSON */,
 				8E8154AB1BAC079700D15B14 /* Info.plist */,
@@ -280,6 +291,7 @@
 				8E0B84A31BBE1D4800CC5688 /* SwiftyJSON.swift in Sources */,
 				8E0B849D1BBA730400CC5688 /* NetworkingProtocol.swift in Sources */,
 				8E0B855C1BC2880400CC5688 /* StarViewController.swift in Sources */,
+				8E0B85671BC2A37400CC5688 /* TestMainViewController.swift in Sources */,
 				8E08B0901BBA5E2500A3EB14 /* MainViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

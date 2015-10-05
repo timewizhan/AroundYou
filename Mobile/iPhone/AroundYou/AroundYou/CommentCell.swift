@@ -23,7 +23,7 @@ class CommentCell: UITableViewCell {
     }
     
     func imageForRating(rating:Int) -> UIImage? {
-        let imageName = "\(rating)Stars"
+        let imageName = "star\(rating)"
         return UIImage(named: imageName)
     }
 }

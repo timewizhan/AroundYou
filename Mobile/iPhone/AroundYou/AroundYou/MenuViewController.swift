@@ -10,8 +10,12 @@ import UIKit
 
 class MenuViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
+    @IBOutlet weak var storeMainImage: UIImageView!
+    @IBOutlet weak var storeReputationImage: UIImageView!
+    @IBOutlet weak var storeNameLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
-    var menuArray = ["부산 식당", "복성각", "미가", "레몬", "새마을 식당", "진국"]
+    
+    var menuArray = ["김치 찌개", "제육 볶음", "김치 찜", "오징어 볶음"]
     let textCellIdentifier = "TextCell"
     
     override func viewDidLoad() {
@@ -19,6 +23,10 @@ class MenuViewController: UIViewController, UITableViewDataSource, UITableViewDe
         // Do any additional setup after loading the view, typically from a nib.
         tableView.delegate = self
         tableView.dataSource = self
+        
+        storeMainImage.image = UIImage(named: "store1")
+        storeReputationImage.image = UIImage(named: "star3")
+        storeNameLabel.text = "찌개 식당"
     }
     
     override func didReceiveMemoryWarning() {

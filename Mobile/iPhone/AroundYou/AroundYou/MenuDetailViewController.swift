@@ -11,7 +11,7 @@ import UIKit
 class MenuDetailViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var commentTableView: UITableView!
-    var comments :[Comment] = [Comment(userId: "TestMan", strComment: "Hello Good store", strStar: "0")]
+    var comments :[Comment] = [Comment(userId: "TestMan", strComment: "Hello Good store", strStar: "1")]
     let textCellIdentifier = "CommentCell"
     
     override func viewDidLoad() {
