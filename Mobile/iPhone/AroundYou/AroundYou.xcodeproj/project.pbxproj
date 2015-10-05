@@ -11,6 +11,13 @@
 		8E08B08C1BBA5DA900A3EB14 /* StoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E08B08A1BBA5DA900A3EB14 /* StoreViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		8E08B0901BBA5E2500A3EB14 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E08B08F1BBA5E2500A3EB14 /* MainViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		8E08B0921BBA5E7800A3EB14 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E08B0911BBA5E7800A3EB14 /* LoginViewController.swift */; settings = {ASSET_TAGS = (); }; };
+		8E0B849B1BBA72C200CC5688 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B849A1BBA72C200CC5688 /* Networking.swift */; settings = {ASSET_TAGS = (); }; };
+		8E0B849D1BBA730400CC5688 /* NetworkingProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B849C1BBA730400CC5688 /* NetworkingProtocol.swift */; settings = {ASSET_TAGS = (); }; };
+		8E0B84A31BBE1D4800CC5688 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B84A21BBE1D4800CC5688 /* SwiftyJSON.swift */; settings = {ASSET_TAGS = (); }; };
+		8E0B84A51BBE20DC00CC5688 /* ErrorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B84A41BBE20DC00CC5688 /* ErrorType.swift */; settings = {ASSET_TAGS = (); }; };
+		8E0B84A71BBE4A9000CC5688 /* BuildJSONString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B84A61BBE4A9000CC5688 /* BuildJSONString.swift */; settings = {ASSET_TAGS = (); }; };
+		8E0B84AB1BBEB3A700CC5688 /* JSONMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B84AA1BBEB3A700CC5688 /* JSONMethods.swift */; settings = {ASSET_TAGS = (); }; };
+		8E0B85571BC0F42900CC5688 /* MenuDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B85561BC0F42900CC5688 /* MenuDetailViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		8E8154AD1BAC079700D15B14 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8154AC1BAC079700D15B14 /* AppDelegate.swift */; };
 		8E8154B21BAC079700D15B14 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E8154B01BAC079700D15B14 /* Main.storyboard */; };
 		8E8154B41BAC079700D15B14 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E8154B31BAC079700D15B14 /* Images.xcassets */; };
@@ -33,6 +40,14 @@
 		8E08B08A1BBA5DA900A3EB14 /* StoreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreViewController.swift; sourceTree = "<group>"; };
 		8E08B08F1BBA5E2500A3EB14 /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		8E08B0911BBA5E7800A3EB14 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		8E0B849A1BBA72C200CC5688 /* Networking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
+		8E0B849C1BBA730400CC5688 /* NetworkingProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkingProtocol.swift; sourceTree = "<group>"; };
+		8E0B84A11BBE1D4800CC5688 /* SwiftyJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwiftyJSON.h; sourceTree = "<group>"; };
+		8E0B84A21BBE1D4800CC5688 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
+		8E0B84A41BBE20DC00CC5688 /* ErrorType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorType.swift; sourceTree = "<group>"; };
+		8E0B84A61BBE4A9000CC5688 /* BuildJSONString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BuildJSONString.swift; sourceTree = "<group>"; };
+		8E0B84AA1BBEB3A700CC5688 /* JSONMethods.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONMethods.swift; sourceTree = "<group>"; };
+		8E0B85561BC0F42900CC5688 /* MenuDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuDetailViewController.swift; sourceTree = "<group>"; };
 		8E8154A71BAC079700D15B14 /* AroundYou.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AroundYou.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E8154AB1BAC079700D15B14 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8E8154AC1BAC079700D15B14 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -62,6 +77,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8E0B84A01BBE1CF500CC5688 /* SwiftyJSON */ = {
+			isa = PBXGroup;
+			children = (
+				8E0B84A11BBE1D4800CC5688 /* SwiftyJSON.h */,
+				8E0B84A21BBE1D4800CC5688 /* SwiftyJSON.swift */,
+				8E0B84A61BBE4A9000CC5688 /* BuildJSONString.swift */,
+				8E0B84AA1BBEB3A700CC5688 /* JSONMethods.swift */,
+			);
+			name = SwiftyJSON;
+			sourceTree = "<group>";
+		};
 		8E81549E1BAC079700D15B14 = {
 			isa = PBXGroup;
 			children = (
@@ -83,6 +109,7 @@
 		8E8154A91BAC079700D15B14 /* AroundYou */ = {
 			isa = PBXGroup;
 			children = (
+				8E0B84A01BBE1CF500CC5688 /* SwiftyJSON */,
 				8E8154AB1BAC079700D15B14 /* Info.plist */,
 				8E08B08F1BBA5E2500A3EB14 /* MainViewController.swift */,
 				8E08B0891BBA5DA900A3EB14 /* MenuViewController.swift */,
@@ -92,6 +119,10 @@
 				8E8154B31BAC079700D15B14 /* Images.xcassets */,
 				8E8154B51BAC079700D15B14 /* LaunchScreen.xib */,
 				8E08B0911BBA5E7800A3EB14 /* LoginViewController.swift */,
+				8E0B849A1BBA72C200CC5688 /* Networking.swift */,
+				8E0B849C1BBA730400CC5688 /* NetworkingProtocol.swift */,
+				8E0B84A41BBE20DC00CC5688 /* ErrorType.swift */,
+				8E0B85561BC0F42900CC5688 /* MenuDetailViewController.swift */,
 			);
 			path = AroundYou;
 			sourceTree = "<group>";
@@ -214,10 +245,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8E0B85571BC0F42900CC5688 /* MenuDetailViewController.swift in Sources */,
 				8E8154AD1BAC079700D15B14 /* AppDelegate.swift in Sources */,
+				8E0B84A71BBE4A9000CC5688 /* BuildJSONString.swift in Sources */,
+				8E0B84A51BBE20DC00CC5688 /* ErrorType.swift in Sources */,
+				8E0B84AB1BBEB3A700CC5688 /* JSONMethods.swift in Sources */,
 				8E08B08B1BBA5DA900A3EB14 /* MenuViewController.swift in Sources */,
 				8E08B08C1BBA5DA900A3EB14 /* StoreViewController.swift in Sources */,
+				8E0B849B1BBA72C200CC5688 /* Networking.swift in Sources */,
 				8E08B0921BBA5E7800A3EB14 /* LoginViewController.swift in Sources */,
+				8E0B84A31BBE1D4800CC5688 /* SwiftyJSON.swift in Sources */,
+				8E0B849D1BBA730400CC5688 /* NetworkingProtocol.swift in Sources */,
 				8E08B0901BBA5E2500A3EB14 /* MainViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
