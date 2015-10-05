@@ -1,24 +1,24 @@
 //
-//  MenuViewController.swift
-//  TestSample
+//  MenuDetailViewController.swift
+//  AroundYou
 //
-//  Created by 물통꿀꿀이 on 2015. 9. 29..
+//  Created by 물통꿀꿀이 on 2015. 10. 4..
 //  Copyright © 2015년 cclab. All rights reserved.
 //
 
 import UIKit
 
-class MenuViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class MenuDetailViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
-    @IBOutlet weak var tableView: UITableView!
-    var menuArray = ["부산 식당", "복성각", "미가", "레몬", "새마을 식당", "진국"]
-    let textCellIdentifier = "TextCell"
+    @IBOutlet weak var commentTableView: UITableView!
+    var swiftBlogs = ["Hi", "Good", "Execellent", "bad"]
+    let textCellIdentifier = "CommentCell"
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        tableView.delegate = self
-        tableView.dataSource = self
+        commentTableView.delegate = self
+        commentTableView.dataSource = self
     }
     
     override func didReceiveMemoryWarning() {
@@ -31,8 +31,8 @@ class MenuViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print(menuArray.count)
-        return menuArray.count
+        print(swiftBlogs.count)
+        return swiftBlogs.count
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
@@ -40,22 +40,22 @@ class MenuViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let cell = tableView.dequeueReusableCellWithIdentifier(textCellIdentifier, forIndexPath: indexPath)
         
         let row = indexPath.row
-        cell.textLabel?.text = menuArray[row]
+        cell.textLabel?.text = swiftBlogs[row]
         
         return cell
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        let row = indexPath.row
-        debugPrint(menuArray[row])
         
-        //print(menuArray[row])
+        let row = indexPath.row
+        let Input : String = "Test"
+        swiftBlogs.append(Input)
+        print(swiftBlogs[row])
     }
     
     
-    
-    
+
     /*
     // MARK: - Navigation
 
@@ -67,4 +67,3 @@ class MenuViewController: UIViewController, UITableViewDataSource, UITableViewDe
     */
 
 }
-
