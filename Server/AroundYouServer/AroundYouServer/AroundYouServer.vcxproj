@@ -89,6 +89,7 @@
     <ClCompile Include="Server\AYServer.cpp" />
     <ClCompile Include="Server\AYServerError.cpp" />
     <ClCompile Include="Server\AYWorkerThread.cpp" />
+    <ClCompile Include="Server\SignIn.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h" />
@@ -103,6 +104,7 @@
     <ClInclude Include="Server\AYServerError.h" />
     <ClInclude Include="Server\AYServerStruct.h" />
     <ClInclude Include="Server\AYWorkerThread.h" />
+    <ClInclude Include="Server\SignIn.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

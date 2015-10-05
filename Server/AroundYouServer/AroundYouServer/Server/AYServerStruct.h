@@ -6,7 +6,6 @@
 struct ST_WORKER_THREAD
 {
 	SOCKET		hClientSocket;
-	std::string strReceivedData;
 };
 
 struct ST_CLIENT_SOCKET
@@ -50,6 +49,18 @@ struct ST_SERVER_CONNECTION
 struct ST_SERVER_STATUS
 {
 	DWORD dwNumberOfCurrentSocket;
+};
+
+struct ST_RECV_HEADER_DATA
+{
+	DWORD dwNumberOfRequest;
+	DWORD dwSizeOfData;
+	std::string strRecvData;
+};
+
+struct ST_RECV_DATA
+{
+	std::string strRecvData;
 };
 
 #endif

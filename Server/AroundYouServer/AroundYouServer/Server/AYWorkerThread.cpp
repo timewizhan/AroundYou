@@ -6,6 +6,8 @@
 #include "json\reader.h"
 #include "json\json.h"
 
+#include "SignIn.h"
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 CAYWorkerThread::CAYWorkerThread(SOCKET ClientSocket)
 {
@@ -26,43 +28,130 @@ CAYWorkerThread::~CAYWorkerThread()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-DWORD CAYWorkerThread::ReceiveDataFromClient(char *pReceiveBuf)
+DWORD CAYWorkerThread::ReceiveDataFromClient(char *pReceiveBuf, DWORD dwByteTransferred, ST_RECV_HEADER_DATA &refstRecvHeaderData)
 {
-	m_stWorkerThread.strReceivedData = pReceiveBuf;
+	refstRecvHeaderData.strRecvData = pReceiveBuf;
+	refstRecvHeaderData.strRecvData.resize(dwByteTransferred);
 	return E_RET_SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-DWORD CAYWorkerThread::ParseDataByJSON(DWORD &refdwNumberOfRequestvoid)
+DWORD CAYWorkerThread::ParseReceivedHeaderByJSON(ST_RECV_HEADER_DATA &refstRecvHeaderData)
 {
 	Json::Value JsonRoot;
 	Json::Reader reader;
-	bool bParsingRet = reader.parse(m_stWorkerThread.strReceivedData, JsonRoot);
+	bool bParsingRet = reader.parse(refstRecvHeaderData.strRecvData, JsonRoot);
 	if (!bParsingRet) {
-		ErrorLog("Fail to parse a received data");
+		ErrorLog("Fail to parse a received data [%s]", reader.getFormatedErrorMessages());
+		std::cout << reader.getFormatedErrorMessages() << std::endl;
 		return E_RET_FAIL;
 	}
 
-	DWORD dwRequest = JsonRoot.get("request", 0).asUInt();
-	DWORD dwSizeOfReceivedData = JsonRoot.get("size", 0).asUInt();
-	refdwNumberOfRequestvoid = dwRequest;
+	std::string strRequest = JsonRoot.get("request", 0).asString();
+	DWORD		dwSizeOfData = ::atoi(JsonRoot.get("size", 0).asString().c_str());
+	refstRecvHeaderData.dwNumberOfRequest = ::atoi(strRequest.c_str());
+	refstRecvHeaderData.dwSizeOfData = dwSizeOfData;
+	return E_RET_SUCCESS;
+}
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+DWORD CAYWorkerThread::SendHeaderToClient(ST_RECV_HEADER_DATA &refstRecvHeaderData)
+{
+	DWORD dwNumberOfRequest = refstRecvHeaderData.dwNumberOfRequest;
+	DWORD dwRet;
+	Json::Value JsonRoot;
+	if (dwNumberOfRequest == E_PROTO_REQ_HEADER_SIGNIN || 
+		dwNumberOfRequest == E_PROTO_REQ_HEADER_SIGNUP) {
+		JsonRoot["response"] = E_PROTO_RES_SUCCESS;
+
+		Json::StyledWriter JsonWriter;
+		std::string strSendData = JsonWriter.write(JsonRoot);
+		
+		dwRet = SendDataToClient(strSendData);
+		if (dwRet != E_RET_SUCCESS) {
+			ErrorLog("Fail to send data about request");
+		}
+		DebugLog("Success to send data about request");
+	}
+	else {
+		/*
+			etc..
+		*/
+	}
+
+	return dwRet;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+DWORD CAYWorkerThread::ReceiveDataFromClient(ST_RECV_HEADER_DATA &refstRecvHeaderData, ST_RECV_DATA &refstRecvData)
+{
+	char *pRecvBuffer = NULL;
+	pRecvBuffer = new char[refstRecvHeaderData.dwSizeOfData];
+	::memset(pRecvBuffer, 0x00, refstRecvHeaderData.dwSizeOfData);
+
+	int nRecv;
+	nRecv = ::recv(m_stWorkerThread.hClientSocket, pRecvBuffer, refstRecvHeaderData.dwSizeOfData, 0);
+	if (nRecv == SOCKET_ERROR) {
+		ErrorLog("Fail to recv data from client");
+		delete pRecvBuffer;
+		return E_RET_FAIL;
+	}
+	refstRecvData.strRecvData = pRecvBuffer;
+	refstRecvData.strRecvData.resize(nRecv);
+	delete pRecvBuffer;
+	return E_RET_SUCCESS;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+DWORD CAYWorkerThread::ParseDataByJSON(DWORD &refdwNumberOfRequest, ST_RECV_DATA &refstRecvData)
+{
+	Json::Value JsonRoot;
+	Json::Reader reader;
+	bool bParsingRet = reader.parse(refstRecvData.strRecvData, JsonRoot);
+	if (!bParsingRet) {
+		ErrorLog("Fail to parse a received data [%s]", reader.getFormatedErrorMessages());
+		std::cout << reader.getFormatedErrorMessages() << std::endl;
+		return E_RET_FAIL;
+	}
+
+	std::string strRequest = JsonRoot.get("request", 0).asString();
+	DWORD dwRequest = ::atoi(strRequest.c_str());
+	refdwNumberOfRequest = dwRequest;
 	/*
 		you have to cast pointer to use pointer flexibly
 	*/
+
+	///////////// Sign In //////////////
+	if (dwRequest == E_PROTO_REQ_DATA_SIGNIN) {
+		m_pstProtoSignIn = new ST_PROTOCOL_SIGNIN;
+		::memset(m_pstProtoSignIn, 0x00, sizeof(ST_PROTOCOL_SIGNIN));
+
+		m_pstProtoSignIn->dwRequest			= dwRequest;
+		m_pstProtoSignIn->strNickName		= JsonRoot.get("nickname", 0).asString();
+		m_pstProtoSignIn->strEmail			= JsonRoot.get("email", 0).asString();
+		m_pstProtoSignIn->strCallID			= JsonRoot.get("callid", 0).asString();
+	}
+	else if (dwRequest == E_PROTO_REQ_DATA_SIGNUP) {
+		m_pstProtoSignUp = new ST_PROTOCOL_SIGNUP;
+		::memset(m_pstProtoSignUp, 0x00, sizeof(ST_PROTOCOL_SIGNUP));
+
+		m_pstProtoSignUp->dwRequest			= dwRequest;
+		m_pstProtoSignUp->strNickName		= JsonRoot.get("nickname", 0).asString();
+		m_pstProtoSignUp->strEmail			= JsonRoot.get("email", 0).asString();
+		m_pstProtoSignUp->strCallID			= JsonRoot.get("callid", 0).asString();
+	}
 	///////////// Menu //////////////
-	if (dwRequest == E_PROTO_REQ_MENU_QUERY){		
+	else if (dwRequest == E_PROTO_REQ_MENU_QUERY){		
 		/*
 			Query inner data is nothing
 		*/
 		return E_RET_SUCCESS;
 	}
-	if (dwRequest == E_PROTO_REQ_MENU_INSERT){
+	else if (dwRequest == E_PROTO_REQ_MENU_INSERT){
 		m_pstProtoMenu = new ST_PROTOCOL_MENU;
 		::memset(m_pstProtoMenu, 0x00, sizeof(ST_PROTOCOL_MENU));
 
 		m_pstProtoMenu->dwRequest				= dwRequest;
-		m_pstProtoMenu->dwSizeOfData			= dwSizeOfReceivedData;
 		m_pstProtoMenu->dwMenuNumber			= JsonRoot["data"].get("menunumber", 0).asUInt();
 		m_pstProtoMenu->strMenuName				= JsonRoot["data"].get("menuname", 0).asString();
 		m_pstProtoMenu->dwMenuPrice				= JsonRoot["data"].get("menuprice", 0).asUInt();
@@ -81,7 +170,6 @@ DWORD CAYWorkerThread::ParseDataByJSON(DWORD &refdwNumberOfRequestvoid)
 		::memset(m_pstProtoClient, 0x00, sizeof(ST_PROTOCOL_CLIENT));
 
 		m_pstProtoClient->dwRequest				= dwRequest;
-		m_pstProtoClient->dwSizeOfData			= dwSizeOfReceivedData;
 		m_pstProtoClient->strClientID			= JsonRoot["data"].get("clientid", 0).asUInt();
 		m_pstProtoClient->strClientMail			= JsonRoot["data"].get("clientmail", 0).asUInt();
 		m_pstProtoClient->strClientPhoneNumber	= JsonRoot["data"].get("clientphonenumber", 0).asString();
@@ -99,7 +187,6 @@ DWORD CAYWorkerThread::ParseDataByJSON(DWORD &refdwNumberOfRequestvoid)
 		::memset(m_pstProtoShop, 0x00, sizeof(ST_PROTOCOL_SHOP));
 
 		m_pstProtoShop->dwRequest			= dwRequest;
-		m_pstProtoShop->dwSizeOfData		= dwSizeOfReceivedData;
 		m_pstProtoShop->strShopAlcohol		= JsonRoot["data"].get("shopalcohol", 0).asString();
 		m_pstProtoShop->strShopCategory		= JsonRoot["data"].get("shopcategory", 0).asString();
 		m_pstProtoShop->strShopETC			= JsonRoot["data"].get("shopetc", 0).asString();
@@ -127,7 +214,6 @@ DWORD CAYWorkerThread::ParseDataByJSON(DWORD &refdwNumberOfRequestvoid)
 		::memset(m_pstProtoComment, 0x00, sizeof(ST_PROTOCOL_COMMENT));
 
 		m_pstProtoComment->dwRequest			= dwRequest;
-		m_pstProtoComment->dwSizeOfData			= dwSizeOfReceivedData;
 		m_pstProtoComment->dwCommentNumber		= JsonRoot["data"].get("commentnumber", 0).asUInt();
 		m_pstProtoComment->strClientID			= JsonRoot["data"].get("clientid", 0).asUInt();
 		m_pstProtoComment->strCommentTime		= JsonRoot["data"].get("commenttime", 0).asString();
@@ -162,8 +248,38 @@ DWORD CAYWorkerThread::RequestToDataBase(DWORD &refdwNumberOfRequest, ST_DB_RESU
 	ST_DB_SQL stDBSQLQuery, stDBSQLInsert, stDBSQLUpdate;
 	ST_DB_RESULT stDBResult;
 	DWORD dwRequest = refdwNumberOfRequest;
+	///////////// Sign In //////////////
+	if (dwRequest == E_PROTO_REQ_DATA_SIGNIN) {
+		stDBSQLQuery.strSQL = "SELECT clientmail, clientphonenumber, \"clientNickName\" FROM \"client\" WHERE clientmail = \'" + m_pstProtoSignIn->strEmail + "\'";
+		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
+		if (dwRet != E_RET_SUCCESS) {
+			ErrorLog("Fail to query data from DataBase");
+			return E_RET_FAIL;
+		}
+		refstDBResult = stDBResult;
+	}
+	///////////// Sign Up //////////////
+	else if (dwRequest == E_PROTO_REQ_DATA_SIGNUP) {
+		stDBSQLQuery.strSQL = "SELECT clientmail, clientphonenumber, \"clientNickName\" FROM \"client\" WHERE clientmail = \'" + m_pstProtoSignUp->strEmail + "\'";
+		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
+		if (dwRet != E_RET_SUCCESS) {
+			ErrorLog("Fail to query data from DataBase");
+			return E_RET_FAIL;
+		}
+		
+		if (stDBResult.vecstDBResultLines.size() < 1) {
+			std::string strInputValue = "\'" + m_pstProtoSignUp->strNickName + "\', \'" + m_pstProtoSignUp->strEmail + "\', \'" + std::to_string(1) + "\', " + m_pstProtoSignUp->strCallID;
+			stDBSQLInsert.strSQL = "INSERT INTO \"client\"(clientid, clientmail, clientphonenumber, \"clientNumber\") VALUES (" + strInputValue + ")";
+			dwRet = InsertToDB(hDataBase, stDBSQLInsert);
+			if (dwRet != E_RET_SUCCESS) {
+				ErrorLog("Fail to query data from DataBase");
+				return E_RET_FAIL;
+			}
+		}
+		refstDBResult = stDBResult;
+	}
 	///////////// Menu //////////////
-	if (dwRequest == E_PROTO_REQ_MENU_QUERY) {
+	else if (dwRequest == E_PROTO_REQ_MENU_QUERY) {
 		stDBSQLQuery.strSQL = "SELECT * FROM \"menu\"";
 		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
 		if (dwRet != E_RET_SUCCESS) {
@@ -338,11 +454,11 @@ DWORD CAYWorkerThread::RequestToDataBase(DWORD &refdwNumberOfRequest, ST_DB_RESU
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-DWORD CAYWorkerThread::MakeSendPacket(DWORD &refdwNumberOfRequest, ST_DB_RESULT &refstDBResult, std::string &refstrSendData)
+DWORD CAYWorkerThread::MakeSendPacket(DWORD &refdwNumberOfRequest, ST_DB_RESULT &refstDBResult, DWORD &refdwResponse, std::string &refstrSendData)
 {
 	Json::Value JsonRoot;
 	std::string strSendData;
-	if (refstDBResult.vecstDBResultLines.size() < 1) {
+	/*if (refstDBResult.vecstDBResultLines.size() < 1) {
 		DebugLog("DB return data is nothing to store");
 
 		JsonRoot["response"] = E_PROTO_RES_NOTHING;
@@ -351,10 +467,40 @@ DWORD CAYWorkerThread::MakeSendPacket(DWORD &refdwNumberOfRequest, ST_DB_RESULT 
 		strSendData = JsonWriter.write(JsonRoot);
 		refstrSendData = strSendData;
 		return E_RET_SUCCESS;
-	}
+	}*/
 	
+	///////////// Sign In //////////////
+	if (refdwNumberOfRequest == E_PROTO_REQ_DATA_SIGNIN) {
+		CSignIn *pSignIn = NULL;
+		pSignIn = new CSignIn();
+		if (pSignIn == NULL) {
+			return E_RET_FAIL;
+		}
+		
+		DWORD dwRet;
+		dwRet = pSignIn->CheckSignInData(m_pstProtoSignIn, refstDBResult);
+		if (dwRet == E_RET_SUCCESS) {
+			refdwResponse = E_PROTO_RES_SUCCESS;
+		}
+		else if (dwRet == E_RET_FAIL) {
+			refdwResponse = E_PROTO_RES_DATA_NOT_EXIST;
+		}
+		else {
+			refdwResponse = (int)dwRet;
+		}
+		refstrSendData = "";
+	}
+	else if (refdwNumberOfRequest == E_PROTO_REQ_DATA_SIGNUP) {
+		if (refstDBResult.vecstDBResultLines.size() > 0) {
+			refdwResponse = E_PROTO_RES_DATA_ACCOUNT_EXIST;
+		}
+		else {
+			refdwResponse = E_PROTO_RES_SUCCESS;
+		}
+		refstrSendData = "";
+	}
 	///////////// Menu //////////////
-	if (refdwNumberOfRequest == E_PROTO_REQ_MENU_QUERY) {
+	else if (refdwNumberOfRequest == E_PROTO_REQ_MENU_QUERY) {
 		/*
 			Return data is following..
 			1. DWORD		dwMenuNumber;
@@ -671,18 +817,119 @@ DWORD CAYWorkerThread::SendDataToClient(std::string &refstrSendData)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-DWORD CAYWorkerThread::StartWorkerThread(char *pReceiveBuf)
+DWORD CAYWorkerThread::SendResponseToClient(DWORD &refdwNumberOfRequest, DWORD &refdwResponse, std::string &refstrSendData)
+{
+	DWORD dwRet;
+	DWORD dwSizeOfData = refstrSendData.size();
+
+	/*
+		Send Header Msg To Client
+	*/
+	dwRet = SendResponseHeaderToClient(refdwNumberOfRequest, refdwResponse, dwSizeOfData);
+	if (dwRet != E_RET_SUCCESS) {
+		return dwRet;
+	}
+
+	/*
+		Send Data Msg To Client
+	*/
+	if (dwSizeOfData > 0)  {
+		// Waiting for 1 second
+		::Sleep(1000);
+		dwRet = SendResponseDataToClient(refdwNumberOfRequest, refstrSendData);
+		if (dwRet != E_RET_SUCCESS) {
+			return dwRet;
+		}
+	}
+	
+	return dwRet;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+DWORD CAYWorkerThread::SendResponseHeaderToClient(DWORD &refdwNumberOfRequest, DWORD &refdwResponse, DWORD &refstSizeOfData)
+{
+	Json::Value JsonRoot;
+	std::string strSendData;
+
+	JsonRoot["response"] = (int)refdwResponse;
+	JsonRoot["size"] = (int)refstSizeOfData;
+
+	Json::StyledWriter JsonWriter;
+	strSendData = JsonWriter.write(JsonRoot);
+
+	DWORD dwRet;
+	dwRet = SendDataToClient(strSendData);
+	if (dwRet != E_RET_SUCCESS) {
+		return dwRet;
+	}
+	return dwRet;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+DWORD CAYWorkerThread::SendResponseDataToClient(DWORD &refdwNumberOfRequest, std::string &refstrSendData)
+{
+	DWORD dwRet;
+	dwRet = SendDataToClient(refstrSendData);
+	if (dwRet != E_RET_SUCCESS) {
+		return dwRet;
+	}
+	return dwRet;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+DWORD CAYWorkerThread::StartWorkerThread(char *pReceiveBuf, DWORD dwByteTransferred)
 {
 	DWORD dwRet;
 	try
 	{
-		dwRet = ReceiveDataFromClient(pReceiveBuf);
+		/*
+			Mobile <----> Server
+			1. Mobile ---> Server (Mobile send Header msg)
+			2. Mobile <--- Server (Server send response msg about Header)
+			3. Mobile ---> Server (Mobile send Data Msg)
+			4. Mobile <--- Server (Server send response header msg)
+			5. Mobile <--- Server (Server send response data msg)		
+		*/
+
+		/*
+			Step 1.
+		*/
+		// Receive Header from client
+		ST_RECV_HEADER_DATA stRecvHeaderData;
+		dwRet = ReceiveDataFromClient(pReceiveBuf, dwByteTransferred, stRecvHeaderData);
+		if (dwRet != E_RET_SUCCESS) {
+			throw std::exception("Fail to operate ReceiveDataFromClient");
+		}
+
+		// Parse Header Data By JSON
+		dwRet = ParseReceivedHeaderByJSON(stRecvHeaderData);
+		if (dwRet != E_RET_SUCCESS) {
+			throw std::exception("Fail to operate ParseReceivedHeaderByJSON");
+		}
+
+		/*
+			Step 2.
+		*/
+		dwRet = SendHeaderToClient(stRecvHeaderData);
+		if (dwRet != E_RET_SUCCESS) {
+			throw std::exception("Fail to operate SendHeaderToClient");
+		}
+
+		/*
+			Step 3.
+			In sequence of step 3, server have to communicate with database.
+			so, server take some second to get data that client want.
+			After finishin operation of server, it send data twice (response header, response data)
+			- response header is included with size of response data
+		*/
+		ST_RECV_DATA stRecvData;
+		dwRet = ReceiveDataFromClient(stRecvHeaderData, stRecvData);
 		if (dwRet != E_RET_SUCCESS) {
 			throw std::exception("Fail to operate ReceiveDataFromClient");
 		}
 
 		DWORD dwNumberOfRequest;
-		dwRet = ParseDataByJSON(dwNumberOfRequest);
+		dwRet = ParseDataByJSON(dwNumberOfRequest, stRecvData);
 		if (dwRet != E_RET_SUCCESS) {
 			throw std::exception("Fail to operate ParseDataByJSON");
 		}
@@ -694,45 +941,48 @@ DWORD CAYWorkerThread::StartWorkerThread(char *pReceiveBuf)
 		}
 	
 		std::string strSendData;
-		dwRet = MakeSendPacket(dwNumberOfRequest, stDBResult, strSendData);
+		DWORD dwResponse;
+		dwRet = MakeSendPacket(dwNumberOfRequest, stDBResult, dwResponse, strSendData);
 		if (dwRet != E_RET_SUCCESS) {
 			throw std::exception("Fail to operate MakeSendPacket");
 		}
-
-		dwRet = SendDataToClient(strSendData);
+		/*
+			Step 4, 5
+		*/
+		dwRet = SendResponseToClient(dwNumberOfRequest, dwResponse, strSendData);
 		if (dwRet != E_RET_SUCCESS) {
-			throw std::exception("Fail to operate SendDataToClient");
+			throw std::exception("Fail to operate SendResponseToClient");
 		}
 	}
 	catch (std::exception &e)
 	{
 		ErrorLog(e.what());
-		if (m_pstProtoMenu) {
+		if (m_pstProtoSignIn)
+			delete m_pstProtoSignIn;
+		if (m_pstProtoSignUp)
+			delete m_pstProtoSignUp;
+		if (m_pstProtoMenu) 
 			delete m_pstProtoMenu;
-		}
-		if (m_pstProtoClient) {
+		if (m_pstProtoClient)
 			delete m_pstProtoClient;
-		}
-		if (m_pstProtoComment) {
+		if (m_pstProtoComment)
 			delete m_pstProtoComment;
-		}
-		if (m_pstProtoShop) {
+		if (m_pstProtoShop)
 			delete m_pstProtoShop;
-		}
 		return E_RET_FAIL;
 	}
 
-	if (m_pstProtoMenu) {
+	if (m_pstProtoSignIn)
+		delete m_pstProtoSignIn;
+	if (m_pstProtoSignUp)
+		delete m_pstProtoSignUp;
+	if (m_pstProtoMenu)
 		delete m_pstProtoMenu;
-	}
-	if (m_pstProtoClient) {
+	if (m_pstProtoClient)
 		delete m_pstProtoClient;
-	}
-	if (m_pstProtoComment) {
+	if (m_pstProtoComment)
 		delete m_pstProtoComment;
-	}
-	if (m_pstProtoShop) {
+	if (m_pstProtoShop)
 		delete m_pstProtoShop;
-	}
 	return E_RET_SUCCESS;
 } 
