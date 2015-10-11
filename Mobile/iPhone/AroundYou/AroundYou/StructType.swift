@@ -20,3 +20,14 @@ struct Comment
         self.strStar = strStar
     }
 }
+
+struct UserAccount
+{
+    var strUserNickName : String?
+    var strUserEmail : String?
+    
+    init(strUserNickName : String?, strUserEmail : String?) {
+        self.strUserNickName = strUserNickName
+        self.strUserEmail = strUserEmail
+    }
+}

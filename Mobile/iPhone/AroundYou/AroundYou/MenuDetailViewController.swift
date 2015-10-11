@@ -10,7 +10,13 @@ import UIKit
 
 class MenuDetailViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
+    @IBOutlet weak var menuMainImage: UIImageView!
+    @IBOutlet weak var menuStarImage: UIImageView!
+    @IBOutlet weak var menuName: UILabel!
     @IBOutlet weak var commentTableView: UITableView!
+    
+    var getMenuName : String?
+    
     var comments :[Comment] = [Comment(userId: "TestMan", strComment: "Hello Good store", strStar: "1")]
     let textCellIdentifier = "CommentCell"
     
@@ -19,6 +25,8 @@ class MenuDetailViewController: UIViewController, UITableViewDataSource, UITable
         // Do any additional setup after loading the view, typically from a nib.
         commentTableView.delegate = self
         commentTableView.dataSource = self
+        
+        menuName.text = getMenuName
     }
     
     override func didReceiveMemoryWarning() {

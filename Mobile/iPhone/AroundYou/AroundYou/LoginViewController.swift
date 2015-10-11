@@ -45,95 +45,24 @@ class LoginViewController: UIViewController {
             textHiddenMsg.hidden = false
             return
         }
-        /*
-        // Connet To Server
-        let networkRet = networking.connectServer()
         
-        // Send Header To Server
-        var stReqHeader  = BuildJSON()
+        
+        let cNetworkingCommunication = NetworkingCommunication()
+        
         var stReqData : BuildJSON = BuildJSON()
         stReqData["request"] = String(E_PROTO_REQ_TYPE.E_PROTO_REQ_DATA_SIGNIN.rawValue)
         stReqData["nickname"] = strNickName!
         stReqData["email"] = strEmail!
-        //stReqData["CallID"] = callID
-        stReqData["callid"] = "0101112222"
+        stReqData["CallID"] = callID
         
         let strJsonReqData = stReqData.toJSONString()
-        let sizeToSendData = strJsonReqData.characters.count
-        
-        stReqHeader["request"] = String(E_PROTO_REQ_TYPE.E_PROTO_REQ_HEADER_SIGNIN.rawValue)
-        stReqHeader["size"] = String(sizeToSendData)
-        
-        let strJsonReq = stReqHeader.toJSONString()
-        let sizeToSend = strJsonReq.characters.count
-        let sizeSent = networking.sendData(strJsonReq)
-        if (sizeSent != sizeToSend) {
-            debugPrint("Fail to send Msg")
-            return
-        }
-        debugPrint("Succeed to send Header")
-        
-        // Receive Header Response From Server
-        let defaultReceivedSize = 32
-        var strReceivedData = networking.recvData(defaultReceivedSize)
-        if (strReceivedData.characters.count < 1) {
-            debugPrint("Fail to receive Msg")
-            return
-        }
-        debugPrint("Succeed to receieve Msg")
-        */
-        /*
-            For swiftyjson, you have to change string to dictionary.
-            and then, call JSON.
-            finally, extract value.
-        *//*
-        var jsonMethod = JSONMethods()
-        var dicData = jsonMethod.convertStringToDictionary(strReceivedData)
-        let resHeaderJson = JSON(dicData!)
-        var nResponseRet = (resHeaderJson.dictionary!["response"]! as JSON).int!
-        if (nResponseRet == E_PROTO_RES_TYPE.E_PROTO_RES_SUCCESS.rawValue) {
-            debugPrint("Valid response")
-        }
-        else {
-            debugPrint("Invalid response from server")
+        var strRecvMsg : String = ""
+        nRet = cNetworkingCommunication.networkingWithServer(strJsonReqData, nMsgType: E_PROTO_REQ_TYPE.E_PROTO_REQ_HEADER_SIGNIN, strRecvMsg: &strRecvMsg)
+        if (nRet > 0) {
             return
         }
         
-        // Send Data To Server
-        let sizeSentData = networking.sendData(strJsonReqData)
-        if (sizeSentData != sizeToSendData) {
-            debugPrint("Fail to send Msg")
-            return
-        }
-        debugPrint("Succeed to send Header")
-        
-        // Receive Data From Server
-        strReceivedData = networking.recvData(defaultReceivedSize)
-        if (strReceivedData.characters.count < 1) {
-            debugPrint("Fail to receive Msg")
-            return
-        }
-        debugPrint("Succeed to receieve Msg")
-        
-        jsonMethod = JSONMethods()
-        dicData = jsonMethod.convertStringToDictionary(strReceivedData)
-        let resDataJson = JSON(dicData!)
-        nResponseRet = (resDataJson.dictionary!["response"]! as JSON).int!
-        
-        if (nResponseRet == E_PROTO_RES_TYPE.E_PROTO_RES_SUCCESS.rawValue) {
-            debugPrint("Valid response")
-        }
-        else if (nResponseRet == E_PROTO_RES_TYPE.E_PROTO_RES_DATA_NOT_FOUND_EMAIL.rawValue) {
-            debugPrint("Valid response")
-        }
-        else if (nResponseRet == E_PROTO_RES_TYPE.E_PROTO_RES_DATA_NOT_FOUND_NICKNAME.rawValue) {
-            debugPrint("Valid response")
-        }
-        else {
-            debugPrint("Invalid response from server")
-            return
-        }*/
-        
+        debugPrint("Success to sign in for user account")
         let vc : AnyObject! = self.storyboard?.instantiateViewControllerWithIdentifier("mainnavi")
         self.showViewController(vc as! UIViewController, sender: sender)
     }
@@ -153,24 +82,21 @@ class LoginViewController: UIViewController {
             textHiddenMsg.hidden = false
             return
         }
-        /*
+        
         let cNetworkingCommunication = NetworkingCommunication()
         
         var stReqData : BuildJSON = BuildJSON()
         stReqData["request"] = String(E_PROTO_REQ_TYPE.E_PROTO_REQ_DATA_SIGNUP.rawValue)
-        //stReqData["nickname"] = strNickName!
-        //stReqData["email"] = strEmail!
-        //stReqData["CallID"] = callID
-        stReqData["nickname"] = "cclab"
-        stReqData["email"] = "cclab@gmail.com"
-        stReqData["callid"] = "0101112222"
+        stReqData["nickname"] = strNickName!
+        stReqData["email"] = strEmail!
+        stReqData["CallID"] = callID
         
         let strJsonReqData = stReqData.toJSONString()
         var strRecvMsg : String = ""
         nRet = cNetworkingCommunication.networkingWithServer(strJsonReqData, nMsgType: E_PROTO_REQ_TYPE.E_PROTO_REQ_HEADER_SIGNUP, strRecvMsg: &strRecvMsg)
         if (nRet > 0) {
             return
-        }*/
+        }
 
         debugPrint("Success to sign up for user account")
         let vc : AnyObject! = self.storyboard?.instantiateViewControllerWithIdentifier("mainnavi")
@@ -207,6 +133,11 @@ class LoginViewController: UIViewController {
             callID = ""
         }
     }
+    
+    func getStoreDataFromServer() {
+        
+    }
+    
     
     /*
     // MARK: - Navigation
