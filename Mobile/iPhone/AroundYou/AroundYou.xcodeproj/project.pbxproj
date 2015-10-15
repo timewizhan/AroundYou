@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4DC6ECAD1BCF92F000CEB4F2 /* SWRevealViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DC6ECAC1BCF92F000CEB4F2 /* SWRevealViewController.m */; settings = {ASSET_TAGS = (); }; };
+		4D7F7B221BCFB271009DF9FF /* SWRevealViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D7F7B211BCFB271009DF9FF /* SWRevealViewController.m */; settings = {ASSET_TAGS = (); }; };
 		4DC6ECAF1BCF945900CEB4F2 /* SidebarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DC6ECAE1BCF945900CEB4F2 /* SidebarController.swift */; settings = {ASSET_TAGS = (); }; };
 		8E08B08B1BBA5DA900A3EB14 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E08B0891BBA5DA900A3EB14 /* MenuViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		8E08B08C1BBA5DA900A3EB14 /* StoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E08B08A1BBA5DA900A3EB14 /* StoreViewController.swift */; settings = {ASSET_TAGS = (); }; };
@@ -44,9 +44,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4D7F7B201BCFB271009DF9FF /* SWRevealViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SWRevealViewController.h; sourceTree = "<group>"; };
+		4D7F7B211BCFB271009DF9FF /* SWRevealViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SWRevealViewController.m; sourceTree = "<group>"; };
 		4DC6ECAA1BCF92EF00CEB4F2 /* AroundYou-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AroundYou-Bridging-Header.h"; sourceTree = "<group>"; };
-		4DC6ECAB1BCF92F000CEB4F2 /* SWRevealViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SWRevealViewController.h; path = "../../../../../../Downloads/SWRevealViewController-master-2/SWRevealViewController/SWRevealViewController.h"; sourceTree = "<group>"; };
-		4DC6ECAC1BCF92F000CEB4F2 /* SWRevealViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SWRevealViewController.m; path = "../../../../../../Downloads/SWRevealViewController-master-2/SWRevealViewController/SWRevealViewController.m"; sourceTree = "<group>"; };
 		4DC6ECAE1BCF945900CEB4F2 /* SidebarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SidebarController.swift; sourceTree = "<group>"; };
 		8E08B0891BBA5DA900A3EB14 /* MenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		8E08B08A1BBA5DA900A3EB14 /* StoreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreViewController.swift; sourceTree = "<group>"; };
@@ -98,8 +98,8 @@
 		4DC6ECA91BCF92DA00CEB4F2 /* SWRevealViewController */ = {
 			isa = PBXGroup;
 			children = (
-				4DC6ECAB1BCF92F000CEB4F2 /* SWRevealViewController.h */,
-				4DC6ECAC1BCF92F000CEB4F2 /* SWRevealViewController.m */,
+				4D7F7B201BCFB271009DF9FF /* SWRevealViewController.h */,
+				4D7F7B211BCFB271009DF9FF /* SWRevealViewController.m */,
 				4DC6ECAA1BCF92EF00CEB4F2 /* AroundYou-Bridging-Header.h */,
 			);
 			name = SWRevealViewController;
@@ -291,13 +291,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				8E0B85571BC0F42900CC5688 /* MenuDetailViewController.swift in Sources */,
-				4DC6ECAD1BCF92F000CEB4F2 /* SWRevealViewController.m in Sources */,
 				8E8154AD1BAC079700D15B14 /* AppDelegate.swift in Sources */,
 				8E0B85621BC2927B00CC5688 /* StructType.swift in Sources */,
 				8E6F36EF1BCAB0B2001F4540 /* MenuContainerTableViewController.swift in Sources */,
 				8E0B855A1BC282A800CC5688 /* CommentViewController.swift in Sources */,
 				8E0B84A71BBE4A9000CC5688 /* BuildJSONString.swift in Sources */,
 				8E0B84A51BBE20DC00CC5688 /* ErrorType.swift in Sources */,
+				4D7F7B221BCFB271009DF9FF /* SWRevealViewController.m in Sources */,
 				8E0B85601BC2924500CC5688 /* CommentCell.swift in Sources */,
 				8E0B84AB1BBEB3A700CC5688 /* JSONMethods.swift in Sources */,
 				8E6F36EB1BC94A45001F4540 /* StoresViewController.swift in Sources */,
