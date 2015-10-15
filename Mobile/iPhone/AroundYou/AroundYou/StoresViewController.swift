@@ -10,6 +10,8 @@ import UIKit
 
 class StoresViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     @IBOutlet weak var tableViewStores: UITableView!
+    @IBOutlet weak var menuButton: UIBarButtonItem!
+    
 
     let textCellIdentifier = "cellStores"
     var arrayStores : [String] = ["부산식당", "형제갈비", "미가", "맥도날드", "버거킹"]
@@ -19,6 +21,12 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
         // Do any additional setup after loading the view, typically from a nib.
         tableViewStores.delegate = self
         tableViewStores.dataSource = self
+        
+        if self.revealViewController() != nil {
+            menuButton.target = self.revealViewController()
+            menuButton.action = "revealToggle:"
+            self.view.addGestureRecognizer(self.revealViewController().panGestureRecognizer())
+        }
     }
     
     override func didReceiveMemoryWarning() {
