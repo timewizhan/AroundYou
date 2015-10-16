@@ -10,20 +10,15 @@ import UIKit
 
 class CommentCell: UITableViewCell {
 
-    @IBOutlet weak var userIDLabel: UILabel!
-    @IBOutlet weak var starImage: UIImageView!
-    @IBOutlet weak var textComment: UITextField!
+    @IBOutlet weak var labelCommentName: UILabel!
+    @IBOutlet weak var labelCommentStar: UILabel!
+    @IBOutlet weak var textFieldCommentContents: UITextField!
     
     var comment: Comment! {
         didSet {
-            userIDLabel.text = comment.userId
-            starImage.image = imageForRating(Int(comment.strStar!)!)
-            textComment.text = comment.strComment
+            labelCommentName.text = comment.userId
+            labelCommentStar.text = comment.strStar
+            textFieldCommentContents.text = comment.strComment
         }
-    }
-    
-    func imageForRating(rating:Int) -> UIImage? {
-        let imageName = "star\(rating)"
-        return UIImage(named: imageName)
     }
 }

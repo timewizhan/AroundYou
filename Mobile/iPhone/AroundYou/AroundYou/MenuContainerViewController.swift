@@ -8,8 +8,9 @@
 
 import UIKit
 
-class MenuViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class MenuContainerViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     @IBOutlet weak var tableView: UITableView!
+    
     
     var menuArray = ["김치 찌개", "제육 볶음", "김치 찜", "오징어 볶음"]
     let textCellIdentifier = "TextCell"
@@ -55,19 +56,19 @@ class MenuViewController: UIViewController, UITableViewDataSource, UITableViewDe
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
-        if segue.identifier == "menuContainerSegue" {
+        /*if segue.identifier == "menuContainerSegue" {
             if let menuContainerTableViewController = segue.destinationViewController as? MenuContainerTableViewController {
                 menuContainerTableViewController.textStoreName = labelStore
                 menuContainerTableViewController.textStoreStar = ""
             }
-        }
+        }*/
         if segue.identifier == "menuToDetailSegue" {
-            if let menuDetailViewController = segue.destinationViewController as? MenuDetailViewController {
+            if let menuDetailViewTableViewController = segue.destinationViewController as? MenuDetailViewTableViewController {
                 if let cell = sender as? UITableViewCell {
                     let indexPath = tableView.indexPathForCell(cell)
                     if let index = indexPath?.row {
                         print(menuArray[index])
-                        menuDetailViewController.getMenuName = menuArray[index]
+                        menuDetailViewTableViewController.textMenuName = menuArray[index]
                     }
                 }
             }

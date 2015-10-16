@@ -66,12 +66,12 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
-        if let menuViewController = segue.destinationViewController as? MenuViewController {
+        if let menuViewTableViewController = segue.destinationViewController as? MenuViewTableViewController {
             if let cell = sender as? UITableViewCell {
                 let indexPath = tableViewStores.indexPathForCell(cell)
                 if let index = indexPath?.row {
                     debugPrint("click button [\(arrayStores[index])]")
-                    menuViewController.labelStore = arrayStores[index]
+                    menuViewTableViewController.textStoreName = arrayStores[index]
                 }
             }
         }

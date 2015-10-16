@@ -8,11 +8,10 @@
 
 import UIKit
 
-class MenuContainerTableViewController: UITableViewController {
-
+class MenuViewTableViewController: UITableViewController {
     @IBOutlet weak var labelStoreName: UILabel!
     @IBOutlet weak var labelStoreStar: UILabel!
-    
+
     var textStoreName : String?
     var textStoreStar : String?
     override func viewDidLoad() {
