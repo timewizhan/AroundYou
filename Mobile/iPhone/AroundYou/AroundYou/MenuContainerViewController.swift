@@ -15,6 +15,7 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
     var menuArray = ["김치 찌개", "제육 볶음", "김치 찜", "오징어 볶음"]
     let textCellIdentifier = "TextCell"
     var labelStore : String?
+    var labelChoice : String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,7 +48,7 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
         let row = indexPath.row
         debugPrint(menuArray[row])
         
-        //print(menuArray[row])
+        labelChoice = menuArray[row]
     }
     
     // MARK: - Navigation
@@ -62,6 +63,7 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
                 menuContainerTableViewController.textStoreStar = ""
             }
         }*/
+        /*
         if segue.identifier == "menuToDetailSegue" {
             if let menuDetailViewTableViewController = segue.destinationViewController as? MenuDetailViewTableViewController {
                 if let cell = sender as? UITableViewCell {
@@ -73,6 +75,7 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
                 }
             }
         }
+*/
        
     }
 }

@@ -32,6 +32,12 @@ class MenuViewTableViewController: UITableViewController {
         // Dispose of any resources that can be recreated.
     }
 
-   
+    @IBAction func alarmToMenuView(segue : UIStoryboardSegue) {
+        if let menuContainerViewController = segue.sourceViewController as? MenuContainerViewController {
+            let strData = menuContainerViewController.labelChoice
+            debugPrint(strData)
+        }
+        
+    }
 
 }
