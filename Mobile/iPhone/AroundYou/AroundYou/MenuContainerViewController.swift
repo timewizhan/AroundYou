@@ -16,6 +16,7 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
     let textCellIdentifier = "TextCell"
     var labelStore : String?
     var labelChoice : String?
+    //var external_row: Int?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,6 +48,7 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         let row = indexPath.row
         debugPrint(menuArray[row])
+        //external_row = row
         
         labelChoice = menuArray[row]
     }
@@ -74,9 +76,17 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
                     }
                 }
             }
+        }*/
+        
+        if let menuDetailViewTableViewController = segue.destinationViewController as? MenuDetailViewTableViewController {
+            if let cell = sender as? UITableViewCell {
+                let indexPath = tableView.indexPathForCell(cell)
+                if let index = indexPath?.row {
+                    debugPrint("click button [\(menuArray[index])]")
+                    menuDetailViewTableViewController.textMenuName = menuArray[index]
+                }
+            }
         }
-*/
-       
+
     }
 }
-
