@@ -58,9 +58,9 @@ class MenuDetailViewContainerController: UIViewController, UITableViewDataSource
     }
     
     @IBAction func saveComment(segue : UIStoryboardSegue) {
-        if let commentViewController = segue.sourceViewController as? CommnetViewController {
+        if let commentViewController = segue.sourceViewController as? CommentViewController {
             
-            //add the new player to the players array
+            //add the new comment to the comment array
             if let comment = commentViewController.comment {
                 comments.append(comment)
                 

@@ -16,7 +16,6 @@
 		8E0B84A51BBE20DC00CC5688 /* ErrorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B84A41BBE20DC00CC5688 /* ErrorType.swift */; settings = {ASSET_TAGS = (); }; };
 		8E0B84A71BBE4A9000CC5688 /* BuildJSONString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B84A61BBE4A9000CC5688 /* BuildJSONString.swift */; settings = {ASSET_TAGS = (); }; };
 		8E0B84AB1BBEB3A700CC5688 /* JSONMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B84AA1BBEB3A700CC5688 /* JSONMethods.swift */; settings = {ASSET_TAGS = (); }; };
-		8E0B85571BC0F42900CC5688 /* MenuDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B85561BC0F42900CC5688 /* MenuDetailViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		8E0B855A1BC282A800CC5688 /* CommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B85591BC282A700CC5688 /* CommentViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		8E0B855C1BC2880400CC5688 /* StarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B855B1BC2880400CC5688 /* StarViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		8E0B85601BC2924500CC5688 /* CommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B855F1BC2924500CC5688 /* CommentCell.swift */; settings = {ASSET_TAGS = (); }; };
@@ -56,7 +55,6 @@
 		8E0B84A41BBE20DC00CC5688 /* ErrorType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorType.swift; sourceTree = "<group>"; };
 		8E0B84A61BBE4A9000CC5688 /* BuildJSONString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BuildJSONString.swift; sourceTree = "<group>"; };
 		8E0B84AA1BBEB3A700CC5688 /* JSONMethods.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONMethods.swift; sourceTree = "<group>"; };
-		8E0B85561BC0F42900CC5688 /* MenuDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuDetailViewController.swift; sourceTree = "<group>"; };
 		8E0B85591BC282A700CC5688 /* CommentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentViewController.swift; sourceTree = "<group>"; };
 		8E0B855B1BC2880400CC5688 /* StarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StarViewController.swift; sourceTree = "<group>"; };
 		8E0B855F1BC2924500CC5688 /* CommentCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentCell.swift; sourceTree = "<group>"; };
@@ -129,7 +127,6 @@
 				4DC6ECAE1BCF945900CEB4F2 /* SidebarController.swift */,
 				8E5EDB0F1BD096AB00193851 /* MenuDetailViewTableViewController.swift */,
 				8E5EDB111BD099EA00193851 /* MenuDetailViewContainerController.swift */,
-				8E0B85561BC0F42900CC5688 /* MenuDetailViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -233,7 +230,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0700;
-				LastUpgradeCheck = 0640;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = cclab;
 				TargetAttributes = {
 					8E8154A61BAC079700D15B14 = {
@@ -291,7 +288,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				8E5EDB121BD099EA00193851 /* MenuDetailViewContainerController.swift in Sources */,
-				8E0B85571BC0F42900CC5688 /* MenuDetailViewController.swift in Sources */,
 				8E8154AD1BAC079700D15B14 /* AppDelegate.swift in Sources */,
 				8E0B85621BC2927B00CC5688 /* StructType.swift in Sources */,
 				8E0B855A1BC282A800CC5688 /* CommentViewController.swift in Sources */,
@@ -372,6 +368,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -479,6 +476,7 @@
 				);
 				INFOPLIST_FILE = AroundYouTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "cclab.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AroundYou.app/AroundYou";
 			};
@@ -494,6 +492,7 @@
 				);
 				INFOPLIST_FILE = AroundYouTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "cclab.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AroundYou.app/AroundYou";
 			};

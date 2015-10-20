@@ -32,12 +32,12 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
         /*
             before loading store view, app have to get data about store menu
             so, users should wait for just seconds
-        */
+        *//*
         let nRet : Int
         nRet = getStoreDataFromServer()
         if nRet != E_RET_TYPE.E_RET_SUCCESS.rawValue {
             debugPrint("Fail to load stores")  
-        }
+        }*/
     }
     
     override func didReceiveMemoryWarning() {

@@ -8,19 +8,17 @@
 
 import UIKit
 
-class CommnetViewController: UITableViewController {
-
-    var comment : Comment?
+class CommentViewController: UITableViewController {
+    @IBOutlet weak var textComment: UITextField!
+    @IBOutlet weak var selectStar: UILabel!
     
+    var comment : Comment?
     var star:String = "1" {
         didSet {
-            selectStart.text? = star
+            selectStar.text? = star
         }
     }
     
-    
-    @IBOutlet weak var textComment: UITextField!
-    @IBOutlet weak var selectStart: UILabel!
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -45,7 +43,8 @@ class CommnetViewController: UITableViewController {
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "saveComment" {
-            comment = Comment(userId: "test", strComment: textComment.text, strStar: selectStart.text)
+            comment = Comment(userId: "test", strComment: textComment.text, strStar: selectStar.text)
+            print(comment)
         }
         if segue.identifier == "selectStar" {
             if let starViewController = segue.destinationViewController as? StarViewController {

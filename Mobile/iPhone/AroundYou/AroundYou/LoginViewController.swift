@@ -28,6 +28,18 @@ class LoginViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        textNickName.endEditing(true)
+        textEMail.endEditing(true)
+    }
+    
+    @IBAction func textNickNameButton(sender: AnyObject) {
+        sender.resignFirstResponder()
+    }
+    @IBAction func textEMailButton(sender: AnyObject) {
+        sender.resignFirstResponder()
+    }
 
     @IBAction func pressSignIn(sender: AnyObject) {
         let strNickName = textNickName.text

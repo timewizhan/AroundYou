@@ -25,12 +25,12 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
         // Do any additional setup after loading the view, typically from a nib.
         tableView.delegate = self
         tableView.dataSource = self
-        
+        /*
         let nRet : Int
         nRet = getMenuDataFromServer()
         if nRet != E_RET_TYPE.E_RET_SUCCESS.rawValue {
             debugPrint("Fail to load stores")
-        }
+        }*/
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
