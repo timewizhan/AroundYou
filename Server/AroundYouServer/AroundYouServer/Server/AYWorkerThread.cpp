@@ -131,6 +131,7 @@ DWORD CAYWorkerThread::ParseDataByJSON(DWORD &refdwNumberOfRequest, ST_RECV_DATA
 		m_pstProtoSignIn->strEmail			= JsonRoot.get("email", 0).asString();
 		m_pstProtoSignIn->strCallID			= JsonRoot.get("callid", 0).asString();
 	}
+	///////////// Sign Up //////////////
 	else if (dwRequest == E_PROTO_REQ_DATA_SIGNUP) {
 		m_pstProtoSignUp = new ST_PROTOCOL_SIGNUP;
 		::memset(m_pstProtoSignUp, 0x00, sizeof(ST_PROTOCOL_SIGNUP));
@@ -140,10 +141,17 @@ DWORD CAYWorkerThread::ParseDataByJSON(DWORD &refdwNumberOfRequest, ST_RECV_DATA
 		m_pstProtoSignUp->strEmail			= JsonRoot.get("email", 0).asString();
 		m_pstProtoSignUp->strCallID			= JsonRoot.get("callid", 0).asString();
 	}
-	///////////// Menu //////////////
-	else if (dwRequest == E_PROTO_REQ_MENU_QUERY){		
+	///////////// Stores //////////////
+	else if (dwRequest == E_PROTO_REQ_DATA_STORES){		
 		/*
-			Query inner data is nothing
+			E_PROTO_REQ_DATA_MENUS is only message to get menu information
+		*/
+		return E_RET_SUCCESS;
+	}
+	///////////// Menus //////////////
+	else if (dwRequest == E_PROTO_REQ_DATA_MENUS) {
+		/*
+			E_PROTO_REQ_DATA_MENUS is only message to get menu information
 		*/
 		return E_RET_SUCCESS;
 	}
@@ -278,9 +286,19 @@ DWORD CAYWorkerThread::RequestToDataBase(DWORD &refdwNumberOfRequest, ST_DB_RESU
 		}
 		refstDBResult = stDBResult;
 	}
-	///////////// Menu //////////////
-	else if (dwRequest == E_PROTO_REQ_MENU_QUERY) {
-		stDBSQLQuery.strSQL = "SELECT * FROM \"menu\"";
+	///////////// Stores //////////////
+	else if (dwRequest == E_PROTO_REQ_DATA_STORES) {
+		stDBSQLQuery.strSQL = "SELECT shopname, shopreputation FROM \"shop\"";
+		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
+		if (dwRet != E_RET_SUCCESS) {
+			ErrorLog("Fail to query data from DataBase");
+			return E_RET_FAIL;
+		}
+		refstDBResult = stDBResult;
+	}
+	///////////// Menus //////////////
+	else if (dwRequest == E_PROTO_REQ_DATA_MENUS) {
+		stDBSQLQuery.strSQL = "SELECT menuname, menureputation FROM \"menu\"";
 		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
 		if (dwRet != E_RET_SUCCESS) {
 			ErrorLog("Fail to query data from DataBase");
@@ -490,6 +508,7 @@ DWORD CAYWorkerThread::MakeSendPacket(DWORD &refdwNumberOfRequest, ST_DB_RESULT 
 		}
 		refstrSendData = "";
 	}
+	///////////// Sign Up //////////////
 	else if (refdwNumberOfRequest == E_PROTO_REQ_DATA_SIGNUP) {
 		if (refstDBResult.vecstDBResultLines.size() > 0) {
 			refdwResponse = E_PROTO_RES_DATA_ACCOUNT_EXIST;
@@ -498,6 +517,102 @@ DWORD CAYWorkerThread::MakeSendPacket(DWORD &refdwNumberOfRequest, ST_DB_RESULT 
 			refdwResponse = E_PROTO_RES_SUCCESS;
 		}
 		refstrSendData = "";
+	}
+	///////////// Stores //////////////
+	else if (refdwNumberOfRequest == E_PROTO_REQ_DATA_STORES) {
+		refstrSendData = "";
+		if (refstDBResult.vecstDBResultLines.size() < 1) {
+			refdwResponse = E_PROTO_RES_DATA_STORES_NOT_EXIST;
+			return E_RET_SUCCESS;
+		}
+		/*
+			Response data is following..
+			1. std::string	strStoreName;
+			2. std::string	strStoreReputation;
+		*/
+		DWORD dwLineCount;
+		Json::Value JsonData;
+		for (dwLineCount = 0; dwLineCount < refstDBResult.vecstDBResultLines.size(); dwLineCount++) {
+			ST_DB_RESULT_LINE stDBResultLine = refstDBResult.vecstDBResultLines[dwLineCount];
+			if (stDBResultLine.vecstrResult.size() != 2) {
+				/*
+					DB Result Query have 2 argument
+				*/
+				refdwResponse = E_PROTO_RES_QUERY_FAIL;
+				break;
+			}
+
+			DWORD dwParamCount;
+			for (dwParamCount = 0; dwParamCount < stDBResultLine.vecstrResult.size(); dwParamCount++) {
+				switch (dwParamCount)
+				{
+				case 0:
+					JsonData["storename"] = stDBResultLine.vecstrResult[dwParamCount];
+					break;
+				case 1:
+					JsonData["storereputation"] = stDBResultLine.vecstrResult[dwParamCount];
+					break;
+				default:
+					break;
+				}
+			}
+			JsonRoot["data"].append(JsonData);
+		}
+
+		JsonRoot["count"] = (int)dwLineCount;
+		Json::StyledWriter JsonWriter;
+		strSendData = JsonWriter.write(JsonRoot);
+		refstrSendData = strSendData;
+		refdwResponse = E_PROTO_RES_SUCCESS;
+		return E_RET_SUCCESS;
+	}
+	///////////// Menus //////////////
+	else if (refdwNumberOfRequest == E_PROTO_REQ_DATA_MENUS) {
+		refstrSendData = "";
+		if (refstDBResult.vecstDBResultLines.size() < 1) {
+			refdwResponse = E_PROTO_RES_DATA_MENUS_NOT_EXIST;
+			return E_RET_SUCCESS;
+		}
+		/*
+			Response data is following..
+			1. std::string	strMenuName;
+			2. std::string	strMenuReputation;
+		*/
+		DWORD dwLineCount;
+		Json::Value JsonData;
+		for (dwLineCount = 0; dwLineCount < refstDBResult.vecstDBResultLines.size(); dwLineCount++) {
+			ST_DB_RESULT_LINE stDBResultLine = refstDBResult.vecstDBResultLines[dwLineCount];
+			if (stDBResultLine.vecstrResult.size() != 2) {
+				/*
+					DB Result Query have 2 argument
+				*/
+				refdwResponse = E_PROTO_RES_QUERY_FAIL;
+				break;
+			}
+
+			DWORD dwParamCount;
+			for (dwParamCount = 0; dwParamCount < stDBResultLine.vecstrResult.size(); dwParamCount++) {
+				switch (dwParamCount)
+				{
+				case 0:
+					JsonData["menuname"] = stDBResultLine.vecstrResult[dwParamCount];
+					break;
+				case 1:
+					JsonData["menureputation"] = stDBResultLine.vecstrResult[dwParamCount];
+					break;
+				default:
+					break;
+				}
+			}
+			JsonRoot["data"].append(JsonData);
+		}
+
+		JsonRoot["count"] = (int)dwLineCount;
+		Json::StyledWriter JsonWriter;
+		strSendData = JsonWriter.write(JsonRoot);
+		refstrSendData = strSendData;
+		refdwResponse = E_PROTO_RES_SUCCESS;
+		return E_RET_SUCCESS;
 	}
 	///////////// Menu //////////////
 	else if (refdwNumberOfRequest == E_PROTO_REQ_MENU_QUERY) {
