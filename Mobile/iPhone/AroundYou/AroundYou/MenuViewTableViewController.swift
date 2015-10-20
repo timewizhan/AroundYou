@@ -8,11 +8,10 @@
 
 import UIKit
 
-class MenuContainerTableViewController: UITableViewController {
-
+class MenuViewTableViewController: UITableViewController {
     @IBOutlet weak var labelStoreName: UILabel!
     @IBOutlet weak var labelStoreStar: UILabel!
-    
+
     var textStoreName : String?
     var textStoreStar : String?
     override func viewDidLoad() {
@@ -33,6 +32,25 @@ class MenuContainerTableViewController: UITableViewController {
         // Dispose of any resources that can be recreated.
     }
 
-   
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        // Get the new view controller using segue.destinationViewController.
+        // Pass the selected object to the new view controller.
+        
+        if segue.identifier == "menucontainer" {
+            if let menuContainerViewController = segue.destinationViewController as? MenuContainerViewController {
+                menuContainerViewController.labelStore = textStoreName!
+            }
+        }
+
+    }
+    
+    
+    @IBAction func alarmToMenuView(segue : UIStoryboardSegue) {
+        if let menuContainerViewController = segue.sourceViewController as? MenuContainerViewController {
+            let strData = menuContainerViewController.labelChoice
+            debugPrint(strData)
+        }
+        
+    }
 
 }

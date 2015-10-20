@@ -1,41 +1,38 @@
 //
-//  MenuController.swift
+//  MenuDetailViewTableViewController.swift
 //  AroundYou
 //
-//  Created by 김계희 on 2015. 10. 12..
+//  Created by 물통꿀꿀이 on 2015. 10. 16..
 //  Copyright © 2015년 cclab. All rights reserved.
 //
 
 import UIKit
 
-class MenuController: UITableViewController {
+class MenuDetailViewTableViewController: UITableViewController {
+    @IBOutlet weak var labelMenuName: UILabel!
+    @IBOutlet weak var labelMenuStar: UILabel!
 
+    var textMenuName : String?
+    var textMenuStar : String?
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
-
+        
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+        
+        labelMenuName.text = textMenuName
+        labelMenuStar.text = textMenuStar
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-    // MARK: - Table view data source
-/*
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
-    }
-
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 0
-    }
+    
+    
 
     /*
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -90,6 +87,6 @@ class MenuController: UITableViewController {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
     }
-    */*/
+    */
 
 }

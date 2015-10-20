@@ -21,6 +21,24 @@ enum E_PROTO_REQ_TYPE : Int
     */
     case E_PROTO_REQ_HEADER_SIGNUP
     case E_PROTO_REQ_DATA_SIGNUP
+    
+    /*
+        Stores
+    */
+    case E_PROTO_REQ_HEADER_STORES
+    case E_PROTO_REQ_DATA_STORES
+    
+    /*
+        Menus
+    */
+    case E_PROTO_REQ_HEADER_MENUS
+    case E_PROTO_REQ_DATA_MENUS
+    
+    /*
+        Comments
+    */
+    case E_PROTO_REQ_HEADER_COMMENTS
+    case E_PROTO_REQ_DATA_COMMENTS
 }
 
 enum E_PROTO_RES_TYPE : Int
@@ -39,6 +57,18 @@ enum E_PROTO_RES_TYPE : Int
         Sign Up
     */
     case E_PROTO_RES_DATA_ACCOUNT_EXIST
+    
+    /*
+        Stores
+    */
+    
+    /*
+        Menus
+    */
+    
+    /*
+        Comments
+    */
 }
 
 enum E_NETWORK_RET_TYPE : Int
@@ -130,6 +160,7 @@ class NetworkingCommunication
             if (strResponseRealData.characters.count < 1) {
                 return E_NETWORK_RET_TYPE.E_NETWORK_RET_FAIL_RECV_DATA.rawValue
             }
+            strRecvMsg = strResponseRealData
         }
         return E_NETWORK_RET_TYPE.E_NETWORK_RET_SUCCESS.rawValue
     }
