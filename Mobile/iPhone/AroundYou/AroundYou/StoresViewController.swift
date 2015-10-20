@@ -14,7 +14,7 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
     
 
     let textCellIdentifier = "cellStores"
-    var arrayStores : [String] = ["부산식당", "형제갈비", "미가", "맥도날드", "버거킹"]
+    var arrayStores : [String] = []// = ["부산식당", "형제갈비", "미가", "맥도날드", "버거킹"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +26,16 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
             menuButton.target = self.revealViewController()
             menuButton.action = "revealToggle:"
             self.view.addGestureRecognizer(self.revealViewController().panGestureRecognizer())
+        }
+        
+        /*
+            before loading store view, app have to get data about store menu
+            so, users should wait for just seconds
+        */
+        let nRet : Int
+        nRet = getMenuDataFromServer()
+        if nRet != E_RET_TYPE.E_RET_SUCCESS.rawValue {
+            debugPrint("Fail to load stores")  
         }
     }
     
@@ -79,8 +89,60 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
     
     
     // Network Function
-    func getMenuDataFromServer() {
+    func getMenuDataFromServer() -> Int {
         debugPrint("Try to get datat from server")
+        
+        let cNetworkingCommunication = NetworkingCommunication()
+        
+        var stReqData : BuildJSON = BuildJSON()
+        stReqData["request"] = String(E_PROTO_REQ_TYPE.E_PROTO_REQ_DATA_STORES.rawValue)
+        // location is default
+        stReqData["location"] = "sinchon"
+        
+        let strJsonReqData = stReqData.toJSONString()
+        var strRecvMsg : String = ""
+        var nRet : Int
+        nRet = cNetworkingCommunication.networkingWithServer(strJsonReqData, nMsgType: E_PROTO_REQ_TYPE.E_PROTO_REQ_HEADER_STORES, strRecvMsg: &strRecvMsg)
+        if (nRet > 0) {
+            return E_RET_TYPE.E_RET_FAIL.rawValue
+        }
+        
+        /*
+            Parse received data (store data)
+        
+            a following string is example that server send for response.
+            @param : count param is number of array
+        
+            {
+                "count" : "2"
+                "data" : [
+                            {"store" : "a"},
+                            {"store" : "b"}
+                         ]
+            }
+        */
+        strRecvMsg = " {\"count\" : \"2\", \"data\" : [{\"store\" : \"a\"},{\"store\" : \"b\"}]}"
+        var countArray : Int = 0
+        if let data = strRecvMsg.dataUsingEncoding(NSUTF8StringEncoding) {
+            let json = JSON(data: data)
+            countArray = Int(json["count"].stringValue)!
+            debugPrint("store array [\(countArray)]")
+            for item in json["data"].arrayValue {
+                let itemData = item["store"].stringValue
+                debugPrint("store name [\(itemData)]")
+                arrayStores.append(itemData)
+            }
+        }
+        
+        if countArray < 1 {
+            let itemNothing : String = "nothing"
+            arrayStores.append(itemNothing)
+            return E_RET_TYPE.E_RET_FAIL.rawValue
+        }
+        else {
+            debugPrint("Success to get data from server")
+            return E_RET_TYPE.E_RET_SUCCESS.rawValue
+        }
     }
     
     /*
