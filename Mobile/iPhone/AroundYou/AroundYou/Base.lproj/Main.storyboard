@@ -292,7 +292,7 @@
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                             <animations/>
                             <connections>
-                                <segue destination="6Zk-wM-EKG" kind="embed" id="6oa-vd-0yj"/>
+                                <segue destination="6Zk-wM-EKG" kind="embed" identifier="menucontainer" id="6oa-vd-0yj"/>
                             </connections>
                         </containerView>
                         <sections>

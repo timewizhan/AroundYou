@@ -14,9 +14,11 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
     
     var menuArray = ["김치 찌개", "제육 볶음", "김치 찜", "오징어 볶음"]
     let textCellIdentifier = "TextCell"
-    var labelStore : String?
+    var labelStore : String = ""
     var labelChoice : String?
     //var external_row: Int?
+    
+    var reputationMenu : String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,7 +26,13 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
         tableView.delegate = self
         tableView.dataSource = self
         
+        let nRet : Int
+        nRet = getMenuDataFromServer()
+        if nRet != E_RET_TYPE.E_RET_SUCCESS.rawValue {
+            debugPrint("Fail to load stores")
+        }
     }
+    
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }
@@ -87,6 +95,63 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
                 }
             }
         }
-
+    }
+    
+    func getMenuDataFromServer() -> Int {
+        debugPrint("Try to get menu data from server")
+        
+        let cNetworkingCommunication = NetworkingCommunication()
+        
+        var stReqData : BuildJSON = BuildJSON()
+        stReqData["request"] = String(E_PROTO_REQ_TYPE.E_PROTO_REQ_DATA_MENUS.rawValue)
+        // location is default
+        stReqData["store"] = labelStore
+        
+        let strJsonReqData = stReqData.toJSONString()
+        var strRecvMsg : String = ""
+        var nRet : Int
+        nRet = cNetworkingCommunication.networkingWithServer(strJsonReqData, nMsgType: E_PROTO_REQ_TYPE.E_PROTO_REQ_HEADER_MENUS, strRecvMsg: &strRecvMsg)
+        if (nRet > 0) {
+            return E_RET_TYPE.E_RET_FAIL.rawValue
+        }
+        
+        /*
+        Parse received data (store data)
+        
+        a following string is example that server send for response.
+        @param : count param is number of array
+        
+        {
+            "count" : "2"
+            "reputation" : "3.0"
+            "data" : [
+                        {"menu" : "a"},
+                        {"menu" : "b"}
+                     ]
+        }
+        */
+        strRecvMsg = " {\"count\" : \"2\", \"data\" : [{\"store\" : \"a\"},{\"store\" : \"b\"}]}"
+        var countArray : Int = 0
+        if let data = strRecvMsg.dataUsingEncoding(NSUTF8StringEncoding) {
+            let json = JSON(data: data)
+            countArray = Int(json["count"].stringValue)!
+            debugPrint("store array [\(countArray)]")
+            reputationMenu = json["reputation"].stringValue
+            for item in json["data"].arrayValue {
+                let itemData = item["menu"].stringValue
+                debugPrint("menu name [\(itemData)]")
+                menuArray.append(itemData)
+            }
+        }
+        
+        if countArray < 1 {
+            let itemNothing : String = "nothing"
+            menuArray.append(itemNothing)
+            return E_RET_TYPE.E_RET_FAIL.rawValue
+        }
+        else {
+            debugPrint("Success to get menu data from server")
+            return E_RET_TYPE.E_RET_SUCCESS.rawValue
+        }
     }
 }

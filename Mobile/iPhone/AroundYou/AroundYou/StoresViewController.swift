@@ -14,7 +14,8 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
     
 
     let textCellIdentifier = "cellStores"
-    var arrayStores : [String] = []// = ["부산식당", "형제갈비", "미가", "맥도날드", "버거킹"]
+    var arrayStores : [String] = ["부산식당", "형제갈비", "미가", "맥도날드", "버거킹"]
+    var reputationStore : String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,7 +34,7 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
             so, users should wait for just seconds
         */
         let nRet : Int
-        nRet = getMenuDataFromServer()
+        nRet = getStoreDataFromServer()
         if nRet != E_RET_TYPE.E_RET_SUCCESS.rawValue {
             debugPrint("Fail to load stores")  
         }
@@ -82,6 +83,7 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
                 if let index = indexPath?.row {
                     debugPrint("click button [\(arrayStores[index])]")
                     menuViewTableViewController.textStoreName = arrayStores[index]
+                    menuViewTableViewController.textStoreStar = reputationStore
                 }
             }
         }
@@ -89,8 +91,8 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
     
     
     // Network Function
-    func getMenuDataFromServer() -> Int {
-        debugPrint("Try to get datat from server")
+    func getStoreDataFromServer() -> Int {
+        debugPrint("Try to get store data from server")
         
         let cNetworkingCommunication = NetworkingCommunication()
         
@@ -115,6 +117,7 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
         
             {
                 "count" : "2"
+                "reputation" : "3.0"
                 "data" : [
                             {"store" : "a"},
                             {"store" : "b"}
@@ -127,6 +130,7 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
             let json = JSON(data: data)
             countArray = Int(json["count"].stringValue)!
             debugPrint("store array [\(countArray)]")
+            reputationStore = json["reputation"].stringValue
             for item in json["data"].arrayValue {
                 let itemData = item["store"].stringValue
                 debugPrint("store name [\(itemData)]")
@@ -140,7 +144,7 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
             return E_RET_TYPE.E_RET_FAIL.rawValue
         }
         else {
-            debugPrint("Success to get data from server")
+            debugPrint("Success to get store data from server")
             return E_RET_TYPE.E_RET_SUCCESS.rawValue
         }
     }
