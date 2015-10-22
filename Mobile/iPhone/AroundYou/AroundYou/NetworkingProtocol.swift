@@ -144,7 +144,7 @@ class NetworkingCommunication
         if (strResponseData.characters.count < 1) {
             return E_NETWORK_RET_TYPE.E_NETWORK_RET_FAIL_RECV_DATA.rawValue
         }
-        let dicResponseData = jsonMethod.convertStringToDictionary(strReceivedData)
+        let dicResponseData = jsonMethod.convertStringToDictionary(strResponseData)
         let resDataJSON = JSON(dicResponseData!)
         let nResponseDataRet = (resDataJSON.dictionary!["response"]! as JSON).int!
         let nSizeOfResponseData = (resDataJSON.dictionary!["size"]! as JSON).int!

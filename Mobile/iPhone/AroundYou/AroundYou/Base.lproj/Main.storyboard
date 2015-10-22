@@ -373,18 +373,18 @@
                         <animations/>
                         <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                         <containerView key="tableFooterView" opaque="NO" contentMode="scaleToFill" id="QJL-tR-aSK">
-                            <rect key="frame" x="0.0" y="319.5" width="375" height="344"/>
+                            <rect key="frame" x="0.0" y="255.5" width="375" height="344"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                             <animations/>
                             <connections>
-                                <segue destination="QuP-2T-w2k" kind="embed" id="NGW-nI-unw"/>
+                                <segue destination="QuP-2T-w2k" kind="embed" identifier="commentcontainer" id="NGW-nI-unw"/>
                             </connections>
                         </containerView>
                         <sections>
                             <tableViewSection headerTitle="메뉴 이름" id="LPD-rb-jHe">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="bKo-i3-aKI">
-                                        <rect key="frame" x="0.0" y="113.5" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="49.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="bKo-i3-aKI" id="U1w-w2-OZZ">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
@@ -407,7 +407,7 @@
                             <tableViewSection headerTitle="메뉴 평점" id="lKB-TG-6Li">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="7Rn-3J-pvK">
-                                        <rect key="frame" x="0.0" y="207.5" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="143.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="7Rn-3J-pvK" id="0qS-1D-cRe">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
@@ -484,7 +484,7 @@
                             <tableViewSection headerTitle="Comment" id="0b9-Zb-P0g">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="47" id="bfE-3m-v0h">
-                                        <rect key="frame" x="0.0" y="113.5" width="375" height="47"/>
+                                        <rect key="frame" x="0.0" y="93.5" width="375" height="47"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="bfE-3m-v0h" id="4hE-30-ZBC">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="46.5"/>
@@ -506,7 +506,7 @@
                             <tableViewSection id="oKa-2w-KqA">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="Wih-PM-D6r" detailTextLabel="5SP-ND-kA2" rowHeight="47" style="IBUITableViewCellStyleValue1" id="jfi-38-HZh">
-                                        <rect key="frame" x="0.0" y="196.5" width="375" height="47"/>
+                                        <rect key="frame" x="0.0" y="176.5" width="375" height="47"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="jfi-38-HZh" id="4bV-fD-4Uc">
                                             <rect key="frame" x="0.0" y="0.0" width="342" height="46.5"/>
@@ -578,7 +578,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="star" id="Msc-vp-rcG">
-                                <rect key="frame" x="0.0" y="92" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="72" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Msc-vp-rcG" id="lPL-L1-ZSN">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
@@ -659,7 +659,7 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="TextCell" id="QhP-aH-iQj" customClass="menuCell">
-                                        <rect key="frame" x="0.0" y="92" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="QhP-aH-iQj" id="RqE-A1-TW6">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
@@ -781,6 +781,6 @@
         <image name="menu" width="22" height="22"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="NYA-5K-n17"/>
+        <segue reference="6oa-vd-0yj"/>
     </inferredMetricsTieBreakers>
 </document>

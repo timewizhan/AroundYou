@@ -31,3 +31,10 @@ struct UserAccount
         self.strUserEmail = strUserEmail
     }
 }
+
+struct ViewValueState
+{
+    var strStoreName : String?
+    var strStoreReputation : String?
+    var strStoreMenu : String?
+}

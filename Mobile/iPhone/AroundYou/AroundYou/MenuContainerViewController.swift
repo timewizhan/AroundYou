@@ -92,6 +92,7 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
                 if let index = indexPath?.row {
                     debugPrint("click button [\(menuArray[index])]")
                     menuDetailViewTableViewController.textMenuName = menuArray[index]
+                    menuDetailViewTableViewController.textStoreName = labelStore
                 }
             }
         }
@@ -123,10 +124,9 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
         
         {
             "count" : "2"
-            "reputation" : "3.0"
             "data" : [
-                        {"menu" : "a"},
-                        {"menu" : "b"}
+                        {"menuname" : "a", "menureputation" : "1"},
+                        {"menuname" : "b", "menureputation" : "1"}
                      ]
         }
         */
@@ -138,9 +138,12 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
             debugPrint("store array [\(countArray)]")
             reputationMenu = json["reputation"].stringValue
             for item in json["data"].arrayValue {
-                let itemData = item["menu"].stringValue
-                debugPrint("menu name [\(itemData)]")
-                menuArray.append(itemData)
+                let itemMenu = item["menuname"].stringValue
+                let itemReputation = item["menureputation"].stringValue
+                
+                debugPrint("Menu Name : [\(itemMenu)]")
+                debugPrint("Menu Reputation : [\(itemReputation)]")
+                menuArray.append(itemMenu)
             }
         }
         

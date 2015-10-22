@@ -17,6 +17,8 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
     var arrayStores : [String] = ["부산식당", "형제갈비", "미가", "맥도날드", "버거킹"]
     var reputationStore : String = ""
     
+    var arrayDicStores = Dictionary<String, String>()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -117,24 +119,26 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
         
             {
                 "count" : "2"
-                "reputation" : "3.0"
                 "data" : [
-                            {"store" : "a"},
-                            {"store" : "b"}
+                            {"storename" : "a", "storereputation" : "3"},
+                            {"storename" : "b", "storereputation" : "2"}
                          ]
             }
         */
-        strRecvMsg = " {\"count\" : \"2\", \"data\" : [{\"store\" : \"a\"},{\"store\" : \"b\"}]}"
+        
+        //strRecvMsg = " {\"count\" : \"2\", \"data\" : [{\"store\" : \"a\"},{\"store\" : \"b\"}]}"
         var countArray : Int = 0
         if let data = strRecvMsg.dataUsingEncoding(NSUTF8StringEncoding) {
             let json = JSON(data: data)
             countArray = Int(json["count"].stringValue)!
             debugPrint("store array [\(countArray)]")
-            reputationStore = json["reputation"].stringValue
             for item in json["data"].arrayValue {
-                let itemData = item["store"].stringValue
-                debugPrint("store name [\(itemData)]")
-                arrayStores.append(itemData)
+                let itemStore : String = item["storename"].stringValue
+                let itemReputation : String = item["storereputation"].stringValue
+                debugPrint("Store name : [\(itemStore)]")
+                debugPrint("Store reputation : [\(itemReputation)]")
+                arrayStores.append(itemStore)
+                arrayDicStores["\(itemStore)"] = itemReputation
             }
         }
         
