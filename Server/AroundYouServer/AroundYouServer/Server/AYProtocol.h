@@ -36,7 +36,8 @@ enum E_PROTOCOL_REQUEST_TYPE
 	*/
 	E_PROTO_REQ_HEADER_COMMENTS,
 	E_PROTO_REQ_DATA_COMMENTS,
-
+	E_PROTO_REQ_HEADER_COMMENTS_INSERT,
+	E_PROTO_REQ_DATA_COMMENTS_INSERT,
 	/*
 		ETC
 	*/
@@ -93,7 +94,9 @@ enum E_PROTOCOL_RESPONSE_TYPE
 	E_PROTO_RES_DATA_COMMENTS_NOT_EXIST,
 
 	E_PROTO_RES_NOTHING,
-
+	/*
+		ETC
+	*/
 	E_PROTO_RES_QUERY_SUCESS,
 	E_PROTO_RES_QUERY_FAIL,
 	E_PROTO_RES_INSERT_SUCCESS,
@@ -140,9 +143,8 @@ struct ST_PROTOCOL_CLIENT : public ST_PROTOCOL_ROOT
 
 struct ST_PROTOCOL_COMMENT : public ST_PROTOCOL_ROOT
 {
-	DWORD		dwCommentNumber;
-	DWORD		dwStoreNumber;
-	std::string	strClientID;
+	std::string strUserID;
+	std::string strReputation;
 	std::string	strCommentTime;
 	std::string	strCommentContent;
 };
