@@ -57,8 +57,7 @@ class LoginViewController: UIViewController {
             textHiddenMsg.hidden = false
             return
         }
-        
-        
+        /*
         let cNetworkingCommunication = NetworkingCommunication()
         
         var stReqData : BuildJSON = BuildJSON()
@@ -72,10 +71,13 @@ class LoginViewController: UIViewController {
         nRet = cNetworkingCommunication.networkingWithServer(strJsonReqData, nMsgType: E_PROTO_REQ_TYPE.E_PROTO_REQ_HEADER_SIGNIN, strRecvMsg: &strRecvMsg)
         if (nRet > 0) {
             return
-        }
+        }*/
+        
+        UserAccount.setUserNickName(strNickName!)
+        UserAccount.setUserEmail(strEmail!)
         
         debugPrint("Success to sign in for user account")
-        let vc : AnyObject! = self.storyboard?.instantiateViewControllerWithIdentifier("mainnavi")
+        let vc : AnyObject! = self.storyboard?.instantiateViewControllerWithIdentifier("Reveal View")
         self.showViewController(vc as! UIViewController, sender: sender)
     }
     @IBAction func pressSignUp(sender: AnyObject) {
@@ -109,9 +111,12 @@ class LoginViewController: UIViewController {
         if (nRet > 0) {
             return
         }
+        
+        UserAccount.setUserNickName(strNickName!)
+        UserAccount.setUserEmail(strEmail!)
 
         debugPrint("Success to sign up for user account")
-        let vc : AnyObject! = self.storyboard?.instantiateViewControllerWithIdentifier("mainnavi")
+        let vc : AnyObject! = self.storyboard?.instantiateViewControllerWithIdentifier("Reveal View")
         self.showViewController(vc as! UIViewController, sender: sender)
     }
     
@@ -145,11 +150,6 @@ class LoginViewController: UIViewController {
             callID = ""
         }
     }
-    
-    func getStoreDataFromServer() {
-        
-    }
-    
     
     /*
     // MARK: - Navigation

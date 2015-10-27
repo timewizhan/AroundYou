@@ -23,18 +23,72 @@ struct Comment
 
 struct UserAccount
 {
-    var strUserNickName : String?
-    var strUserEmail : String?
+    static var strUserNickName : String?
+    static var strUserEmail : String?
+    static var strCallID : String?
     
-    init(strUserNickName : String?, strUserEmail : String?) {
-        self.strUserNickName = strUserNickName
-        self.strUserEmail = strUserEmail
+    /*
+        set function
+    */
+    static func setUserNickName(UserNickName : String) {
+        strUserNickName = UserNickName
+    }
+    
+    static func setUserEmail(UserEmail : String) {
+        strUserEmail = UserEmail
+    }
+    
+    static func setCallID(CallID : String) {
+        strCallID = CallID
+    }
+    /*
+        get function
+    */
+    static func getUserNickName() -> String {
+        return strUserNickName!
+    }
+    
+    static func getUserEmail() -> String {
+        return strUserEmail!
+    }
+    
+    static func getCallID() -> String {
+        return strCallID!
     }
 }
 
-struct ViewValueState
+struct CurrentClickedValue
 {
-    var strStoreName : String?
-    var strStoreReputation : String?
-    var strStoreMenu : String?
+    static var strStoreName : String?
+    static var strStoreReputation : String?
+    static var strStoreMenu : String?
+    
+    /*
+        set function
+    */
+    static func setStoreName(StoreName : String) {
+        strStoreName = StoreName
+    }
+    
+    static func setStoreReputation(StoreReputation : String) {
+        strStoreReputation = StoreReputation
+    }
+    
+    static func setStoreMenu(StoreMenu : String) {
+        strStoreMenu = StoreMenu
+    }
+    /*
+        get function
+    */
+    static func getStoreName() -> String {
+        return strStoreName!
+    }
+    
+    static func getStoreReputation() -> String {
+        return strStoreReputation!
+    }
+    
+    static func getStoreMenu() -> String {
+        return strStoreMenu!
+    }
 }

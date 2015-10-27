@@ -43,14 +43,14 @@ class CommentViewController: UITableViewController {
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "saveComment" {
-            comment = Comment(userId: "test", strComment: textComment.text, strStar: selectStar.text)
+            comment = Comment(userId: UserAccount.getUserNickName(), strComment: textComment.text, strStar: selectStar.text)/*
             let nRet = sendCommentDataToServer()
             if (nRet != E_RET_TYPE.E_RET_SUCCESS.rawValue) {
                 debugPrint("Success to insert comment data to server")
             }
             else {
                 debugPrint("Fail to insert comment data to server")
-            }
+            }*/
         }
         if segue.identifier == "selectStar" {
             if let starViewController = segue.destinationViewController as? StarViewController {
@@ -67,7 +67,7 @@ class CommentViewController: UITableViewController {
         var stReqData : BuildJSON = BuildJSON()
         stReqData["request"] = String(E_PROTO_REQ_TYPE.E_PROTO_REQ_DATA_MENUS.rawValue)
         // location is default
-        stReqData["commentid"] = ""
+        stReqData["commentid"] = UserAccount.getUserNickName()
         stReqData["commentreputation"] = selectStar.text!
         stReqData["commenttext"] = textComment.text!
         
