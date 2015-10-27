@@ -46,6 +46,7 @@ int main()
 		\"request\" : 0,\
 			  \"size\" : 0\
 	}";
+		std::string strJSON2 = "{\"request\" : 0, \"size\" : 0}";
 		dwRet = DummyClient.SendMsg(strJSON1);
 		if (dwRet != E_RET_SUCCESS) {
 			std::exception("Fail to send msg to server");
