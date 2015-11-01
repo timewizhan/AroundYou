@@ -197,6 +197,9 @@ DWORD CAYServer::InitServerValue(DWORD dwPort, DWORD dwBackLog)
 	::inet_pton(AF_INET, strAddress.c_str(), &m_stServerInit.stServerAddrIn.sin_addr.s_addr);
 
 	int nRet;
+	DebugLog("Init Server Address : %s", vecstrGetAddress[0].c_str());
+	DebugLog("Init Server Port : %d", dwPort);
+	DebugLog("Init Server BackLog : %d", dwBackLog);
 	nRet = ::bind(m_stServerInit.hServerSock, (SOCKADDR *)&m_stServerInit.stServerAddrIn, sizeof(m_stServerInit.stServerAddrIn));
 	if (nRet == SOCKET_ERROR) {
 		ErrorLog("Fail to operate socket bind");

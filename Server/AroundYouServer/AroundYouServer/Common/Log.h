@@ -3,6 +3,7 @@
 
 #include "Common.h"
 #include <stdarg.h>
+#include <time.h>
 
 #define MAX_BUF	1024
 
@@ -21,6 +22,7 @@ enum E_LOG_LEVEL
 
 extern char *g_pszPath;
 extern E_LOG_TYPE g_eLogtype;
+extern CRITICAL_SECTION CriticalSection;
 
 DWORD InitLog(E_LOG_TYPE eLogType);
 DWORD ErrorLog(const char *cformat, ...);

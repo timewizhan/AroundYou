@@ -6,6 +6,22 @@ extern E_LOG_TYPE g_eLogtype = E_LOG_CONSOLE;
 
 std::string strLogFileFullPath;
 
+CRITICAL_SECTION CriticalSection;
+
+////////////////////////////////////////////////////////////////////////////////////////
+void _TimeToString(char *pBuf)
+{
+	time_t timer;
+	struct tm stTM;
+
+	timer = time(NULL);  
+	localtime_s(&stTM, &timer);
+
+	sprintf_s(pBuf, 512,"%04d-%02d-%02d %02d:%02d:%02d ",
+		stTM.tm_year + 1900, stTM.tm_mon + 1, stTM.tm_mday,
+		stTM.tm_hour, stTM.tm_min, stTM.tm_sec
+		);
+}
 ////////////////////////////////////////////////////////////////////////////////////////
 DWORD InitLog(E_LOG_TYPE eLogType)
 {
@@ -18,7 +34,7 @@ DWORD InitLog(E_LOG_TYPE eLogType)
 		TCHAR lpwBuffer[512] = { 0 };
 		GetCurrentDirectory(512, lpwBuffer);
 		std::wstring strBuffer = lpwBuffer;
-		std::wstring strFileName = L"";// LOG_FILE_NAME;
+		std::wstring strFileName = L"AYServer.log";// LOG_FILE_NAME;
 		strBuffer += L"\\" + strFileName;
 
 		strLogFileFullPath.assign(strBuffer.begin(), strBuffer.end());
@@ -27,6 +43,8 @@ DWORD InitLog(E_LOG_TYPE eLogType)
 		if (iRet != 0) {
 			return E_RET_FAIL;
 		}
+
+		InitializeCriticalSection(&CriticalSection);
 		::fclose(pLogFile);
 	}
 
@@ -36,9 +54,11 @@ DWORD InitLog(E_LOG_TYPE eLogType)
 ////////////////////////////////////////////////////////////////////////////////////////
 DWORD ErrorLog(const char *cformat, ...)
 {
+	EnterCriticalSection(&CriticalSection);
 	va_list arg;
 	int iCount;
 	char szBuf[MAX_BUF] = { 0 };
+	char szTime[128] = { 0 };
 
 	va_start(arg, cformat);
 	iCount = vsnprintf_s(szBuf, sizeof(szBuf), cformat, arg);
@@ -55,6 +75,8 @@ DWORD ErrorLog(const char *cformat, ...)
 		if (iRet != 0) {
 			return E_RET_FAIL;
 		}
+		fputs(szTime, pLogFile);
+
 		fputs(szBuf, pLogFile);
 		fputs("\n", pLogFile);
 		::fclose(pLogFile);
@@ -62,13 +84,14 @@ DWORD ErrorLog(const char *cformat, ...)
 	default:
 		break;
 	}
-
+	LeaveCriticalSection(&CriticalSection);
 	return E_RET_SUCCESS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
 DWORD DebugLog(const char *cformat, ...)
 {
+	//EnterCriticalSection(&CriticalSection);
 	va_list arg;
 	int iCount;
 	char szBuf[MAX_BUF] = { 0 };
@@ -88,23 +111,35 @@ DWORD DebugLog(const char *cformat, ...)
 		if (iRet != 0) {
 			return E_RET_FAIL;
 		}
-		fputs(szBuf, pLogFile);
-		fputs("\n", pLogFile);
+
+		time_t timer;
+		struct tm stTM;
+
+		timer = time(NULL);
+		localtime_s(&stTM, &timer);
+		
+		fprintf_s(pLogFile, "%04d-%02d-%02d %02d:%02d:%02d %s\n",
+			stTM.tm_year + 1900, stTM.tm_mon + 1, stTM.tm_mday,
+			stTM.tm_hour, stTM.tm_min, stTM.tm_sec, szBuf);
+		//fputs(szBuf, pLogFile);
+		//fputs("\n", pLogFile);
 		::fclose(pLogFile);
 		break;
 	default:
 		break;
 	}
-
+	//LeaveCriticalSection(&CriticalSection);
 	return E_RET_SUCCESS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
 DWORD WarningLog(const char *cformat, ...)
 {
+	EnterCriticalSection(&CriticalSection);
 	va_list arg;
 	int iCount;
 	char szBuf[MAX_BUF] = { 0 };
+	char szTime[128] = { 0 };
 
 	va_start(arg, cformat);
 	iCount = vsnprintf_s(szBuf, sizeof(szBuf), cformat, arg);
@@ -121,12 +156,16 @@ DWORD WarningLog(const char *cformat, ...)
 		if (iRet != 0) {
 			return E_RET_FAIL;
 		}
+		_TimeToString(szTime);
+		fputs(szTime, pLogFile);
+
 		fputs(szBuf, pLogFile);
 		::fclose(pLogFile);
+
 		break;
 	default:
 		break;
 	}
-
+	LeaveCriticalSection(&CriticalSection);
 	return E_RET_SUCCESS;
 }

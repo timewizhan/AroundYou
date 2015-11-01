@@ -4,7 +4,10 @@
 
 int main(int argc, char **argv)
 {
-	
+	DWORD dwRet;
+	//dwRet = InitLog(E_LOG_CONSOLE);
+	dwRet = InitLog(E_LOG_FILE);
+
 	if (argc < 2) {
 		DebugLog("[Usage] : Server Port, Server BackLog");
 		return E_RET_FAIL;
@@ -34,10 +37,8 @@ int main(int argc, char **argv)
 		return E_RET_FAIL;
 	}
 
-	DWORD dwRet;
 	try
 	{
-		dwRet = InitLog(E_LOG_CONSOLE);
 		if (dwRet != E_RET_SUCCESS) {
 			std::exception("Fail to init log");
 		}
@@ -67,6 +68,7 @@ int main(int argc, char **argv)
 		if (AYServer)
 			delete AYServer;
 
+		DeleteCriticalSection(&CriticalSection);
 		return E_RET_FAIL;
 	}
 
@@ -77,5 +79,6 @@ int main(int argc, char **argv)
 	if (AYServer)
 		delete AYServer;
 
+	DeleteCriticalSection(&CriticalSection);
 	return E_RET_SUCCESS;
 }
