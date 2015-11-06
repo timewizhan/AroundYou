@@ -5,7 +5,7 @@
 #include <stdarg.h>
 #include <time.h>
 
-#define MAX_BUF	1024
+#define MAX_BUF	4096
 
 enum E_LOG_TYPE
 {

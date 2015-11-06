@@ -131,6 +131,7 @@ struct ST_PROTOCOL_MENU : public ST_PROTOCOL_ROOT
 	DWORD		dwMenuPrice;
 	std::string	strMenuName;
 	std::string	strStoreName;
+	std::string	strStoreIndex;
 };
 
 struct ST_PROTOCOL_CLIENT : public ST_PROTOCOL_ROOT
@@ -143,10 +144,12 @@ struct ST_PROTOCOL_CLIENT : public ST_PROTOCOL_ROOT
 
 struct ST_PROTOCOL_COMMENT : public ST_PROTOCOL_ROOT
 {
-	std::string strUserID;
+	std::string	strStoreIndex;
+	std::string	strMenuIndex;
+	std::string strWriter;
 	std::string strReputation;
-	std::string	strCommentTime;
-	std::string	strCommentContent;
+	std::string	strText;
+	std::string	strWriteTime;
 };
 
 struct ST_PROTOCOL_SHOP : public ST_PROTOCOL_ROOT

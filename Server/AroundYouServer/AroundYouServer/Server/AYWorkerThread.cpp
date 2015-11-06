@@ -153,16 +153,19 @@ DWORD CAYWorkerThread::ParseDataByJSON(DWORD &refdwNumberOfRequest, ST_RECV_DATA
 	}
 	///////////// Menus //////////////
 	else if (dwRequest == E_PROTO_REQ_DATA_MENUS) {
-		/*
-			E_PROTO_REQ_DATA_MENUS is only message to get menu information
-		*/
+		m_pstProtoMenu = new ST_PROTOCOL_MENU;
+		::memset(m_pstProtoMenu, 0x00, sizeof(ST_PROTOCOL_MENU));
+
+		m_pstProtoMenu->strStoreIndex = JsonRoot.get("storeindex", 0).asString();
 		return E_RET_SUCCESS;
 	}
 	///////////// Comments //////////////
 	else if (dwRequest == E_PROTO_REQ_DATA_COMMENTS) {
-		/*
-			E_PROTO_REQ_DATA_COMMENTS is only message to get menu information
-		*/
+		m_pstProtoComment = new ST_PROTOCOL_COMMENT;
+		::memset(m_pstProtoComment, 0x00, sizeof(ST_PROTOCOL_COMMENT));
+
+		m_pstProtoComment->strStoreIndex = JsonRoot.get("storeindex", 0).asString();
+		m_pstProtoComment->strMenuIndex = JsonRoot.get("menuindex", 0).asString();
 		return E_RET_SUCCESS;
 	}
 	else if (dwRequest == E_PROTO_REQ_DATA_COMMENTS_INSERT) {
@@ -170,10 +173,12 @@ DWORD CAYWorkerThread::ParseDataByJSON(DWORD &refdwNumberOfRequest, ST_RECV_DATA
 		::memset(m_pstProtoComment, 0x00, sizeof(ST_PROTOCOL_COMMENT));
 
 		m_pstProtoComment->dwRequest			= dwRequest;
-		m_pstProtoComment->strUserID			= JsonRoot.get("commentid", 0).asString();
-		m_pstProtoComment->strReputation		= JsonRoot.get("commentreputation", 0).asString();
-		m_pstProtoComment->strCommentTime; // current data is nothing
-		m_pstProtoComment->strCommentContent	= JsonRoot.get("commenttext", 0).asString();
+		m_pstProtoComment->strStoreIndex		= JsonRoot.get("storeindex", 0).asString();
+		m_pstProtoComment->strMenuIndex			= JsonRoot.get("menuindex", 0).asString();
+		m_pstProtoComment->strWriter			= JsonRoot.get("writer", 0).asString();
+		m_pstProtoComment->strReputation		= JsonRoot.get("reputation", 0).asString();
+		m_pstProtoComment->strWriteTime; // current data is nothing
+		m_pstProtoComment->strText				= JsonRoot.get("text", 0).asString();
 
 		return E_RET_SUCCESS;
 	}
@@ -292,7 +297,7 @@ DWORD CAYWorkerThread::RequestToDataBase(DWORD &refdwNumberOfRequest, ST_DB_RESU
 	}
 	///////////// Stores //////////////
 	else if (dwRequest == E_PROTO_REQ_DATA_STORES) {
-		stDBSQLQuery.strSQL = "SELECT shopname, shopreputation FROM \"shop\"";
+		stDBSQLQuery.strSQL = "SELECT storename, reputation, index FROM \"stores\"";
 		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
 		if (dwRet != E_RET_SUCCESS) {
 			ErrorLog("Fail to query data from DataBase");
@@ -302,7 +307,7 @@ DWORD CAYWorkerThread::RequestToDataBase(DWORD &refdwNumberOfRequest, ST_DB_RESU
 	}
 	///////////// Menus //////////////
 	else if (dwRequest == E_PROTO_REQ_DATA_MENUS) {
-		stDBSQLQuery.strSQL = "SELECT menuname, menureputation FROM \"menu\"";
+		stDBSQLQuery.strSQL = "SELECT menuname, reputation, price, index FROM \"store_" + m_pstProtoMenu->strStoreIndex + "\"";
 		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
 		if (dwRet != E_RET_SUCCESS) {
 			ErrorLog("Fail to query data from DataBase");
@@ -312,7 +317,7 @@ DWORD CAYWorkerThread::RequestToDataBase(DWORD &refdwNumberOfRequest, ST_DB_RESU
 	}
 	///////////// Comments //////////////
 	else if (dwRequest == E_PROTO_REQ_DATA_COMMENTS) {
-		stDBSQLQuery.strSQL = "SELECT clientid, reputation, commentcontent FROM \"comment\"";
+		stDBSQLQuery.strSQL = "SELECT writer, reputation, text, writetime FROM \"store_\"" + m_pstProtoComment->strStoreIndex + "_" + m_pstProtoComment->strMenuIndex + "\"";
 		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
 		if (dwRet != E_RET_SUCCESS) {
 			ErrorLog("Fail to query data from DataBase");
@@ -321,8 +326,8 @@ DWORD CAYWorkerThread::RequestToDataBase(DWORD &refdwNumberOfRequest, ST_DB_RESU
 		refstDBResult = stDBResult;
 	}
 	else if (dwRequest == E_PROTO_REQ_DATA_COMMENTS_INSERT) {
-		std::string strInputValue = "\'" + m_pstProtoComment->strUserID + "\', \'" + m_pstProtoComment->strCommentTime + "\', \'" + m_pstProtoComment->strCommentContent + "\', " + m_pstProtoComment->strReputation;
-		stDBSQLInsert.strSQL = "INSERT INTO \"comment\"(commentnumber, clientid, commenttime, commentcontent, storenumber) VALUES (" + strInputValue + ")";
+		std::string strInputValue = "\'" + m_pstProtoComment->strWriter + "\', \'" + m_pstProtoComment->strReputation + "\', \'" + m_pstProtoComment->strText + "\', " + m_pstProtoComment->strWriteTime;
+		stDBSQLInsert.strSQL = "INSERT INTO \"store_" + m_pstProtoComment->strStoreIndex + "_" + m_pstProtoComment->strMenuIndex + "\"(writer, reputation, text, writetime) VALUES (" + strInputValue + ")";
 		dwRet = InsertToDB(hDataBase, stDBSQLInsert);
 		if (dwRet != E_RET_SUCCESS) {
 			ErrorLog("Fail to query data from DataBase");
@@ -510,15 +515,16 @@ DWORD CAYWorkerThread::MakeSendPacket(DWORD &refdwNumberOfRequest, ST_DB_RESULT 
 		/*
 			Response data is following..
 			1. std::string	strStoreName;
-			2. std::string	strStoreReputation;
+			2. std::string	strReputation;
+			3. std::string  strIndex
 		*/
 		DWORD dwLineCount;
 		Json::Value JsonData;
 		for (dwLineCount = 0; dwLineCount < refstDBResult.vecstDBResultLines.size(); dwLineCount++) {
 			ST_DB_RESULT_LINE stDBResultLine = refstDBResult.vecstDBResultLines[dwLineCount];
-			if (stDBResultLine.vecstrResult.size() != 2) {
+			if (stDBResultLine.vecstrResult.size() != 3) {
 				/*
-					DB Result Query have 2 argument
+					DB Result Query have 3 argument
 				*/
 				refdwResponse = E_PROTO_RES_QUERY_FAIL;
 				break;
@@ -532,7 +538,10 @@ DWORD CAYWorkerThread::MakeSendPacket(DWORD &refdwNumberOfRequest, ST_DB_RESULT 
 					JsonData["storename"] = stDBResultLine.vecstrResult[dwParamCount];
 					break;
 				case 1:
-					JsonData["storereputation"] = stDBResultLine.vecstrResult[dwParamCount];
+					JsonData["reputation"] = stDBResultLine.vecstrResult[dwParamCount];
+					break;
+				case 2:
+					JsonData["index"] = stDBResultLine.vecstrResult[dwParamCount];
 					break;
 				default:
 					break;
@@ -558,15 +567,17 @@ DWORD CAYWorkerThread::MakeSendPacket(DWORD &refdwNumberOfRequest, ST_DB_RESULT 
 		/*
 			Response data is following..
 			1. std::string	strMenuName;
-			2. std::string	strMenuReputation;
+			2. std::string	strReputation;
+			3. std::string	strPrice;
+			4. std::string	strIndex;
 		*/
 		DWORD dwLineCount;
 		Json::Value JsonData;
 		for (dwLineCount = 0; dwLineCount < refstDBResult.vecstDBResultLines.size(); dwLineCount++) {
 			ST_DB_RESULT_LINE stDBResultLine = refstDBResult.vecstDBResultLines[dwLineCount];
-			if (stDBResultLine.vecstrResult.size() != 2) {
+			if (stDBResultLine.vecstrResult.size() != 4) {
 				/*
-					DB Result Query have 2 argument
+					DB Result Query have 4 argument
 				*/
 				refdwResponse = E_PROTO_RES_QUERY_FAIL;
 				break;
@@ -580,7 +591,13 @@ DWORD CAYWorkerThread::MakeSendPacket(DWORD &refdwNumberOfRequest, ST_DB_RESULT 
 					JsonData["menuname"] = stDBResultLine.vecstrResult[dwParamCount];
 					break;
 				case 1:
-					JsonData["menureputation"] = stDBResultLine.vecstrResult[dwParamCount];
+					JsonData["reputation"] = stDBResultLine.vecstrResult[dwParamCount];
+					break;
+				case 2:
+					JsonData["price"] = stDBResultLine.vecstrResult[dwParamCount];
+					break;
+				case 3:
+					JsonData["index"] = stDBResultLine.vecstrResult[dwParamCount];
 					break;
 				default:
 					break;
@@ -605,9 +622,10 @@ DWORD CAYWorkerThread::MakeSendPacket(DWORD &refdwNumberOfRequest, ST_DB_RESULT 
 		}
 		/*
 		Response data is following..
-		1. std::string	strUserName;
+		1. std::string	strWriter;
 		2. std::string	strReputation;
-		3. std::string  strCommentContents
+		3. std::string  strText
+		4. std::string  strWritetime
 		*/
 		DWORD dwLineCount;
 		Json::Value JsonData;
@@ -615,7 +633,7 @@ DWORD CAYWorkerThread::MakeSendPacket(DWORD &refdwNumberOfRequest, ST_DB_RESULT 
 			ST_DB_RESULT_LINE stDBResultLine = refstDBResult.vecstDBResultLines[dwLineCount];
 			if (stDBResultLine.vecstrResult.size() != 3) {
 				/*
-					DB Result Query have 3 argument
+					DB Result Query have 4 argument
 				*/
 				refdwResponse = E_PROTO_RES_QUERY_FAIL;
 				break;
@@ -626,13 +644,16 @@ DWORD CAYWorkerThread::MakeSendPacket(DWORD &refdwNumberOfRequest, ST_DB_RESULT 
 				switch (dwParamCount)
 				{
 				case 0:
-					JsonData["userid"] = stDBResultLine.vecstrResult[dwParamCount];
+					JsonData["write"] = stDBResultLine.vecstrResult[dwParamCount];
 					break;
 				case 1:
 					JsonData["reputation"] = stDBResultLine.vecstrResult[dwParamCount];
 					break;
 				case 2:
-					JsonData["contents"] = stDBResultLine.vecstrResult[dwParamCount];
+					JsonData["text"] = stDBResultLine.vecstrResult[dwParamCount];
+					break;
+				case 3:
+					JsonData["writetime"] = stDBResultLine.vecstrResult[dwParamCount];
 					break;
 				default:
 					break;

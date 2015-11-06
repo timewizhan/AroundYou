@@ -5,8 +5,8 @@
 int main(int argc, char **argv)
 {
 	DWORD dwRet;
-	//dwRet = InitLog(E_LOG_CONSOLE);
-	dwRet = InitLog(E_LOG_FILE);
+	dwRet = InitLog(E_LOG_CONSOLE);
+	//dwRet = InitLog(E_LOG_FILE);
 
 	if (argc < 2) {
 		DebugLog("[Usage] : Server Port, Server BackLog");
