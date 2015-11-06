@@ -10,13 +10,15 @@ import UIKit
 
 class MenuContainerViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var downloadindicator: UIActivityIndicatorView!
     
+    var dataStatus : E_DATA_CONNECTION_TYPE = .E_DATA_READY
+    var refreshStatus : E_REFRESH_TYPE = .E_REFRESH_READY
     
-    var menuArray = ["김치 찌개", "제육 볶음", "김치 찜", "오징어 볶음"]
+    var menuArray : [String] = []
     let textCellIdentifier = "TextCell"
     var labelStore : String = ""
     var labelChoice : String?
-    //var external_row: Int?
     
     var reputationMenu : String = ""
     
@@ -25,20 +27,52 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
         // Do any additional setup after loading the view, typically from a nib.
         tableView.delegate = self
         tableView.dataSource = self
-        /*
-        let nRet : Int
-        nRet = getMenuDataFromServer()
-        if nRet != E_RET_TYPE.E_RET_SUCCESS.rawValue {
-            debugPrint("Fail to load stores")
-        }*/
     }
+    
+    override func viewDidAppear(animated: Bool) {
+        if refreshStatus == .E_REFRESH_DONE {
+            return
+        }
+        
+        // start Indicator until receiving data from server
+        downloadindicator.startAnimating()
+        menuArray.append("menu")
+        /*
+        // Thread for receiving store data
+        let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+        dispatch_async(queue, { () -> () in
+            let nRet : Int
+            self.dataStatus = .E_DATA_START
+            nRet = self.getMenuDataFromServer()
+            if nRet != E_RET_TYPE.E_RET_SUCCESS.rawValue {
+                debugPrint("Fail to load stores")
+                self.dataStatus = .E_DATA_CANCELL
+            }
+            else {
+                self.dataStatus = .E_DATA_FINISH
+            }
+        })
+        
+        while true
+        {
+            if self.dataStatus != .E_DATA_FINISH {
+                continue
+            }
+            
+            debugPrint("Success to download data (store data)")
+            downloadindicator.stopAnimating()
+            break
+        }*/
+        self.tableView.reloadData()
+        refreshStatus = .E_REFRESH_DONE
+    }
+    
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print(menuArray.count)
         return menuArray.count
     }
     
@@ -67,25 +101,6 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
-        /*if segue.identifier == "menuContainerSegue" {
-            if let menuContainerTableViewController = segue.destinationViewController as? MenuContainerTableViewController {
-                menuContainerTableViewController.textStoreName = labelStore
-                menuContainerTableViewController.textStoreStar = ""
-            }
-        }*/
-        /*
-        if segue.identifier == "menuToDetailSegue" {
-            if let menuDetailViewTableViewController = segue.destinationViewController as? MenuDetailViewTableViewController {
-                if let cell = sender as? UITableViewCell {
-                    let indexPath = tableView.indexPathForCell(cell)
-                    if let index = indexPath?.row {
-                        print(menuArray[index])
-                        menuDetailViewTableViewController.textMenuName = menuArray[index]
-                    }
-                }
-            }
-        }*/
-        
         if let menuDetailViewTableViewController = segue.destinationViewController as? MenuDetailViewTableViewController {
             if let cell = sender as? UITableViewCell {
                 let indexPath = tableView.indexPathForCell(cell)

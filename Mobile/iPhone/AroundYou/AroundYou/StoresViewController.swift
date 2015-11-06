@@ -12,11 +12,13 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
     @IBOutlet weak var tableViewStores: UITableView!
     @IBOutlet weak var menuButton: UIBarButtonItem!
     
-
-    let textCellIdentifier = "cellStores"
-    var arrayStores : [String] = ["부산식당", "형제갈비", "미가", "맥도날드", "버거킹"]
-    var reputationStore : String = ""
+    @IBOutlet weak var downloadindicator: UIActivityIndicatorView!
+    var dataStatus : E_DATA_CONNECTION_TYPE = .E_DATA_READY
+    var refreshStatus : E_REFRESH_TYPE = .E_REFRESH_READY
     
+    let textCellIdentifier = "cellStores"
+    var arrayStores : [String] = []
+    var reputationStore : String = ""
     var arrayDicStores = Dictionary<String, String>()
     
     override func viewDidLoad() {
@@ -30,16 +32,45 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
             menuButton.action = "revealToggle:"
             self.view.addGestureRecognizer(self.revealViewController().panGestureRecognizer())
         }
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        if refreshStatus == .E_REFRESH_DONE {
+            return
+        }
         
+        // start Indicator until receiving data from server
+        downloadindicator.startAnimating()
+        arrayStores.append("aaa")
+        arrayStores.append("bbb")
         /*
-            before loading store view, app have to get data about store menu
-            so, users should wait for just seconds
-        *//*
-        let nRet : Int
-        nRet = getStoreDataFromServer()
-        if nRet != E_RET_TYPE.E_RET_SUCCESS.rawValue {
-            debugPrint("Fail to load stores")  
+        // Thread for receiving store data
+        let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+        dispatch_async(queue, { () -> () in
+            let nRet : Int
+            self.dataStatus = .E_DATA_START
+            nRet = self.getStoreDataFromServer()
+            if nRet != E_RET_TYPE.E_RET_SUCCESS.rawValue {
+                debugPrint("Fail to load stores")
+                self.dataStatus = .E_DATA_CANCELL
+            }
+            else {
+                self.dataStatus = .E_DATA_FINISH
+            }
+        })
+        
+        while true
+        {
+            if self.dataStatus != .E_DATA_FINISH {
+                continue
+            }
+            
+            debugPrint("Success to download data (store data)")
+            downloadindicator.stopAnimating()
+            break
         }*/
+        self.tableViewStores.reloadData()
+        refreshStatus = .E_REFRESH_DONE
     }
     
     override func didReceiveMemoryWarning() {
@@ -52,7 +83,6 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print(arrayStores.count)
         return arrayStores.count
     }
     
@@ -68,9 +98,7 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        let row = indexPath.row
-        debugPrint(arrayStores[row])
-        //print(menuArray[row])
+        //let row = indexPath.row
     }
     
     // MARK: - Navigation
@@ -135,6 +163,7 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
             for item in json["data"].arrayValue {
                 let itemStore : String = item["storename"].stringValue
                 let itemReputation : String = item["storereputation"].stringValue
+                
                 debugPrint("Store name : [\(itemStore)]")
                 debugPrint("Store reputation : [\(itemReputation)]")
                 arrayStores.append(itemStore)
@@ -148,7 +177,6 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
             return E_RET_TYPE.E_RET_FAIL.rawValue
         }
         else {
-            debugPrint("Success to get store data from server")
             return E_RET_TYPE.E_RET_SUCCESS.rawValue
         }
     }

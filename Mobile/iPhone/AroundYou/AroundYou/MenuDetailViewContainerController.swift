@@ -9,9 +9,13 @@
 import UIKit
 
 class MenuDetailViewContainerController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-
     @IBOutlet weak var commentTableView: UITableView!
-    var comments :[Comment] = [Comment(userId: "TestMan", strComment: "Hello Good store", strStar: "1")]
+    
+    @IBOutlet weak var downloadindicator: UIActivityIndicatorView!
+    var dataStatus : E_DATA_CONNECTION_TYPE = .E_DATA_READY
+    var refreshStatus : E_REFRESH_TYPE = .E_REFRESH_READY
+    
+    var comments :[Comment] = []
     let textCellIdentifier = "CommentCell"
     
     var textStoreName : String?
@@ -22,19 +26,44 @@ class MenuDetailViewContainerController: UIViewController, UITableViewDataSource
         // Do any additional setup after loading the view, typically from a nib.
         commentTableView.delegate = self
         commentTableView.dataSource = self
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        if refreshStatus == .E_REFRESH_DONE {
+            return
+        }
         
-        debugPrint("Selected Store : \(textStoreName)")
-        debugPrint("Selected Menu : \(textMenuName)")
-        
+        // start Indicator until receiving data from server
+        downloadindicator.startAnimating()
+        comments.append(Comment(userId: "TestMan", strComment: "Hello Good store", strStar: "1"))
         /*
-            before loading store view, app have to get data about store menu
-            so, users should wait for just seconds
-        *//*
-        let nRet : Int
-        nRet = getCommentDataFromServer()
-        if nRet != E_RET_TYPE.E_RET_SUCCESS.rawValue {
-            debugPrint("Fail to load stores")
+        // Thread for receiving store data
+        let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+        dispatch_async(queue, { () -> () in
+            let nRet : Int
+            self.dataStatus = .E_DATA_START
+            nRet = self.getCommentDataFromServer()
+            if nRet != E_RET_TYPE.E_RET_SUCCESS.rawValue {
+                debugPrint("Fail to load stores")
+                self.dataStatus = .E_DATA_CANCELL
+            }
+            else {
+                self.dataStatus = .E_DATA_FINISH
+            }
+        })
+        
+        while true
+        {
+            if self.dataStatus != .E_DATA_FINISH {
+                continue
+            }
+            
+            debugPrint("Success to download data (store data)")
+            downloadindicator.stopAnimating()
+            break
         }*/
+        self.commentTableView.reloadData()
+        refreshStatus = .E_REFRESH_DONE
     }
     
     override func didReceiveMemoryWarning() {
@@ -47,7 +76,6 @@ class MenuDetailViewContainerController: UIViewController, UITableViewDataSource
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print(comments.count)
         return comments.count
     }
     
@@ -62,11 +90,6 @@ class MenuDetailViewContainerController: UIViewController, UITableViewDataSource
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        
-        //let row = indexPath.row
-        //let Input : String = "Test"
-        //swiftBlogs.append(Input)
-        //print(swiftBlogs[row])
     }
     
     @IBAction func cancelComment(segue : UIStoryboardSegue) {

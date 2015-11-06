@@ -9,6 +9,8 @@
 import UIKit
 
 class CommentViewController: UITableViewController {
+
+    @IBOutlet weak var textUserID: UITextField!
     @IBOutlet weak var textComment: UITextField!
     @IBOutlet weak var selectStar: UILabel!
     
@@ -43,7 +45,18 @@ class CommentViewController: UITableViewController {
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "saveComment" {
-            comment = Comment(userId: UserAccount.getUserNickName(), strComment: textComment.text, strStar: selectStar.text)/*
+            if (checkUserID(textUserID.text!) != E_RET_TYPE.E_RET_SUCCESS.rawValue) {
+                debugPrint("Invalid UserID")
+                return
+            }
+            if (checkComment(textComment.text!) != E_RET_TYPE.E_RET_SUCCESS.rawValue) {
+                debugPrint("Invalid Comment")
+                return
+            }
+            
+            comment = Comment(userId: textUserID.text, strComment: textComment.text, strStar: selectStar.text)
+            
+            /*
             let nRet = sendCommentDataToServer()
             if (nRet != E_RET_TYPE.E_RET_SUCCESS.rawValue) {
                 debugPrint("Success to insert comment data to server")
@@ -82,4 +95,17 @@ class CommentViewController: UITableViewController {
         return E_RET_TYPE.E_RET_SUCCESS.rawValue
     }
     
+    func checkUserID(strInputUserIDText : String) -> Int {
+        if (strInputUserIDText.characters.count > 20) {
+            return E_RET_TYPE.E_RET_FAIL.rawValue
+        }
+        return E_RET_TYPE.E_RET_SUCCESS.rawValue
+    }
+    
+    func checkComment(strInputCommentText : String) -> Int {
+        if (strInputCommentText.characters.count > 50) {
+            return E_RET_TYPE.E_RET_FAIL.rawValue
+        }
+        return E_RET_TYPE.E_RET_SUCCESS.rawValue
+    }
 }
