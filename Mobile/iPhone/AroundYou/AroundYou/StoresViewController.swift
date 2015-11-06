@@ -17,9 +17,12 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
     var refreshStatus : E_REFRESH_TYPE = .E_REFRESH_READY
     
     let textCellIdentifier = "cellStores"
+    
+    // Array for showing to user
     var arrayStores : [String] = []
-    var reputationStore : String = ""
-    var arrayDicStores = Dictionary<String, String>()
+    
+    // Array for communication
+    var arrayStoreData : [StoresData] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,9 +44,14 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
         
         // start Indicator until receiving data from server
         downloadindicator.startAnimating()
-        arrayStores.append("aaa")
-        arrayStores.append("bbb")
         /*
+        var testvalue = StoresData()
+        testvalue.strIndex = "1"
+        testvalue.strReputation = "3"
+        testvalue.strStoreName = "aaa"
+        arrayStores.append(testvalue.strStoreName!)
+        arrayStoreData.append(testvalue)
+        */
         // Thread for receiving store data
         let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
         dispatch_async(queue, { () -> () in
@@ -68,7 +76,7 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
             debugPrint("Success to download data (store data)")
             downloadindicator.stopAnimating()
             break
-        }*/
+        }
         self.tableViewStores.reloadData()
         refreshStatus = .E_REFRESH_DONE
     }
@@ -98,7 +106,6 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        //let row = indexPath.row
     }
     
     // MARK: - Navigation
@@ -112,8 +119,7 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
                 let indexPath = tableViewStores.indexPathForCell(cell)
                 if let index = indexPath?.row {
                     debugPrint("click button [\(arrayStores[index])]")
-                    menuViewTableViewController.textStoreName = arrayStores[index]
-                    menuViewTableViewController.textStoreStar = reputationStore
+                    menuViewTableViewController.storeData = arrayStoreData[index]
                 }
             }
         }
@@ -162,12 +168,20 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
             debugPrint("store array [\(countArray)]")
             for item in json["data"].arrayValue {
                 let itemStore : String = item["storename"].stringValue
-                let itemReputation : String = item["storereputation"].stringValue
+                let itemReputation : String = item["reputation"].stringValue
+                let itemIndex : String = item["index"].stringValue
                 
                 debugPrint("Store name : [\(itemStore)]")
                 debugPrint("Store reputation : [\(itemReputation)]")
+                debugPrint("Store Index : [\(itemIndex)]")
+                
+                var savedStoreData = StoresData()
+                savedStoreData.strStoreName = itemStore
+                savedStoreData.strReputation = itemReputation
+                savedStoreData.strIndex = itemIndex
+                
                 arrayStores.append(itemStore)
-                arrayDicStores["\(itemStore)"] = itemReputation
+                arrayStoreData.append(savedStoreData)
             }
         }
         

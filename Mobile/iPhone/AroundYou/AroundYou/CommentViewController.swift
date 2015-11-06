@@ -55,15 +55,6 @@ class CommentViewController: UITableViewController {
             }
             
             comment = Comment(userId: textUserID.text, strComment: textComment.text, strStar: selectStar.text)
-            
-            /*
-            let nRet = sendCommentDataToServer()
-            if (nRet != E_RET_TYPE.E_RET_SUCCESS.rawValue) {
-                debugPrint("Success to insert comment data to server")
-            }
-            else {
-                debugPrint("Fail to insert comment data to server")
-            }*/
         }
         if segue.identifier == "selectStar" {
             if let starViewController = segue.destinationViewController as? StarViewController {
@@ -72,28 +63,6 @@ class CommentViewController: UITableViewController {
         }
     }
     
-    func sendCommentDataToServer() -> Int {
-        debugPrint("Try to get menu data from server")
-        
-        let cNetworkingCommunication = NetworkingCommunication()
-        
-        var stReqData : BuildJSON = BuildJSON()
-        stReqData["request"] = String(E_PROTO_REQ_TYPE.E_PROTO_REQ_DATA_MENUS.rawValue)
-        // location is default
-        stReqData["commentid"] = UserAccount.getUserNickName()
-        stReqData["commentreputation"] = selectStar.text!
-        stReqData["commenttext"] = textComment.text!
-        
-        
-        let strJsonReqData = stReqData.toJSONString()
-        var strRecvMsg : String = ""
-        var nRet : Int
-        nRet = cNetworkingCommunication.networkingWithServer(strJsonReqData, nMsgType: E_PROTO_REQ_TYPE.E_PROTO_REQ_HEADER_MENUS, strRecvMsg: &strRecvMsg)
-        if (nRet > 0) {
-            return E_RET_TYPE.E_RET_FAIL.rawValue
-        }
-        return E_RET_TYPE.E_RET_SUCCESS.rawValue
-    }
     
     func checkUserID(strInputUserIDText : String) -> Int {
         if (strInputUserIDText.characters.count > 20) {

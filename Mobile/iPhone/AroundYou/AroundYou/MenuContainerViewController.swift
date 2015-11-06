@@ -15,12 +15,11 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
     var dataStatus : E_DATA_CONNECTION_TYPE = .E_DATA_READY
     var refreshStatus : E_REFRESH_TYPE = .E_REFRESH_READY
     
-    var menuArray : [String] = []
     let textCellIdentifier = "TextCell"
-    var labelStore : String = ""
-    var labelChoice : String?
     
-    var reputationMenu : String = ""
+    var menuArray : [String] = []
+    var arrayMenuData : [StoresMenuData] = []
+    var storeData = StoresData()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,8 +35,7 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
         
         // start Indicator until receiving data from server
         downloadindicator.startAnimating()
-        menuArray.append("menu")
-        /*
+        
         // Thread for receiving store data
         let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
         dispatch_async(queue, { () -> () in
@@ -62,7 +60,7 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
             debugPrint("Success to download data (store data)")
             downloadindicator.stopAnimating()
             break
-        }*/
+        }
         self.tableView.reloadData()
         refreshStatus = .E_REFRESH_DONE
     }
@@ -88,11 +86,6 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        let row = indexPath.row
-        debugPrint(menuArray[row])
-        //external_row = row
-        
-        labelChoice = menuArray[row]
     }
     
     // MARK: - Navigation
@@ -106,8 +99,8 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
                 let indexPath = tableView.indexPathForCell(cell)
                 if let index = indexPath?.row {
                     debugPrint("click button [\(menuArray[index])]")
-                    menuDetailViewTableViewController.textMenuName = menuArray[index]
-                    menuDetailViewTableViewController.textStoreName = labelStore
+                    menuDetailViewTableViewController.storeMenuDetailData.storeData = storeData
+                    menuDetailViewTableViewController.storeMenuDetailData.storeMenuData = arrayMenuData[index]
                 }
             }
         }
@@ -121,7 +114,7 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
         var stReqData : BuildJSON = BuildJSON()
         stReqData["request"] = String(E_PROTO_REQ_TYPE.E_PROTO_REQ_DATA_MENUS.rawValue)
         // location is default
-        stReqData["store"] = labelStore
+        stReqData["storeindex"] = storeData.strIndex!
         
         let strJsonReqData = stReqData.toJSONString()
         var strRecvMsg : String = ""
@@ -145,20 +138,31 @@ class MenuContainerViewController: UIViewController, UITableViewDataSource, UITa
                      ]
         }
         */
-        strRecvMsg = " {\"count\" : \"2\", \"data\" : [{\"store\" : \"a\"},{\"store\" : \"b\"}]}"
+        //strRecvMsg = " {\"count\" : \"2\", \"data\" : [{\"store\" : \"a\"},{\"store\" : \"b\"}]}"
         var countArray : Int = 0
         if let data = strRecvMsg.dataUsingEncoding(NSUTF8StringEncoding) {
             let json = JSON(data: data)
             countArray = Int(json["count"].stringValue)!
             debugPrint("store array [\(countArray)]")
-            reputationMenu = json["reputation"].stringValue
+            
             for item in json["data"].arrayValue {
                 let itemMenu = item["menuname"].stringValue
-                let itemReputation = item["menureputation"].stringValue
+                let itemReputation = item["reputation"].stringValue
+                let itemPrice = item["price"].stringValue
+                let itemIndex = item["index"].stringValue
                 
                 debugPrint("Menu Name : [\(itemMenu)]")
                 debugPrint("Menu Reputation : [\(itemReputation)]")
+                debugPrint("Menu Price : [\(itemPrice)]")
+                debugPrint("Menu Index : [\(itemIndex)]")
                 menuArray.append(itemMenu)
+                
+                var savedStoreMenu = StoresMenuData()
+                savedStoreMenu.strMenuName = itemMenu
+                savedStoreMenu.strReputation = itemReputation
+                savedStoreMenu.strPrice = itemPrice
+                savedStoreMenu.strIndex = itemIndex
+                arrayMenuData.append(savedStoreMenu)
             }
         }
         

@@ -12,8 +12,10 @@ class MenuViewTableViewController: UITableViewController {
     @IBOutlet weak var labelStoreName: UILabel!
     @IBOutlet weak var labelStoreStar: UILabel!
 
-    var textStoreName : String?
-    var textStoreStar : String?
+    
+    // data to get from prior to view (StoresViewController)
+    var storeData = StoresData()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -23,8 +25,8 @@ class MenuViewTableViewController: UITableViewController {
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
         
-        labelStoreName.text = textStoreName
-        labelStoreStar.text = textStoreStar
+        labelStoreName.text = storeData.strStoreName
+        labelStoreStar.text = storeData.strReputation
     }
 
     override func didReceiveMemoryWarning() {
@@ -38,7 +40,7 @@ class MenuViewTableViewController: UITableViewController {
         
         if segue.identifier == "menucontainer" {
             if let menuContainerViewController = segue.destinationViewController as? MenuContainerViewController {
-                menuContainerViewController.labelStore = textStoreName!
+                menuContainerViewController.storeData = storeData
             }
         }
 
@@ -47,8 +49,6 @@ class MenuViewTableViewController: UITableViewController {
     
     @IBAction func alarmToMenuView(segue : UIStoryboardSegue) {
         if let menuContainerViewController = segue.sourceViewController as? MenuContainerViewController {
-            let strData = menuContainerViewController.labelChoice
-            debugPrint(strData)
         }
         
     }

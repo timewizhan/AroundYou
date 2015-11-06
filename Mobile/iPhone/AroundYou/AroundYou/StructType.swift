@@ -92,3 +92,57 @@ struct CurrentClickedValue
         return strStoreMenu!
     }
 }
+
+///////////// Value Struct /////////
+struct StoresData
+{
+    var strStoreName : String?
+    var strReputation : String?
+    var strIndex : String?
+    
+    init() {
+        self.strStoreName = ""
+        self.strReputation = ""
+        self.strIndex = ""
+    }
+}
+
+struct StoresMenuData
+{
+    var strMenuName : String?
+    var strReputation : String?
+    var strPrice : String?
+    var strIndex : String?
+    
+    init() {
+        self.strMenuName = ""
+        self.strReputation = ""
+        self.strPrice = ""
+        self.strIndex = ""
+    }
+}
+
+struct StoresMenuDetailData
+{
+    var storeData = StoresData()
+    var storeMenuData = StoresMenuData()
+}
+
+struct StoresMenuComment
+{
+    var strStoreIndex : String?
+    var strMenuIndex : String?
+    var strWriter : String?
+    var strReputation : String?
+    var strText : String?
+    var strTime : String?
+    
+    init() {
+        self.strStoreIndex = ""
+        self.strMenuIndex = ""
+        self.strWriter = ""
+        self.strReputation = ""
+        self.strText = ""
+        self.strTime = ""
+    }
+}

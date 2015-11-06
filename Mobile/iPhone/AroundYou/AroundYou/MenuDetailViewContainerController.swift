@@ -15,11 +15,10 @@ class MenuDetailViewContainerController: UIViewController, UITableViewDataSource
     var dataStatus : E_DATA_CONNECTION_TYPE = .E_DATA_READY
     var refreshStatus : E_REFRESH_TYPE = .E_REFRESH_READY
     
-    var comments :[Comment] = []
     let textCellIdentifier = "CommentCell"
     
-    var textStoreName : String?
-    var textMenuName : String?
+    var comments :[Comment] = []
+    var storeMenuDetailData = StoresMenuDetailData()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,8 +34,8 @@ class MenuDetailViewContainerController: UIViewController, UITableViewDataSource
         
         // start Indicator until receiving data from server
         downloadindicator.startAnimating()
-        comments.append(Comment(userId: "TestMan", strComment: "Hello Good store", strStar: "1"))
-        /*
+        //comments.append(Comment(userId: "TestMan", strComment: "Hello Good store", strStar: "1"))
+        
         // Thread for receiving store data
         let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
         dispatch_async(queue, { () -> () in
@@ -61,7 +60,7 @@ class MenuDetailViewContainerController: UIViewController, UITableViewDataSource
             debugPrint("Success to download data (store data)")
             downloadindicator.stopAnimating()
             break
-        }*/
+        }
         self.commentTableView.reloadData()
         refreshStatus = .E_REFRESH_DONE
     }
@@ -106,6 +105,27 @@ class MenuDetailViewContainerController: UIViewController, UITableViewDataSource
                 //update the tableView
                 let indexPath = NSIndexPath(forRow: comments.count-1, inSection: 0)
                 commentTableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+                
+                //update data to server
+                // Thread for receiving store data
+                let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+                dispatch_async(queue, { () -> () in
+                    let nRet : Int
+                    
+                    var commentData = StoresMenuComment()
+                    commentData.strStoreIndex = self.storeMenuDetailData.storeData.strIndex
+                    commentData.strMenuIndex = self.storeMenuDetailData.storeMenuData.strIndex
+                    commentData.strWriter = comment.userId!
+                    commentData.strReputation = comment.strStar!
+                    commentData.strText = comment.strComment!
+                    
+                    nRet = self.sendCommentDataToServer(commentData)
+                    if nRet == E_RET_TYPE.E_RET_SUCCESS.rawValue {
+                        debugPrint("Success to load comment data")
+                        return
+                    }
+                    debugPrint("Fail to load stores")
+                })
             }
         }
     }
@@ -118,8 +138,8 @@ class MenuDetailViewContainerController: UIViewController, UITableViewDataSource
         var stReqData : BuildJSON = BuildJSON()
         stReqData["request"] = String(E_PROTO_REQ_TYPE.E_PROTO_REQ_DATA_MENUS.rawValue)
         // location is default
-        stReqData["store"] = textStoreName!
-        stReqData["menu"] = textMenuName!
+        stReqData["storeindex"] = storeMenuDetailData.storeData.strIndex!
+        stReqData["menuindex"] = storeMenuDetailData.storeMenuData.strIndex!
         
         let strJsonReqData = stReqData.toJSONString()
         var strRecvMsg : String = ""
@@ -150,13 +170,15 @@ class MenuDetailViewContainerController: UIViewController, UITableViewDataSource
             countArray = Int(json["count"].stringValue)!
             debugPrint("store array [\(countArray)]")
             for item in json["data"].arrayValue {
-                let itemID = item["commentid"].stringValue
-                let itemReputation = item["commentreputation"].stringValue
-                let itemComment = item["commenttext"].stringValue
+                let itemID = item["writer"].stringValue
+                let itemReputation = item["reputation"].stringValue
+                let itemComment = item["text"].stringValue
+                let itemTime = item["writetime"].stringValue
                 
                 debugPrint("Comment ID [\(itemID)]")
                 debugPrint("Comment Reputation [\(itemReputation)]")
-                debugPrint("Comment text [\(itemComment)]")
+                debugPrint("Comment Text [\(itemComment)]")
+                debugPrint("Comment Time [\(itemTime)]")
                 let userComment = Comment(userId: itemID, strComment: itemReputation, strStar: itemComment)
                 
                 debugPrint("Insert comment data")
@@ -172,6 +194,28 @@ class MenuDetailViewContainerController: UIViewController, UITableViewDataSource
         return E_RET_TYPE.E_RET_SUCCESS.rawValue
     }
     
+    func sendCommentDataToServer(commentData : StoresMenuComment) -> Int {
+        debugPrint("Try to get menu data from server")
+        
+        let cNetworkingCommunication = NetworkingCommunication()
+        
+        var stReqData : BuildJSON = BuildJSON()
+        stReqData["request"] = String(E_PROTO_REQ_TYPE.E_PROTO_REQ_DATA_MENUS.rawValue)
+        stReqData["writer"] = commentData.strWriter!
+        stReqData["reputation"] = commentData.strReputation!
+        stReqData["text"] = commentData.strText!
+        //stReqData["writetime"] = ""
+        
+        
+        let strJsonReqData = stReqData.toJSONString()
+        var strRecvMsg : String = ""
+        var nRet : Int
+        nRet = cNetworkingCommunication.networkingWithServer(strJsonReqData, nMsgType: E_PROTO_REQ_TYPE.E_PROTO_REQ_HEADER_MENUS, strRecvMsg: &strRecvMsg)
+        if (nRet > 0) {
+            return E_RET_TYPE.E_RET_FAIL.rawValue
+        }
+        return E_RET_TYPE.E_RET_SUCCESS.rawValue
+    }
     
     /*
     // MARK: - Navigation

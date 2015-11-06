@@ -12,9 +12,8 @@ class MenuDetailViewTableViewController: UITableViewController {
     @IBOutlet weak var labelMenuName: UILabel!
     @IBOutlet weak var labelMenuStar: UILabel!
 
-    var textStoreName : String?
-    var textMenuName : String?
-    var textMenuStar : String?
+    var storeMenuDetailData = StoresMenuDetailData()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -24,8 +23,8 @@ class MenuDetailViewTableViewController: UITableViewController {
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
         
-        labelMenuName.text = textMenuName
-        labelMenuStar.text = textMenuStar
+        labelMenuName.text = storeMenuDetailData.storeMenuData.strMenuName
+        labelMenuStar.text = storeMenuDetailData.storeMenuData.strReputation
     }
     
     override func didReceiveMemoryWarning() {
@@ -38,8 +37,7 @@ class MenuDetailViewTableViewController: UITableViewController {
         // Pass the selected object to the new view controller.
         if segue.identifier == "commentcontainer" {
             if let menuDetailViewContainerController = segue.destinationViewController as? MenuDetailViewContainerController {
-                menuDetailViewContainerController.textStoreName = textStoreName!
-                menuDetailViewContainerController.textMenuName = textMenuName!
+                menuDetailViewContainerController.storeMenuDetailData = storeMenuDetailData
             }
         }
         
