@@ -54,7 +54,7 @@ DWORD InitLog(E_LOG_TYPE eLogType)
 ////////////////////////////////////////////////////////////////////////////////////////
 DWORD ErrorLog(const char *cformat, ...)
 {
-	EnterCriticalSection(&CriticalSection);
+	//EnterCriticalSection(&CriticalSection);
 	va_list arg;
 	int iCount;
 	char szBuf[MAX_BUF] = { 0 };
@@ -75,16 +75,23 @@ DWORD ErrorLog(const char *cformat, ...)
 		if (iRet != 0) {
 			return E_RET_FAIL;
 		}
-		fputs(szTime, pLogFile);
+		time_t timer;
+		struct tm stTM;
 
-		fputs(szBuf, pLogFile);
-		fputs("\n", pLogFile);
-		::fclose(pLogFile);
+		timer = time(NULL);
+		localtime_s(&stTM, &timer);
+
+		fprintf_s(pLogFile, "%04d-%02d-%02d %02d:%02d:%02d %s\n",
+			stTM.tm_year + 1900, stTM.tm_mon + 1, stTM.tm_mday,
+			stTM.tm_hour, stTM.tm_min, stTM.tm_sec, szBuf);
+		//fputs(szBuf, pLogFile);
+		//fputs("\n", pLogFile);
+		::fclose(pLogFile);;
 		break;
 	default:
 		break;
 	}
-	LeaveCriticalSection(&CriticalSection);
+	//LeaveCriticalSection(&CriticalSection);
 	return E_RET_SUCCESS;
 }
 

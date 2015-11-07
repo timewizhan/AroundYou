@@ -64,7 +64,8 @@ DWORD CAYWorkerThread::SendHeaderToClient(ST_RECV_HEADER_DATA &refstRecvHeaderDa
 		dwNumberOfRequest == E_PROTO_REQ_HEADER_SIGNUP ||
 		dwNumberOfRequest == E_PROTO_REQ_HEADER_STORES ||
 		dwNumberOfRequest == E_PROTO_REQ_HEADER_MENUS || 
-		dwNumberOfRequest == E_PROTO_REQ_HEADER_COMMENTS) {
+		dwNumberOfRequest == E_PROTO_REQ_HEADER_COMMENTS ||
+		dwNumberOfRequest == E_PROTO_REQ_HEADER_COMMENTS_INSERT) {
 		JsonRoot["response"] = E_PROTO_RES_SUCCESS;
 
 		Json::StyledWriter JsonWriter;
@@ -177,8 +178,8 @@ DWORD CAYWorkerThread::ParseDataByJSON(DWORD &refdwNumberOfRequest, ST_RECV_DATA
 		m_pstProtoComment->strMenuIndex			= JsonRoot.get("menuindex", 0).asString();
 		m_pstProtoComment->strWriter			= JsonRoot.get("writer", 0).asString();
 		m_pstProtoComment->strReputation		= JsonRoot.get("reputation", 0).asString();
-		m_pstProtoComment->strWriteTime; // current data is nothing
 		m_pstProtoComment->strText				= JsonRoot.get("text", 0).asString();
+		m_pstProtoComment->strWriteTime			= JsonRoot.get("writetime", 0).asString();
 
 		return E_RET_SUCCESS;
 	}
@@ -317,7 +318,7 @@ DWORD CAYWorkerThread::RequestToDataBase(DWORD &refdwNumberOfRequest, ST_DB_RESU
 	}
 	///////////// Comments //////////////
 	else if (dwRequest == E_PROTO_REQ_DATA_COMMENTS) {
-		stDBSQLQuery.strSQL = "SELECT writer, reputation, text, writetime FROM \"store_\"" + m_pstProtoComment->strStoreIndex + "_" + m_pstProtoComment->strMenuIndex + "\"";
+		stDBSQLQuery.strSQL = "SELECT writer, reputation, text, writetime FROM \"store_" + m_pstProtoComment->strStoreIndex + "_" + m_pstProtoComment->strMenuIndex + "\"";
 		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
 		if (dwRet != E_RET_SUCCESS) {
 			ErrorLog("Fail to query data from DataBase");
@@ -326,7 +327,7 @@ DWORD CAYWorkerThread::RequestToDataBase(DWORD &refdwNumberOfRequest, ST_DB_RESU
 		refstDBResult = stDBResult;
 	}
 	else if (dwRequest == E_PROTO_REQ_DATA_COMMENTS_INSERT) {
-		std::string strInputValue = "\'" + m_pstProtoComment->strWriter + "\', \'" + m_pstProtoComment->strReputation + "\', \'" + m_pstProtoComment->strText + "\', " + m_pstProtoComment->strWriteTime;
+		std::string strInputValue = "\'" + m_pstProtoComment->strWriter + "\', \'" + m_pstProtoComment->strReputation + "\', \'" + m_pstProtoComment->strText + "\', \'" + m_pstProtoComment->strWriteTime + "\'";
 		stDBSQLInsert.strSQL = "INSERT INTO \"store_" + m_pstProtoComment->strStoreIndex + "_" + m_pstProtoComment->strMenuIndex + "\"(writer, reputation, text, writetime) VALUES (" + strInputValue + ")";
 		dwRet = InsertToDB(hDataBase, stDBSQLInsert);
 		if (dwRet != E_RET_SUCCESS) {
@@ -631,7 +632,7 @@ DWORD CAYWorkerThread::MakeSendPacket(DWORD &refdwNumberOfRequest, ST_DB_RESULT 
 		Json::Value JsonData;
 		for (dwLineCount = 0; dwLineCount < refstDBResult.vecstDBResultLines.size(); dwLineCount++) {
 			ST_DB_RESULT_LINE stDBResultLine = refstDBResult.vecstDBResultLines[dwLineCount];
-			if (stDBResultLine.vecstrResult.size() != 3) {
+			if (stDBResultLine.vecstrResult.size() != 4) {
 				/*
 					DB Result Query have 4 argument
 				*/
@@ -644,7 +645,7 @@ DWORD CAYWorkerThread::MakeSendPacket(DWORD &refdwNumberOfRequest, ST_DB_RESULT 
 				switch (dwParamCount)
 				{
 				case 0:
-					JsonData["write"] = stDBResultLine.vecstrResult[dwParamCount];
+					JsonData["writer"] = stDBResultLine.vecstrResult[dwParamCount];
 					break;
 				case 1:
 					JsonData["reputation"] = stDBResultLine.vecstrResult[dwParamCount];
