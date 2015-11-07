@@ -136,7 +136,7 @@ class MenuDetailViewContainerController: UIViewController, UITableViewDataSource
         let cNetworkingCommunication = NetworkingCommunication()
         
         var stReqData : BuildJSON = BuildJSON()
-        stReqData["request"] = String(E_PROTO_REQ_TYPE.E_PROTO_REQ_DATA_MENUS.rawValue)
+        stReqData["request"] = String(E_PROTO_REQ_TYPE.E_PROTO_REQ_DATA_COMMENTS.rawValue)
         // location is default
         stReqData["storeindex"] = storeMenuDetailData.storeData.strIndex!
         stReqData["menuindex"] = storeMenuDetailData.storeMenuData.strIndex!
@@ -144,7 +144,7 @@ class MenuDetailViewContainerController: UIViewController, UITableViewDataSource
         let strJsonReqData = stReqData.toJSONString()
         var strRecvMsg : String = ""
         var nRet : Int
-        nRet = cNetworkingCommunication.networkingWithServer(strJsonReqData, nMsgType: E_PROTO_REQ_TYPE.E_PROTO_REQ_HEADER_MENUS, strRecvMsg: &strRecvMsg)
+        nRet = cNetworkingCommunication.networkingWithServer(strJsonReqData, nMsgType: E_PROTO_REQ_TYPE.E_PROTO_REQ_HEADER_COMMENTS, strRecvMsg: &strRecvMsg)
         if (nRet > 0) {
             return E_RET_TYPE.E_RET_FAIL.rawValue
         }
@@ -179,7 +179,7 @@ class MenuDetailViewContainerController: UIViewController, UITableViewDataSource
                 debugPrint("Comment Reputation [\(itemReputation)]")
                 debugPrint("Comment Text [\(itemComment)]")
                 debugPrint("Comment Time [\(itemTime)]")
-                let userComment = Comment(userId: itemID, strComment: itemReputation, strStar: itemComment)
+                let userComment = Comment(userId: itemID, strComment: itemComment, strStar: itemReputation)
                 
                 debugPrint("Insert comment data")
                 comments.append(userComment)
@@ -200,17 +200,19 @@ class MenuDetailViewContainerController: UIViewController, UITableViewDataSource
         let cNetworkingCommunication = NetworkingCommunication()
         
         var stReqData : BuildJSON = BuildJSON()
-        stReqData["request"] = String(E_PROTO_REQ_TYPE.E_PROTO_REQ_DATA_MENUS.rawValue)
+        stReqData["request"] = String(E_PROTO_REQ_TYPE.E_PROTO_REQ_DATA_COMMENTS_INSERT.rawValue)
+        stReqData["storeindex"] = commentData.strStoreIndex!
+        stReqData["menuindex"] = commentData.strMenuIndex!
         stReqData["writer"] = commentData.strWriter!
         stReqData["reputation"] = commentData.strReputation!
         stReqData["text"] = commentData.strText!
-        //stReqData["writetime"] = ""
+        stReqData["writetime"] = "2015-11-15 00:00:00"
         
         
         let strJsonReqData = stReqData.toJSONString()
         var strRecvMsg : String = ""
         var nRet : Int
-        nRet = cNetworkingCommunication.networkingWithServer(strJsonReqData, nMsgType: E_PROTO_REQ_TYPE.E_PROTO_REQ_HEADER_MENUS, strRecvMsg: &strRecvMsg)
+        nRet = cNetworkingCommunication.networkingWithServer(strJsonReqData, nMsgType: E_PROTO_REQ_TYPE.E_PROTO_REQ_HEADER_COMMENTS_INSERT, strRecvMsg: &strRecvMsg)
         if (nRet > 0) {
             return E_RET_TYPE.E_RET_FAIL.rawValue
         }

@@ -39,6 +39,8 @@ enum E_PROTO_REQ_TYPE : Int
     */
     case E_PROTO_REQ_HEADER_COMMENTS
     case E_PROTO_REQ_DATA_COMMENTS
+    case E_PROTO_REQ_HEADER_COMMENTS_INSERT
+    case E_PROTO_REQ_DATA_COMMENTS_INSERT
 }
 
 enum E_PROTO_RES_TYPE : Int
@@ -106,6 +108,7 @@ class NetworkingCommunication
         let sizeToSendHeader = strReqJSONHeader.characters.count
         var nSent = cNetworking.sendData(strReqJSONHeader)
         if (nSent != sizeToSendHeader) {
+            cNetworking.closeSocket()
             return E_NETWORK_RET_TYPE.E_NETWORK_RET_FAIL_SEND_HEADER.rawValue
         }
         
@@ -114,6 +117,7 @@ class NetworkingCommunication
         */
         let strReceivedData = cNetworking.recvData(defaultReceivedSize)
         if (strReceivedData.characters.count < 1) {
+            cNetworking.closeSocket()
             return E_NETWORK_RET_TYPE.E_NETWORK_RET_FAIL_RECV_HEADER.rawValue
         }
         
@@ -125,7 +129,7 @@ class NetworkingCommunication
         let dicData = jsonMethod.convertStringToDictionary(strReceivedData)
         let resHeaderJson = JSON(dicData!)
         let nResponseRet = (resHeaderJson.dictionary!["response"]! as JSON).int!
-        if (nResponseRet != E_PROTO_RES_TYPE.E_PROTO_RES_SUCCESS.rawValue) {
+        if (nResponseRet != E_PROTO_RES_TYPE.E_PROTO_RES_SUCCESS.rawValue) {                        cNetworking.closeSocket()
             return E_NETWORK_RET_TYPE.E_NETWORK_RET_FAIL_RECV_HEADER.rawValue
         }
         
@@ -134,6 +138,7 @@ class NetworkingCommunication
         */
         nSent = cNetworking.sendData(strMsgData)
         if (nSent != sizeToSendRealData) {
+            cNetworking.closeSocket()
             return E_NETWORK_RET_TYPE.E_NETWORK_RET_FAIL_SEND_HEADER.rawValue
         }
         
@@ -142,6 +147,7 @@ class NetworkingCommunication
         */
         let strResponseData = cNetworking.recvData(defaultReceivedSize)
         if (strResponseData.characters.count < 1) {
+            cNetworking.closeSocket()
             return E_NETWORK_RET_TYPE.E_NETWORK_RET_FAIL_RECV_DATA.rawValue
         }
         let dicResponseData = jsonMethod.convertStringToDictionary(strResponseData)
@@ -149,6 +155,7 @@ class NetworkingCommunication
         let nResponseDataRet = (resDataJSON.dictionary!["response"]! as JSON).int!
         let nSizeOfResponseData = (resDataJSON.dictionary!["size"]! as JSON).int!
         if (nResponseDataRet != E_PROTO_RES_TYPE.E_PROTO_RES_SUCCESS.rawValue) {
+            cNetworking.closeSocket()
             return E_NETWORK_RET_TYPE.E_NETWORK_RET_FAIL_RECV_HEADER.rawValue
         }
         
@@ -158,10 +165,12 @@ class NetworkingCommunication
         if (nSizeOfResponseData > 0) {
             let strResponseRealData = cNetworking.recvData(nSizeOfResponseData)
             if (strResponseRealData.characters.count < 1) {
+                cNetworking.closeSocket()
                 return E_NETWORK_RET_TYPE.E_NETWORK_RET_FAIL_RECV_DATA.rawValue
             }
             strRecvMsg = strResponseRealData
         }
+        cNetworking.closeSocket()
         return E_NETWORK_RET_TYPE.E_NETWORK_RET_SUCCESS.rawValue
     }
 }

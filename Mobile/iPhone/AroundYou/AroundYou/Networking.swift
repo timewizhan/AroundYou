@@ -62,4 +62,9 @@ class CNetworking
         
         return String.fromCString(receiveBuffer)!
     }
+    
+    func closeSocket()
+    {
+        close(stNetwork.socketToServer)
+    }
 }
