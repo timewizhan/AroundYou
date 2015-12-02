@@ -30,6 +30,7 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
         tableViewStores.delegate = self
         tableViewStores.dataSource = self
         
+        
         if self.revealViewController() != nil {
             menuButton.target = self.revealViewController()
             menuButton.action = "revealToggle:"
@@ -53,6 +54,7 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
         arrayStoreData.append(testvalue)
         */
         // Thread for receiving store data
+        /*
         let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
         dispatch_async(queue, { () -> () in
             let nRet : Int
@@ -78,7 +80,7 @@ class StoresViewController: UIViewController, UITableViewDataSource, UITableView
             break
         }
         self.tableViewStores.reloadData()
-        refreshStatus = .E_REFRESH_DONE
+        refreshStatus = .E_REFRESH_DONE*/
     }
     
     override func didReceiveMemoryWarning() {

@@ -1,24 +1,32 @@
 //
-//  LoginViewController.swift
+//  MainPageTopViewController.swift
 //  AroundYou
 //
-//  Created by 물통꿀꿀이 on 2015. 9. 29..
+//  Created by 물통꿀꿀이 on 2015. 12. 2..
 //  Copyright © 2015년 cclab. All rights reserved.
 //
 
 import UIKit
-import CoreTelephony
 
-class LoginViewController: UIViewController {
+class MainPageTopViewController: UIViewController {
 
+    @IBOutlet weak var settingButton: UIImageView!
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        //NSThread.sleepForTimeInterval(3)
+
         // Do any additional setup after loading the view.
         if self.revealViewController() != nil {
-                print("dfdf")
+            //self.view.addGestureRecognizer(self.revealViewController().panGestureRecognizer()
+            let tapGesture = UITapGestureRecognizer(target: self.revealViewController(), action: "revealToggle:")
+
+            settingButton.addGestureRecognizer(tapGesture)
+            settingButton.userInteractionEnabled = true
+            
         }
+    }
+    
+    func tapGesture(gesture: UIGestureRecognizer) {
+        print("touch")
     }
 
     override func didReceiveMemoryWarning() {
@@ -26,10 +34,7 @@ class LoginViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    /*
-        To do..
-    */
-    
+
     /*
     // MARK: - Navigation
 
