@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9059" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="I3v-3R-3SU">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9059" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="HBk-Bu-plM">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
@@ -24,9 +24,6 @@
                                     <segue destination="Zse-zZ-DtK" kind="embed" id="jaR-4D-aGj"/>
                                 </connections>
                             </containerView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="page1_004" translatesAutoresizingMaskIntoConstraints="NO" id="5Kv-XQ-dQL">
-                                <rect key="frame" x="87" y="20" width="200" height="65"/>
-                            </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="page1_003" translatesAutoresizingMaskIntoConstraints="NO" id="6Mu-El-jd0">
                                 <rect key="frame" x="19" y="33" width="40" height="40"/>
                             </imageView>
@@ -47,6 +44,9 @@
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="page1_009" translatesAutoresizingMaskIntoConstraints="NO" id="eao-S4-88R">
                                 <rect key="frame" x="315" y="160" width="40" height="40"/>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="page1_004" translatesAutoresizingMaskIntoConstraints="NO" id="5Kv-XQ-dQL">
+                                <rect key="frame" x="87" y="20" width="200" height="65"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="0.3294117647" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
@@ -73,39 +73,34 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="AroundYou" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dw1-AA-rWa">
-                                <rect key="frame" x="94" y="150" width="187" height="115"/>
-                                <animations/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="115" id="KNr-tE-bek"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="34"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ogg-WZ-og1">
-                                <rect key="frame" x="146" y="497" width="82" height="42"/>
-                                <animations/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="42" id="87b-XO-GEx"/>
-                                    <constraint firstAttribute="width" constant="82" id="sgH-1A-PS2"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                <state key="normal" title="들어가기"/>
-                            </button>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="intro_005" translatesAutoresizingMaskIntoConstraints="NO" id="jcJ-IW-ZpU">
+                                <rect key="frame" x="214" y="327" width="80" height="36"/>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="intro_006" translatesAutoresizingMaskIntoConstraints="NO" id="ZPO-lc-Mwo">
+                                <rect key="frame" x="135" y="315" width="80" height="60"/>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="intro_003" translatesAutoresizingMaskIntoConstraints="NO" id="VUW-j7-kFX">
+                                <rect key="frame" x="47" y="275" width="280" height="17"/>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="intro_002" translatesAutoresizingMaskIntoConstraints="NO" id="2Z8-Lg-VHn">
+                                <rect key="frame" x="47" y="264" width="40" height="40"/>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="intro_004" translatesAutoresizingMaskIntoConstraints="NO" id="V3d-g0-Xsz">
+                                <rect key="frame" x="77" y="335" width="50" height="20"/>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="page1_004" translatesAutoresizingMaskIntoConstraints="NO" id="0OS-fy-VLl">
+                                <rect key="frame" x="47" y="124" width="280" height="128"/>
+                            </imageView>
                         </subviews>
                         <animations/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="HfP-VL-scQ" firstAttribute="top" secondItem="ogg-WZ-og1" secondAttribute="bottom" constant="128" id="21Q-Qf-Vau"/>
-                            <constraint firstItem="dw1-AA-rWa" firstAttribute="top" secondItem="wVz-kI-HKS" secondAttribute="bottom" constant="130" id="O2N-f4-IOS"/>
-                            <constraint firstItem="dw1-AA-rWa" firstAttribute="centerX" secondItem="qPS-QG-y54" secondAttribute="centerX" id="evq-pq-Yof"/>
-                            <constraint firstItem="dw1-AA-rWa" firstAttribute="leading" secondItem="qPS-QG-y54" secondAttribute="leadingMargin" constant="78" id="uiy-48-FPt"/>
-                            <constraint firstItem="ogg-WZ-og1" firstAttribute="centerX" secondItem="dw1-AA-rWa" secondAttribute="centerX" id="zXz-i7-hsh"/>
-                        </constraints>
+                        <color key="backgroundColor" red="1" green="0.3294117647" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
-                    <navigationItem key="navigationItem" id="hy6-FS-97l"/>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+                    <connections>
+                        <outlet property="imageForDrag" destination="2Z8-Lg-VHn" id="Eb5-2b-erm"/>
+                        <outlet property="imagebarForDrag" destination="VUW-j7-kFX" id="Ys5-wH-E8p"/>
+                        <segue destination="I3v-3R-3SU" kind="presentation" identifier="completedLogin" id="nd4-Qv-NYS"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ODD-yE-b7e" sceneMemberID="firstResponder"/>
             </objects>
@@ -209,7 +204,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Xpf-hU-nbW">
-                                <rect key="frame" x="60" y="0.0" width="315" height="315"/>
+                                <rect key="frame" x="60" y="20" width="315" height="315"/>
                                 <connections>
                                     <segue destination="8gk-Y3-D0y" kind="embed" id="i34-OG-bJQ"/>
                                 </connections>
@@ -220,6 +215,18 @@
                                     <segue destination="rtZ-5F-rPq" kind="embed" id="k53-8D-K0g"/>
                                 </connections>
                             </containerView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="page1-1_001" translatesAutoresizingMaskIntoConstraints="NO" id="eWj-7Q-8gP">
+                                <rect key="frame" x="0.0" y="352" width="60" height="56"/>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="page1-1_002" translatesAutoresizingMaskIntoConstraints="NO" id="wOO-s6-N5r">
+                                <rect key="frame" x="0.0" y="406" width="60" height="261"/>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="page1-1_001" translatesAutoresizingMaskIntoConstraints="NO" id="MbL-US-QmP">
+                                <rect key="frame" x="0.0" y="20" width="60" height="56"/>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="page1-1_002" translatesAutoresizingMaskIntoConstraints="NO" id="voS-QK-XEU">
+                                <rect key="frame" x="0.0" y="74" width="60" height="261"/>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
@@ -384,9 +391,9 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="settings" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZG1-9X-997">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="아아아아" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZG1-9X-997">
                                                     <rect key="frame" x="17" y="15" width="62" height="21"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <fontDescription key="fontDescription" name="ZapfDingbatsITC" family="Zapf Dingbats" pointSize="17"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
@@ -1020,11 +1027,11 @@
                         <viewControllerLayoutGuide type="bottom" id="qe3-Od-EEH"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="sD8-ox-jJd">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="455"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" image="page1_011" translatesAutoresizingMaskIntoConstraints="NO" id="MOK-G8-q3P">
-                                <rect key="frame" x="165" y="0.0" width="45" height="45"/>
+                                <rect key="frame" x="157" y="0.0" width="53" height="45"/>
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="page1_015" translatesAutoresizingMaskIntoConstraints="NO" id="FhC-vI-hXB">
                                 <rect key="frame" x="8" y="53" width="360" height="270"/>
@@ -1096,10 +1103,10 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="page1_024" translatesAutoresizingMaskIntoConstraints="NO" id="QnW-62-aeo">
-                                <rect key="frame" x="213" y="367" width="15" height="65"/>
+                                <rect key="frame" x="219" y="367" width="9" height="65"/>
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="page1_025" translatesAutoresizingMaskIntoConstraints="NO" id="Mb7-GK-fSD">
-                                <rect key="frame" x="232" y="365" width="116" height="70"/>
+                                <rect key="frame" x="285" y="364" width="63" height="71"/>
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="page1_022" translatesAutoresizingMaskIntoConstraints="NO" id="Iit-qJ-b1D">
                                 <rect key="frame" x="130" y="364" width="15" height="15"/>
@@ -1134,6 +1141,7 @@
                             <constraint firstItem="MOK-G8-q3P" firstAttribute="centerX" secondItem="sD8-ox-jJd" secondAttribute="centerX" id="ZnC-uP-RFz"/>
                         </constraints>
                     </view>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Mq0-0I-4oG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -1141,7 +1149,14 @@
         </scene>
     </scenes>
     <resources>
+        <image name="intro_002" width="103" height="105"/>
+        <image name="intro_003" width="641" height="42"/>
+        <image name="intro_004" width="66" height="38"/>
+        <image name="intro_005" width="154" height="85"/>
+        <image name="intro_006" width="189" height="85"/>
         <image name="menu" width="22" height="22"/>
+        <image name="page1-1_001" width="94" height="94"/>
+        <image name="page1-1_002" width="25" height="553"/>
         <image name="page1_003" width="123" height="127"/>
         <image name="page1_004" width="396" height="170"/>
         <image name="page1_006" width="101" height="106"/>
