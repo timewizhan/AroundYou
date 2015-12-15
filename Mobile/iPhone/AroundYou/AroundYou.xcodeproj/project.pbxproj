@@ -31,6 +31,8 @@
 		8E8154B41BAC079700D15B14 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E8154B31BAC079700D15B14 /* Images.xcassets */; };
 		8E8154B71BAC079700D15B14 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8E8154B51BAC079700D15B14 /* LaunchScreen.xib */; };
 		8E8154C31BAC079700D15B14 /* AroundYouTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8154C21BAC079700D15B14 /* AroundYouTests.swift */; };
+		8EC1A2931C1DAF2A00B6BC93 /* MainPageContainerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EC1A2921C1DAF2A00B6BC93 /* MainPageContainerController.swift */; };
+		8EC1A2951C20656100B6BC93 /* SelectPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EC1A2941C20656100B6BC93 /* SelectPageViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +77,8 @@
 		8E8154BC1BAC079700D15B14 /* AroundYouTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AroundYouTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E8154C11BAC079700D15B14 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8E8154C21BAC079700D15B14 /* AroundYouTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AroundYouTests.swift; sourceTree = "<group>"; };
+		8EC1A2921C1DAF2A00B6BC93 /* MainPageContainerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainPageContainerController.swift; sourceTree = "<group>"; };
+		8EC1A2941C20656100B6BC93 /* SelectPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectPageViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,7 +133,9 @@
 				8E5EDB0F1BD096AB00193851 /* MenuDetailViewTableViewController.swift */,
 				8E5EDB111BD099EA00193851 /* MenuDetailViewContainerController.swift */,
 				8E3D5FF91C0EDAD20045949C /* MainPageTopViewController.swift */,
+				8EC1A2921C1DAF2A00B6BC93 /* MainPageContainerController.swift */,
 				8E3D5FFD1C0F36480045949C /* SideMenuBarViewController.swift */,
+				8EC1A2941C20656100B6BC93 /* SelectPageViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -291,6 +297,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8E5EDB121BD099EA00193851 /* MenuDetailViewContainerController.swift in Sources */,
+				8EC1A2931C1DAF2A00B6BC93 /* MainPageContainerController.swift in Sources */,
 				8E8154AD1BAC079700D15B14 /* AppDelegate.swift in Sources */,
 				8E3D5FFA1C0EDAD20045949C /* MainPageTopViewController.swift in Sources */,
 				8E0B85621BC2927B00CC5688 /* StructType.swift in Sources */,
@@ -306,6 +313,7 @@
 				8E6F36EB1BC94A45001F4540 /* StoresViewController.swift in Sources */,
 				8E5EDB0E1BD0921F00193851 /* MenuViewTableViewController.swift in Sources */,
 				8E0B849B1BBA72C200CC5688 /* Networking.swift in Sources */,
+				8EC1A2951C20656100B6BC93 /* SelectPageViewController.swift in Sources */,
 				8E08B0921BBA5E7800A3EB14 /* LoginViewController.swift in Sources */,
 				8E0B84A31BBE1D4800CC5688 /* SwiftyJSON.swift in Sources */,
 				8E0B849D1BBA730400CC5688 /* NetworkingProtocol.swift in Sources */,

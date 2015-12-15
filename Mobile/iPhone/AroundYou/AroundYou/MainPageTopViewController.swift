@@ -11,6 +11,9 @@ import UIKit
 class MainPageTopViewController: UIViewController {
 
     @IBOutlet weak var settingButton: UIImageView!
+    
+    var currentPage : Int = 0
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -34,6 +37,9 @@ class MainPageTopViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    @IBAction func returnToHome(segue: UIStoryboardSegue) {
+        
+    }
 
     /*
     // MARK: - Navigation
