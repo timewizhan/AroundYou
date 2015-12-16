@@ -30,3 +30,10 @@ enum E_REFRESH_TYPE
     case E_REFRESH_READY
     case E_REFRESH_DONE
 }
+
+// Button type of main page
+enum E_BUTTON_TYPE
+{
+    case E_BUTTON_SELECT_PAGE
+    case E_BUTTON_LIST_PAGE
+}

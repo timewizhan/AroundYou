@@ -19,6 +19,9 @@
 		8E0B855C1BC2880400CC5688 /* StarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B855B1BC2880400CC5688 /* StarViewController.swift */; };
 		8E0B85601BC2924500CC5688 /* CommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B855F1BC2924500CC5688 /* CommentCell.swift */; };
 		8E0B85621BC2927B00CC5688 /* StructType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B85611BC2927B00CC5688 /* StructType.swift */; };
+		8E326BFC1C217B3400A58361 /* MainCustomPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E326BFB1C217B3400A58361 /* MainCustomPageViewController.swift */; };
+		8E326BFE1C2185D900A58361 /* EmbededMainCustomSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E326BFD1C2185D900A58361 /* EmbededMainCustomSegue.swift */; };
+		8E326C001C218ED700A58361 /* ListPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E326BFF1C218ED700A58361 /* ListPageViewController.swift */; };
 		8E3D5FFA1C0EDAD20045949C /* MainPageTopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3D5FF91C0EDAD20045949C /* MainPageTopViewController.swift */; };
 		8E3D5FFE1C0F36480045949C /* SideMenuBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3D5FFD1C0F36480045949C /* SideMenuBarViewController.swift */; };
 		8E5EDB0D1BD0921F00193851 /* MenuContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E5EDB0B1BD0921F00193851 /* MenuContainerViewController.swift */; };
@@ -61,6 +64,9 @@
 		8E0B855B1BC2880400CC5688 /* StarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StarViewController.swift; sourceTree = "<group>"; };
 		8E0B855F1BC2924500CC5688 /* CommentCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentCell.swift; sourceTree = "<group>"; };
 		8E0B85611BC2927B00CC5688 /* StructType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StructType.swift; sourceTree = "<group>"; };
+		8E326BFB1C217B3400A58361 /* MainCustomPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainCustomPageViewController.swift; sourceTree = "<group>"; };
+		8E326BFD1C2185D900A58361 /* EmbededMainCustomSegue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmbededMainCustomSegue.swift; sourceTree = "<group>"; };
+		8E326BFF1C218ED700A58361 /* ListPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListPageViewController.swift; sourceTree = "<group>"; };
 		8E3D5FF91C0EDAD20045949C /* MainPageTopViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainPageTopViewController.swift; sourceTree = "<group>"; };
 		8E3D5FFD1C0F36480045949C /* SideMenuBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideMenuBarViewController.swift; sourceTree = "<group>"; };
 		8E5EDB0B1BD0921F00193851 /* MenuContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuContainerViewController.swift; sourceTree = "<group>"; };
@@ -136,6 +142,9 @@
 				8EC1A2921C1DAF2A00B6BC93 /* MainPageContainerController.swift */,
 				8E3D5FFD1C0F36480045949C /* SideMenuBarViewController.swift */,
 				8EC1A2941C20656100B6BC93 /* SelectPageViewController.swift */,
+				8E326BFB1C217B3400A58361 /* MainCustomPageViewController.swift */,
+				8E326BFD1C2185D900A58361 /* EmbededMainCustomSegue.swift */,
+				8E326BFF1C218ED700A58361 /* ListPageViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -302,12 +311,14 @@
 				8E3D5FFA1C0EDAD20045949C /* MainPageTopViewController.swift in Sources */,
 				8E0B85621BC2927B00CC5688 /* StructType.swift in Sources */,
 				8E0B855A1BC282A800CC5688 /* CommentViewController.swift in Sources */,
+				8E326BFE1C2185D900A58361 /* EmbededMainCustomSegue.swift in Sources */,
 				8E0B84A71BBE4A9000CC5688 /* BuildJSONString.swift in Sources */,
 				8E0B84A51BBE20DC00CC5688 /* ErrorType.swift in Sources */,
 				8E3D5FFE1C0F36480045949C /* SideMenuBarViewController.swift in Sources */,
 				4D7F7B221BCFB271009DF9FF /* SWRevealViewController.m in Sources */,
 				8E5EDB101BD096AB00193851 /* MenuDetailViewTableViewController.swift in Sources */,
 				8E5EDB0D1BD0921F00193851 /* MenuContainerViewController.swift in Sources */,
+				8E326BFC1C217B3400A58361 /* MainCustomPageViewController.swift in Sources */,
 				8E0B85601BC2924500CC5688 /* CommentCell.swift in Sources */,
 				8E0B84AB1BBEB3A700CC5688 /* JSONMethods.swift in Sources */,
 				8E6F36EB1BC94A45001F4540 /* StoresViewController.swift in Sources */,
@@ -318,6 +329,7 @@
 				8E0B84A31BBE1D4800CC5688 /* SwiftyJSON.swift in Sources */,
 				8E0B849D1BBA730400CC5688 /* NetworkingProtocol.swift in Sources */,
 				8E0B855C1BC2880400CC5688 /* StarViewController.swift in Sources */,
+				8E326C001C218ED700A58361 /* ListPageViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
