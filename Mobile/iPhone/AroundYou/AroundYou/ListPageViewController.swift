@@ -11,6 +11,7 @@ import UIKit
 class ListPageViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var tableAboutList: UITableView!
+    @IBOutlet weak var labelEvalution: UILabel!
     override func viewDidLoad() {
         super.viewDidLoad()
 

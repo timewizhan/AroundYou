@@ -22,6 +22,8 @@
 		8E326BFC1C217B3400A58361 /* MainCustomPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E326BFB1C217B3400A58361 /* MainCustomPageViewController.swift */; };
 		8E326BFE1C2185D900A58361 /* EmbededMainCustomSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E326BFD1C2185D900A58361 /* EmbededMainCustomSegue.swift */; };
 		8E326C001C218ED700A58361 /* ListPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E326BFF1C218ED700A58361 /* ListPageViewController.swift */; };
+		8E326C401C23433800A58361 /* PopUpEvaluationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E326C3F1C23433800A58361 /* PopUpEvaluationViewController.swift */; };
+		8E326C421C23513100A58361 /* SummaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E326C411C23513100A58361 /* SummaryViewController.swift */; };
 		8E3D5FFA1C0EDAD20045949C /* MainPageTopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3D5FF91C0EDAD20045949C /* MainPageTopViewController.swift */; };
 		8E3D5FFE1C0F36480045949C /* SideMenuBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3D5FFD1C0F36480045949C /* SideMenuBarViewController.swift */; };
 		8E5EDB0D1BD0921F00193851 /* MenuContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E5EDB0B1BD0921F00193851 /* MenuContainerViewController.swift */; };
@@ -34,6 +36,7 @@
 		8E8154B41BAC079700D15B14 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E8154B31BAC079700D15B14 /* Images.xcassets */; };
 		8E8154B71BAC079700D15B14 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8E8154B51BAC079700D15B14 /* LaunchScreen.xib */; };
 		8E8154C31BAC079700D15B14 /* AroundYouTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8154C21BAC079700D15B14 /* AroundYouTests.swift */; };
+		8E981DDA1C26CDF90036CC17 /* SelectCustomPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E981DD91C26CDF90036CC17 /* SelectCustomPageViewController.swift */; };
 		8EC1A2931C1DAF2A00B6BC93 /* MainPageContainerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EC1A2921C1DAF2A00B6BC93 /* MainPageContainerController.swift */; };
 		8EC1A2951C20656100B6BC93 /* SelectPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EC1A2941C20656100B6BC93 /* SelectPageViewController.swift */; };
 /* End PBXBuildFile section */
@@ -67,6 +70,8 @@
 		8E326BFB1C217B3400A58361 /* MainCustomPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainCustomPageViewController.swift; sourceTree = "<group>"; };
 		8E326BFD1C2185D900A58361 /* EmbededMainCustomSegue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmbededMainCustomSegue.swift; sourceTree = "<group>"; };
 		8E326BFF1C218ED700A58361 /* ListPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListPageViewController.swift; sourceTree = "<group>"; };
+		8E326C3F1C23433800A58361 /* PopUpEvaluationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopUpEvaluationViewController.swift; sourceTree = "<group>"; };
+		8E326C411C23513100A58361 /* SummaryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SummaryViewController.swift; sourceTree = "<group>"; };
 		8E3D5FF91C0EDAD20045949C /* MainPageTopViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainPageTopViewController.swift; sourceTree = "<group>"; };
 		8E3D5FFD1C0F36480045949C /* SideMenuBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideMenuBarViewController.swift; sourceTree = "<group>"; };
 		8E5EDB0B1BD0921F00193851 /* MenuContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuContainerViewController.swift; sourceTree = "<group>"; };
@@ -83,7 +88,8 @@
 		8E8154BC1BAC079700D15B14 /* AroundYouTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AroundYouTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E8154C11BAC079700D15B14 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8E8154C21BAC079700D15B14 /* AroundYouTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AroundYouTests.swift; sourceTree = "<group>"; };
-		8EC1A2921C1DAF2A00B6BC93 /* MainPageContainerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainPageContainerController.swift; sourceTree = "<group>"; };
+		8E981DD91C26CDF90036CC17 /* SelectCustomPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectCustomPageViewController.swift; sourceTree = "<group>"; };
+		8EC1A2921C1DAF2A00B6BC93 /* MainPageContainerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = MainPageContainerController.swift; sourceTree = "<group>"; };
 		8EC1A2941C20656100B6BC93 /* SelectPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectPageViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -143,8 +149,11 @@
 				8E3D5FFD1C0F36480045949C /* SideMenuBarViewController.swift */,
 				8EC1A2941C20656100B6BC93 /* SelectPageViewController.swift */,
 				8E326BFB1C217B3400A58361 /* MainCustomPageViewController.swift */,
+				8E981DD91C26CDF90036CC17 /* SelectCustomPageViewController.swift */,
 				8E326BFD1C2185D900A58361 /* EmbededMainCustomSegue.swift */,
 				8E326BFF1C218ED700A58361 /* ListPageViewController.swift */,
+				8E326C3F1C23433800A58361 /* PopUpEvaluationViewController.swift */,
+				8E326C411C23513100A58361 /* SummaryViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -310,6 +319,7 @@
 				8E8154AD1BAC079700D15B14 /* AppDelegate.swift in Sources */,
 				8E3D5FFA1C0EDAD20045949C /* MainPageTopViewController.swift in Sources */,
 				8E0B85621BC2927B00CC5688 /* StructType.swift in Sources */,
+				8E326C401C23433800A58361 /* PopUpEvaluationViewController.swift in Sources */,
 				8E0B855A1BC282A800CC5688 /* CommentViewController.swift in Sources */,
 				8E326BFE1C2185D900A58361 /* EmbededMainCustomSegue.swift in Sources */,
 				8E0B84A71BBE4A9000CC5688 /* BuildJSONString.swift in Sources */,
@@ -330,6 +340,8 @@
 				8E0B849D1BBA730400CC5688 /* NetworkingProtocol.swift in Sources */,
 				8E0B855C1BC2880400CC5688 /* StarViewController.swift in Sources */,
 				8E326C001C218ED700A58361 /* ListPageViewController.swift in Sources */,
+				8E981DDA1C26CDF90036CC17 /* SelectCustomPageViewController.swift in Sources */,
+				8E326C421C23513100A58361 /* SummaryViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

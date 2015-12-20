@@ -15,7 +15,9 @@ class MainPageContainerController: UIViewController {
     @IBOutlet weak var imageRank: UIImageView!
     @IBOutlet weak var imageLeftArrow: UIImageView!
     @IBOutlet weak var imageRightArrow: UIImageView!
-    @IBOutlet weak var imageMainStore: UIImageView!
+    
+    @IBOutlet weak var webViewAboutImage: UIWebView!
+    @IBOutlet var viewParentAboutwebView: UIView!
     
     var flagRecommendedStore : Bool = true
     var flagRecommendedMenu : Bool = false
@@ -29,12 +31,18 @@ class MainPageContainerController: UIViewController {
 
         // Do any additional setup after loading the view.
         setGestureToImages()
-        
+        loadWebURL()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func loadWebURL() {
+        let webURL = NSURL(string: "http://cfile27.uf.tistory.com/image/2116DA485370846738F840")
+        let urlRequest = NSURLRequest(URL: webURL!)
+        webViewAboutImage.loadRequest(urlRequest)
     }
     
     func setGestureToImages() {
@@ -55,10 +63,9 @@ class MainPageContainerController: UIViewController {
         imageRightArrow.userInteractionEnabled = true
         
         // click main view
-        let gestureClickedMainStore = UITapGestureRecognizer(target: self, action: "clickedMainStore:")
-        imageMainStore.addGestureRecognizer(gestureClickedMainStore)
-        imageMainStore.userInteractionEnabled = true
-        
+        let gestureClickedMainImage = UITapGestureRecognizer(target: self, action: "clickedMainImage:")
+        viewParentAboutwebView.addGestureRecognizer(gestureClickedMainImage)
+        viewParentAboutwebView.userInteractionEnabled = true
     }
     
     func clickedRecommendedStore(sender : AnyObject) {
@@ -73,6 +80,10 @@ class MainPageContainerController: UIViewController {
             
             // diable RecommendedMenu
             imageRecommendedMenu.image = UIImage(named: "page1_031.png")
+            
+            let webURL = NSURL(string: "http://cfile27.uf.tistory.com/image/2116DA485370846738F840")
+            let urlRequest = NSURLRequest(URL: webURL!)
+            webViewAboutImage.loadRequest(urlRequest)
         }
     }
     
@@ -88,6 +99,10 @@ class MainPageContainerController: UIViewController {
             
             // disable RecommendedStore
             imageRecommendedStore.image = UIImage(named: "page1_029.png")
+            
+            let webURL = NSURL(string: "http://cfile236.uf.daum.net/image/2102834052D29C8202FF9F")
+            let urlRequest = NSURLRequest(URL: webURL!)
+            webViewAboutImage.loadRequest(urlRequest)
         }
     }
     
@@ -99,20 +114,32 @@ class MainPageContainerController: UIViewController {
         debugPrint("Click recommended right arrow")
     }
     
-    func clickedMainStore(sender : AnyObject) {
+    func clickedMainImage(sender : AnyObject) {
         debugPrint("Click main image")
-        
-        performSegueWithIdentifier("test", sender: self)
+        performSegueWithIdentifier("SelectPageSegue", sender: self)
     }
     
-    /*
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
+        
+        if segue.identifier == "SelectPageSegue" {
+            let selectPageViewController = segue.destinationViewController as! SelectPageViewController
+            if flagRecommendedStore == true {
+                selectPageViewController.requestedPage = E_BUTTON_TYPE.E_BUTTON_SELECT_DETAIL_STORE_PAGE
+            }
+            else if flagRecommendedMenu == true {
+                selectPageViewController.requestedPage = E_BUTTON_TYPE.E_BUTTON_SELECT_DETAIL_MENU_PAGE
+            }
+            else {
+                debugPrint("Invalid segue flag")
+                // nothing
+            }
+        }
     }
-    */
+    
 
 }
