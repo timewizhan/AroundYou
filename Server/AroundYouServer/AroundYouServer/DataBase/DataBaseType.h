@@ -41,4 +41,9 @@ struct ST_DB_RESULT
 	std::vector<ST_DB_RESULT_LINE>	vecstDBResultLines;
 };
 
+struct ST_PROCESSED_VALUE
+{
+	std::vector<ST_DB_RESULT_LINE>	vecstDBResultLines;
+};
+
 #endif

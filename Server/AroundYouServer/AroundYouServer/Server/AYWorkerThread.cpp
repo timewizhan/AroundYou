@@ -7,6 +7,9 @@
 #include "json\json.h"
 
 #include "SignIn.h"
+#include "Store.h"
+
+#define DEFAULT_RECV_DATA 32
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 CAYWorkerThread::CAYWorkerThread(SOCKET ClientSocket)
@@ -28,215 +31,115 @@ CAYWorkerThread::~CAYWorkerThread()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-DWORD CAYWorkerThread::ReceiveDataFromClient(char *pReceiveBuf, DWORD dwByteTransferred, ST_RECV_HEADER_DATA &refstRecvHeaderData)
+VOID CAYWorkerThread::ConvertReceivedDataToString(char *pReceiveBuf, DWORD dwByteTransferred, std::string &refstrReceivedData)
 {
-	refstRecvHeaderData.strRecvData = pReceiveBuf;
-	refstRecvHeaderData.strRecvData.resize(dwByteTransferred);
-	return E_RET_SUCCESS;
+	refstrReceivedData = pReceiveBuf;
+	refstrReceivedData.resize(dwByteTransferred);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-DWORD CAYWorkerThread::ParseReceivedHeaderByJSON(ST_RECV_HEADER_DATA &refstRecvHeaderData)
+DWORD CAYWorkerThread::ParseSimpleReceivedDataByJSON(DWORD dwSentResProtocolNumber, std::string &refstrRecvData)
 {
 	Json::Value JsonRoot;
 	Json::Reader reader;
-	bool bParsingRet = reader.parse(refstRecvHeaderData.strRecvData, JsonRoot);
+	bool bParsingRet = reader.parse(refstrRecvData, JsonRoot);
 	if (!bParsingRet) {
 		ErrorLog("Fail to parse a received data [%s]", reader.getFormatedErrorMessages());
 		std::cout << reader.getFormatedErrorMessages() << std::endl;
 		return E_RET_FAIL;
 	}
 
-	std::string strRequest = JsonRoot.get("request", 0).asString();
-	DWORD		dwSizeOfData = ::atoi(JsonRoot.get("size", 0).asString().c_str());
-	refstRecvHeaderData.dwNumberOfRequest = ::atoi(strRequest.c_str());
-	refstRecvHeaderData.dwSizeOfData = dwSizeOfData;
-	return E_RET_SUCCESS;
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-DWORD CAYWorkerThread::SendHeaderToClient(ST_RECV_HEADER_DATA &refstRecvHeaderData)
-{
-	DWORD dwNumberOfRequest = refstRecvHeaderData.dwNumberOfRequest;
 	DWORD dwRet = E_RET_SUCCESS;
-	Json::Value JsonRoot;
-	if (dwNumberOfRequest == E_PROTO_REQ_HEADER_SIGNIN || 
-		dwNumberOfRequest == E_PROTO_REQ_HEADER_SIGNUP ||
-		dwNumberOfRequest == E_PROTO_REQ_HEADER_STORES ||
-		dwNumberOfRequest == E_PROTO_REQ_HEADER_MENUS || 
-		dwNumberOfRequest == E_PROTO_REQ_HEADER_COMMENTS ||
-		dwNumberOfRequest == E_PROTO_REQ_HEADER_COMMENTS_INSERT) {
-		JsonRoot["response"] = E_PROTO_RES_SUCCESS;
-
-		Json::StyledWriter JsonWriter;
-		std::string strSendData = JsonWriter.write(JsonRoot);
-		
-		dwRet = SendDataToClient(strSendData);
-		if (dwRet != E_RET_SUCCESS) {
-			ErrorLog("Fail to send data about request");
+	DWORD dwProtocolNumber = ::atoi(JsonRoot.get("req", 0).asString().c_str());
+	if (dwSentResProtocolNumber == E_PROTO_REQ_NEXT_RECOMMENDED_STORE) {
+		if (dwProtocolNumber != E_PROTO_REQ_READY_FOR_DATA) {
+			dwRet = E_RET_FAIL;
 		}
-		DebugLog("Success to send data about request");
 	}
 	else {
-		/*
-			etc..
-		*/
+		// nothing
 	}
 
 	return dwRet;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-DWORD CAYWorkerThread::ReceiveDataFromClient(ST_RECV_HEADER_DATA &refstRecvHeaderData, ST_RECV_DATA &refstRecvData)
-{
-	char *pRecvBuffer = NULL;
-	pRecvBuffer = new char[refstRecvHeaderData.dwSizeOfData];
-	::memset(pRecvBuffer, 0x00, refstRecvHeaderData.dwSizeOfData);
-
-	int nRecv;
-	nRecv = ::recv(m_stWorkerThread.hClientSocket, pRecvBuffer, refstRecvHeaderData.dwSizeOfData, 0);
-	if (nRecv == SOCKET_ERROR) {
-		ErrorLog("Fail to recv data from client");
-		delete pRecvBuffer;
-		return E_RET_FAIL;
-	}
-	refstRecvData.strRecvData = pRecvBuffer;
-	refstRecvData.strRecvData.resize(nRecv);
-	delete pRecvBuffer;
-	return E_RET_SUCCESS;
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-DWORD CAYWorkerThread::ParseDataByJSON(DWORD &refdwNumberOfRequest, ST_RECV_DATA &refstRecvData)
+DWORD CAYWorkerThread::ParseReceivedDataByJSON(const std::string &refstrReceivedData, ST_RECV_HEADER_DATA &refstRecvHeaderData)
 {
 	Json::Value JsonRoot;
 	Json::Reader reader;
-	bool bParsingRet = reader.parse(refstRecvData.strRecvData, JsonRoot);
+	bool bParsingRet = reader.parse(refstrReceivedData, JsonRoot);
 	if (!bParsingRet) {
 		ErrorLog("Fail to parse a received data [%s]", reader.getFormatedErrorMessages());
 		std::cout << reader.getFormatedErrorMessages() << std::endl;
 		return E_RET_FAIL;
 	}
 
-	std::string strRequest = JsonRoot.get("request", 0).asString();
+	refstRecvHeaderData.dwReqNumber			= ::atoi(JsonRoot.get("req", 0).asString().c_str());
+	refstRecvHeaderData.dwNextReqNumber		= ::atoi(JsonRoot.get("next_req", 0).asString().c_str());
+	refstRecvHeaderData.dwNextSizeOfData	= ::atoi(JsonRoot.get("next_size", 0).asString().c_str());
+	return E_RET_SUCCESS;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+DWORD CAYWorkerThread::CheckFirstRequestNumber(ST_RECV_HEADER_DATA &refstRecvHeaderData)
+{
+	if (refstRecvHeaderData.dwReqNumber != E_PROTO_REQ_CONNECTION_START) {
+		return E_RET_FAIL;
+	}
+
+	return E_RET_SUCCESS;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+DWORD CAYWorkerThread::BranchByRequestNumber(ST_RECV_HEADER_DATA &refstRecvHeaderData)
+{
+	DWORD dwRet = E_RET_FAIL;
+	DWORD dwNextReqNumber = refstRecvHeaderData.dwNextReqNumber;
+	switch (dwNextReqNumber)
+	{
+	case E_PROTO_REQ_USER_SIGN_IN:
+	case E_PROTO_REQ_USER_SIGN_UP:
+		dwRet = PROTO_101_ABOUT_USER(refstRecvHeaderData);
+		break;
+	case E_PROTO_REQ_RECOMMENDED_STORE:
+		dwRet = PROTO_201_RECOMMENTED_STORE(refstRecvHeaderData);
+		break;
+	case E_PROTO_REQ_RECOMMENDED_MENU:
+		dwRet = PROTO_201_RECOMMENTED_MENU(refstRecvHeaderData);
+		break;
+	default:
+		break;
+	}
+	return dwRet;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+DWORD CAYWorkerThread::ParseDataByJSON(VOID *pProto, ST_RECV_DATA &refstRecvData)
+{
+	Json::Value JsonRoot;
+	Json::Reader reader;
+	bool bParsingRet = reader.parse(refstRecvData.strReceivedData, JsonRoot);
+	if (!bParsingRet) {
+		ErrorLog("Fail to parse a received data [%s]", reader.getFormatedErrorMessages());
+		std::cout << reader.getFormatedErrorMessages() << std::endl;
+		return E_RET_FAIL;
+	}
+
+	std::string strRequest = JsonRoot.get("req", 0).asString();
 	DWORD dwRequest = ::atoi(strRequest.c_str());
-	refdwNumberOfRequest = dwRequest;
-	/*
-		you have to cast pointer to use pointer flexibly
-	*/
 
-	///////////// Sign In //////////////
-	if (dwRequest == E_PROTO_REQ_DATA_SIGNIN) {
-		m_pstProtoSignIn = new ST_PROTOCOL_SIGNIN;
-		::memset(m_pstProtoSignIn, 0x00, sizeof(ST_PROTOCOL_SIGNIN));
-
-		m_pstProtoSignIn->dwRequest			= dwRequest;
-		m_pstProtoSignIn->strNickName		= JsonRoot.get("nickname", 0).asString();
-		m_pstProtoSignIn->strEmail			= JsonRoot.get("email", 0).asString();
-		m_pstProtoSignIn->strCallID			= JsonRoot.get("callid", 0).asString();
+	///////////// User //////////////
+	if (dwRequest == E_PROTO_REQ_USER_SIGN_IN || dwRequest == E_PROTO_REQ_USER_SIGN_UP) {
+		((ST_PROTOCOL_REQ_101_ABOUT_USER *)pProto)->dwRequest = dwRequest;
+		((ST_PROTOCOL_REQ_101_ABOUT_USER *)pProto)->strCallID = JsonRoot.get("call_id", 0).asString();
 	}
-	///////////// Sign Up //////////////
-	else if (dwRequest == E_PROTO_REQ_DATA_SIGNUP) {
-		m_pstProtoSignUp = new ST_PROTOCOL_SIGNUP;
-		::memset(m_pstProtoSignUp, 0x00, sizeof(ST_PROTOCOL_SIGNUP));
-
-		m_pstProtoSignUp->dwRequest			= dwRequest;
-		m_pstProtoSignUp->strNickName		= JsonRoot.get("nickname", 0).asString();
-		m_pstProtoSignUp->strEmail			= JsonRoot.get("email", 0).asString();
-		m_pstProtoSignUp->strCallID			= JsonRoot.get("callid", 0).asString();
-	}
-	///////////// Stores //////////////
-	else if (dwRequest == E_PROTO_REQ_DATA_STORES){		
-		/*
-			E_PROTO_REQ_DATA_MENUS is only message to get menu information
-		*/
-		return E_RET_SUCCESS;
-	}
-	///////////// Menus //////////////
-	else if (dwRequest == E_PROTO_REQ_DATA_MENUS) {
-		m_pstProtoMenu = new ST_PROTOCOL_MENU;
-		::memset(m_pstProtoMenu, 0x00, sizeof(ST_PROTOCOL_MENU));
-
-		m_pstProtoMenu->strStoreIndex = JsonRoot.get("storeindex", 0).asString();
-		return E_RET_SUCCESS;
-	}
-	///////////// Comments //////////////
-	else if (dwRequest == E_PROTO_REQ_DATA_COMMENTS) {
-		m_pstProtoComment = new ST_PROTOCOL_COMMENT;
-		::memset(m_pstProtoComment, 0x00, sizeof(ST_PROTOCOL_COMMENT));
-
-		m_pstProtoComment->strStoreIndex = JsonRoot.get("storeindex", 0).asString();
-		m_pstProtoComment->strMenuIndex = JsonRoot.get("menuindex", 0).asString();
-		return E_RET_SUCCESS;
-	}
-	else if (dwRequest == E_PROTO_REQ_DATA_COMMENTS_INSERT) {
-		m_pstProtoComment = new ST_PROTOCOL_COMMENT;
-		::memset(m_pstProtoComment, 0x00, sizeof(ST_PROTOCOL_COMMENT));
-
-		m_pstProtoComment->dwRequest			= dwRequest;
-		m_pstProtoComment->strStoreIndex		= JsonRoot.get("storeindex", 0).asString();
-		m_pstProtoComment->strMenuIndex			= JsonRoot.get("menuindex", 0).asString();
-		m_pstProtoComment->strWriter			= JsonRoot.get("writer", 0).asString();
-		m_pstProtoComment->strReputation		= JsonRoot.get("reputation", 0).asString();
-		m_pstProtoComment->strText				= JsonRoot.get("text", 0).asString();
-		m_pstProtoComment->strWriteTime			= JsonRoot.get("writetime", 0).asString();
-
-		return E_RET_SUCCESS;
-	}
-	else if (dwRequest == E_PROTO_REQ_MENU_INSERT){
-		m_pstProtoMenu = new ST_PROTOCOL_MENU;
-		::memset(m_pstProtoMenu, 0x00, sizeof(ST_PROTOCOL_MENU));
-
-		m_pstProtoMenu->dwRequest				= dwRequest;
-		m_pstProtoMenu->dwMenuNumber			= JsonRoot["data"].get("menunumber", 0).asUInt();
-		m_pstProtoMenu->strMenuName				= JsonRoot["data"].get("menuname", 0).asString();
-		m_pstProtoMenu->dwMenuPrice				= JsonRoot["data"].get("menuprice", 0).asUInt();
-		m_pstProtoMenu->strStoreName			= JsonRoot["data"].get("storename", 0).asString();
-
-	}
-	///////////// Client //////////////
-	else if (dwRequest == E_PROTO_REQ_CLIENT_QUERY){
-		/*
-			Query inner data is nothing
-		*/
-		return E_RET_SUCCESS;
-	}
-	else if (dwRequest == E_PROTO_REQ_CLIENT_INSERT){
-		m_pstProtoClient = new ST_PROTOCOL_CLIENT;
-		::memset(m_pstProtoClient, 0x00, sizeof(ST_PROTOCOL_CLIENT));
-
-		m_pstProtoClient->dwRequest				= dwRequest;
-		m_pstProtoClient->strClientID			= JsonRoot["data"].get("clientid", 0).asUInt();
-		m_pstProtoClient->strClientMail			= JsonRoot["data"].get("clientmail", 0).asUInt();
-		m_pstProtoClient->strClientPhoneNumber	= JsonRoot["data"].get("clientphonenumber", 0).asString();
-		m_pstProtoClient->dwClientNumber		= JsonRoot["data"].get("clientnumber", 0).asUInt();
-	}
-	///////////// Shop //////////////
-	else if (dwRequest == E_PROTO_REQ_SHOP_QUERY){
-		/*
-			Query inner data is nothing
-		*/
-		return E_RET_SUCCESS;
-	}
-	else if (dwRequest == E_PROTO_REQ_SHOP_INSERT){
-		m_pstProtoShop = new ST_PROTOCOL_SHOP;
-		::memset(m_pstProtoShop, 0x00, sizeof(ST_PROTOCOL_SHOP));
-
-		m_pstProtoShop->dwRequest			= dwRequest;
-		m_pstProtoShop->strShopAlcohol		= JsonRoot["data"].get("shopalcohol", 0).asString();
-		m_pstProtoShop->strShopCategory		= JsonRoot["data"].get("shopcategory", 0).asString();
-		m_pstProtoShop->strShopETC			= JsonRoot["data"].get("shopetc", 0).asString();
-		m_pstProtoShop->strShopFacility		= JsonRoot["data"].get("shopfacility", 0).asString();
-		m_pstProtoShop->strShopHomepage		= JsonRoot["data"].get("shophomepage", 0).asString();
-		m_pstProtoShop->strShopIntroduction = JsonRoot["data"].get("shopintroduction", 0).asString();
-		m_pstProtoShop->strShopName			= JsonRoot["data"].get("shopname", 0).asString();
-		m_pstProtoShop->dwShopNumber		= JsonRoot["data"].get("shopnumber", 0).asUInt();
-		m_pstProtoShop->strShopParking		= JsonRoot["data"].get("shopparking", 0).asString();
-		m_pstProtoShop->strShopPhoneNumber	= JsonRoot["data"].get("shopphonenumber", 0).asString();
-		m_pstProtoShop->strShopRunningTime	= JsonRoot["data"].get("shoprunningtime", 0).asString();
-		m_pstProtoShop->bShopSmoking		= JsonRoot["data"].get("shopsmoking", 0).asBool();
-		m_pstProtoShop->strShopAddress		= JsonRoot["data"].get("shopaddress", 0).asString();
-		m_pstProtoShop->strShopHoliday		= JsonRoot["data"].get("shopholiday", 0).asString();
+	else if (dwRequest == E_PROTO_REQ_RECOMMENDED_STORE) {
+		((ST_PROTOCOL_REQ_201_RECOMMENDED_STORE *)pProto)->dwRequest					= dwRequest;
+		((ST_PROTOCOL_REQ_201_RECOMMENDED_STORE *)pProto)->dwLocation					= ::atoi(JsonRoot["data"].get("location", 0).asString().c_str());
+		((ST_PROTOCOL_REQ_201_RECOMMENDED_STORE *)pProto)->dwNumberOfRequestedMaximun	= ::atoi(JsonRoot["data"].get("res_number", 0).asString().c_str());
 	}
 	else {
 		ErrorLog("Invalid Request Code");
@@ -247,7 +150,7 @@ DWORD CAYWorkerThread::ParseDataByJSON(DWORD &refdwNumberOfRequest, ST_RECV_DATA
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-DWORD CAYWorkerThread::RequestToDataBase(DWORD &refdwNumberOfRequest, ST_DB_RESULT &refstDBResult)
+DWORD CAYWorkerThread::RequestToDataBase(VOID *pProtoRoot, ST_DB_RESULT &refstDBResult)
 {
 	HANDLE hDataBase = NULL;
 	hDataBase = CreateDBInstance(E_DB_POSTGRES);
@@ -265,192 +168,84 @@ DWORD CAYWorkerThread::RequestToDataBase(DWORD &refdwNumberOfRequest, ST_DB_RESU
 
 	ST_DB_SQL stDBSQLQuery, stDBSQLInsert, stDBSQLUpdate;
 	ST_DB_RESULT stDBResult;
-	DWORD dwRequest = refdwNumberOfRequest;
-	///////////// Sign In //////////////
-	if (dwRequest == E_PROTO_REQ_DATA_SIGNIN) {
-		stDBSQLQuery.strSQL = "SELECT clientmail, clientphonenumber, \"clientNickName\" FROM \"client\" WHERE clientmail = \'" + m_pstProtoSignIn->strEmail + "\'";
+
+	ST_PROTOCOL_ROOT *pstProtoRoot = (ST_PROTOCOL_ROOT *)pProtoRoot;
+	DWORD dwRequest = pstProtoRoot->dwRequest;
+
+	if (dwRequest == E_PROTO_REQ_USER_SIGN_IN || dwRequest == E_PROTO_REQ_USER_SIGN_UP) {
+		ST_PROTOCOL_REQ_101_ABOUT_USER *pstProto101 = (ST_PROTOCOL_REQ_101_ABOUT_USER *)pProtoRoot;
+		stDBSQLQuery.strSQL = "SELECT call_id FROM user WHERE call_id = \'" + pstProto101->strCallID + "\'";
 		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
 		if (dwRet != E_RET_SUCCESS) {
 			ErrorLog("Fail to query data from DataBase");
 			return E_RET_FAIL;
 		}
+
 		refstDBResult = stDBResult;
-	}
-	///////////// Sign Up //////////////
-	else if (dwRequest == E_PROTO_REQ_DATA_SIGNUP) {
-		stDBSQLQuery.strSQL = "SELECT clientmail, clientphonenumber, \"clientNickName\" FROM \"client\" WHERE clientmail = \'" + m_pstProtoSignUp->strEmail + "\'";
-		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
-		if (dwRet != E_RET_SUCCESS) {
-			ErrorLog("Fail to query data from DataBase");
-			return E_RET_FAIL;
+		if (stDBResult.vecstDBResultLines.size() >= 1) {
+			return E_RET_SUCCESS;
 		}
-		
-		if (stDBResult.vecstDBResultLines.size() < 1) {
-			std::string strInputValue = "\'" + m_pstProtoSignUp->strNickName + "\', \'" + m_pstProtoSignUp->strEmail + "\', \'" + std::to_string(1) + "\', " + m_pstProtoSignUp->strCallID;
-			stDBSQLInsert.strSQL = "INSERT INTO \"client\"(clientid, clientmail, clientphonenumber, \"clientNumber\") VALUES (" + strInputValue + ")";
-			dwRet = InsertToDB(hDataBase, stDBSQLInsert);
-			if (dwRet != E_RET_SUCCESS) {
-				ErrorLog("Fail to query data from DataBase");
-				return E_RET_FAIL;
-			}
-		}
-		refstDBResult = stDBResult;
-	}
-	///////////// Stores //////////////
-	else if (dwRequest == E_PROTO_REQ_DATA_STORES) {
-		stDBSQLQuery.strSQL = "SELECT storename, reputation, index FROM \"stores\"";
-		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
-		if (dwRet != E_RET_SUCCESS) {
-			ErrorLog("Fail to query data from DataBase");
-			return E_RET_FAIL;
-		}
-		refstDBResult = stDBResult;
-	}
-	///////////// Menus //////////////
-	else if (dwRequest == E_PROTO_REQ_DATA_MENUS) {
-		stDBSQLQuery.strSQL = "SELECT menuname, reputation, price, index FROM \"store_" + m_pstProtoMenu->strStoreIndex + "\"";
-		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
-		if (dwRet != E_RET_SUCCESS) {
-			ErrorLog("Fail to query data from DataBase");
-			return E_RET_FAIL;
-		}
-		refstDBResult = stDBResult;
-	}
-	///////////// Comments //////////////
-	else if (dwRequest == E_PROTO_REQ_DATA_COMMENTS) {
-		stDBSQLQuery.strSQL = "SELECT writer, reputation, text, writetime FROM \"store_" + m_pstProtoComment->strStoreIndex + "_" + m_pstProtoComment->strMenuIndex + "\"";
-		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
-		if (dwRet != E_RET_SUCCESS) {
-			ErrorLog("Fail to query data from DataBase");
-			return E_RET_FAIL;
-		}
-		refstDBResult = stDBResult;
-	}
-	else if (dwRequest == E_PROTO_REQ_DATA_COMMENTS_INSERT) {
-		std::string strInputValue = "\'" + m_pstProtoComment->strWriter + "\', \'" + m_pstProtoComment->strReputation + "\', \'" + m_pstProtoComment->strText + "\', \'" + m_pstProtoComment->strWriteTime + "\'";
-		stDBSQLInsert.strSQL = "INSERT INTO \"store_" + m_pstProtoComment->strStoreIndex + "_" + m_pstProtoComment->strMenuIndex + "\"(writer, reputation, text, writetime) VALUES (" + strInputValue + ")";
+
+		stDBSQLInsert.strSQL = "INSERT INTO user(call_id) VALUES (" + pstProto101->strCallID + ")";
 		dwRet = InsertToDB(hDataBase, stDBSQLInsert);
 		if (dwRet != E_RET_SUCCESS) {
 			ErrorLog("Fail to query data from DataBase");
 			return E_RET_FAIL;
 		}
 	}
-	//////////////////////////
-	else if (dwRequest == E_PROTO_REQ_MENU_INSERT) {
-		stDBSQLQuery.strSQL = "SELECT menuname FROM \"menu\" WHERE storename = \'" + m_pstProtoMenu->strMenuName + "\'";
-		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
-		if (dwRet != E_RET_SUCCESS) {
-			ErrorLog("Fail to query data from DataBase");
-			return E_RET_FAIL;
-		}
+	else if (dwRequest == E_PROTO_REQ_RECOMMENDED_STORE) {
+		ST_PROTOCOL_REQ_201_RECOMMENDED_STORE *pstProto201 = (ST_PROTOCOL_REQ_201_RECOMMENDED_STORE *)pProtoRoot;
 
 		/*
-			if line is 1, you have to update data in database
-			otherwise, data to get data from client is new value
+			Collecting Sequence
+			1. store_evaluation_taste
+			2. store_evaluation_kind
+			3. store_evaluation_mood
+			4. store_id
+			5. store_name
+			6. store_location
+			7. store_info_etc
+			8. location
+			9. store_short_intro
+			10. store_hashtag
+			11. store_address
+			12. store_tel
+			13. store_open_time
+			14. store_close_time
 		*/
-		if (stDBResult.vecstDBResultLines.size() < 1) {
-			std::string strInputValue = std::to_string(m_pstProtoMenu->dwMenuNumber) + ", \'" + m_pstProtoMenu->strMenuName + "\', " + std::to_string(m_pstProtoMenu->dwMenuPrice) + ", \'" + m_pstProtoMenu->strStoreName + "\'";
-			stDBSQLInsert.strSQL = "INSERT INTO \"menu\"(menunumber, menuname, menuprice, storename) VALUES (" + strInputValue + ")";
-			dwRet = InsertToDB(hDataBase, stDBSQLInsert);
-			if (dwRet != E_RET_SUCCESS) {
-				ErrorLog("Fail to query data from DataBase");
-				return E_RET_FAIL;
-			}
-		}
-		else {
-			stDBSQLUpdate.strSQL = "";
-			dwRet = UpdateToDB(hDataBase, stDBSQLInsert);
-			if (dwRet != E_RET_SUCCESS) {
-				ErrorLog("Fail to query data from DataBase");
-				return E_RET_FAIL;
-			}
-		}
+		stDBSQLQuery.strSQL = "SELECT " 
+								"store_evaluation_taste, "
+								"store_evaluation_kind, "
+								"store_evaluation_mood, "
+								"store_id, "
+								"store_name, "
+								"store_location, "
+								"store_info_etc, "
+								"location, "
+								"store_short_intro, "
+								"store_hashtag, "
+								"store_address, "
+								"store_tel, "
+								"store_open_time, "
+								"store_close_time "
+								"FROM store";
 
-		refstDBResult = stDBResult;
-	}
-	///////////// Client //////////////
-	else if (dwRequest == E_PROTO_REQ_CLIENT_QUERY){
-		stDBSQLQuery.strSQL = "SELECT * FROM \"client\"";
-		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
-		if (dwRet != E_RET_SUCCESS) {
-			ErrorLog("Fail to query data from DataBase");
-			return E_RET_FAIL;
-		}
-		refstDBResult = stDBResult;
-	}
-	else if (dwRequest == E_PROTO_REQ_CLIENT_INSERT){
-		stDBSQLQuery.strSQL = "SELECT clientid FROM \"client\" WHERE storename = \'" + m_pstProtoClient->strClientID + "\'";
 		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
 		if (dwRet != E_RET_SUCCESS) {
 			ErrorLog("Fail to query data from DataBase");
 			return E_RET_FAIL;
 		}
 
-		/*
-			if line is 1, you have to update data in database
-			otherwise, data to get data from client is new value
-		*/
-		if (stDBResult.vecstDBResultLines.size() < 1) {
-			std::string strInputValue = "\'" + m_pstProtoClient->strClientID + "\', \'" + m_pstProtoClient->strClientMail + "\', \'" + std::to_string(m_pstProtoClient->dwClientNumber) + "\', " + std::to_string(m_pstProtoClient->dwClientNumber);
-			stDBSQLInsert.strSQL = "INSERT INTO \"client\"(clientid, clientmail, clientphonenumber, \"clientNumber\") VALUES (" + strInputValue + ")";
-			dwRet = InsertToDB(hDataBase, stDBSQLInsert);
-			if (dwRet != E_RET_SUCCESS) {
-				ErrorLog("Fail to query data from DataBase");
-				return E_RET_FAIL;
-			}
-		}
-		else {
-			stDBSQLUpdate.strSQL = "";
-			dwRet = UpdateToDB(hDataBase, stDBSQLInsert);
-			if (dwRet != E_RET_SUCCESS) {
-				ErrorLog("Fail to query data from DataBase");
-				return E_RET_FAIL;
-			}
-		}
-
-		refstDBResult = stDBResult;
-	}
-	///////////// Shop //////////////
-	else if (dwRequest == E_PROTO_REQ_SHOP_QUERY){
-		stDBSQLQuery.strSQL = "SELECT * FROM \"shop\"";
-		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
+		CStore Store;
+		dwRet = Store.SortStoreEvaluationByAscendingOrder(stDBResult);
 		if (dwRet != E_RET_SUCCESS) {
-			ErrorLog("Fail to query data from DataBase");
 			return E_RET_FAIL;
 		}
+		Store.PruningOrderedDataByRequestedNumber(stDBResult, pstProto201->dwNumberOfRequestedMaximun);
 		refstDBResult = stDBResult;
 	}
-	else if (dwRequest == E_PROTO_REQ_SHOP_INSERT){
-		stDBSQLQuery.strSQL = "SELECT shopname FROM \"shop\" WHERE shopname = \'" + m_pstProtoShop->strShopName + "\'";
-		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
-		if (dwRet != E_RET_SUCCESS) {
-			ErrorLog("Fail to query data from DataBase");
-			return E_RET_FAIL;
-		}
+	else if (dwRequest == E_PROTO_REQ_RECOMMENDED_MENU) {
 
-		/*
-			if line is 1, you have to update data in database
-			otherwise, data to get data from client is new value
-		*/
-		if (stDBResult.vecstDBResultLines.size() < 1) {
-			std::string strInputValue = std::to_string(m_pstProtoShop->dwShopNumber) + ", \'" + m_pstProtoShop->strShopName + "\', \'" + m_pstProtoShop->strShopAddress + "\', \'" + m_pstProtoShop->strShopPhoneNumber + "\', \'" + m_pstProtoShop->strShopCategory + "\', \'" + m_pstProtoShop->strShopHomepage + "\', \'" + m_pstProtoShop->strShopETC + "\', " + std::to_string(m_pstProtoShop->bShopSmoking) + ", \'" + m_pstProtoShop->strShopParking + "\', \'" + m_pstProtoShop->strShopAlcohol + "\', \'" + m_pstProtoShop->strShopFacility + "\', \'" + m_pstProtoShop->strShopIntroduction + "\'";
-			stDBSQLInsert.strSQL = "INSERT INTO \"shop\"(shopnumber, shopname, shopaddress, shopphonenumber, shopcategory, shophomepage, shoprunningtime, shopholiday, shopetc, shopsmoking, shopparking, shopalcohol, shopfacility, shopintroduction) VALUES (" + strInputValue + ")";
-			dwRet = InsertToDB(hDataBase, stDBSQLInsert);
-			if (dwRet != E_RET_SUCCESS) {
-				ErrorLog("Fail to query data from DataBase");
-				return E_RET_FAIL;
-			}
-		}
-		else {
-			stDBSQLUpdate.strSQL = "";
-			dwRet = UpdateToDB(hDataBase, stDBSQLInsert);
-			if (dwRet != E_RET_SUCCESS) {
-				ErrorLog("Fail to query data from DataBase");
-				return E_RET_FAIL;
-			}
-		}
-
-		refstDBResult = stDBResult;
 	}
 	else {
 		ErrorLog("Invalid Request Code");
@@ -460,505 +255,42 @@ DWORD CAYWorkerThread::RequestToDataBase(DWORD &refdwNumberOfRequest, ST_DB_RESU
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-DWORD CAYWorkerThread::MakeSendPacket(DWORD &refdwNumberOfRequest, ST_DB_RESULT &refstDBResult, DWORD &refdwResponse, std::string &refstrSendData)
+DWORD CAYWorkerThread::SendSimpleResByProtocolNumber(DWORD dwWantedProtocolNumber)
 {
 	Json::Value JsonRoot;
 	std::string strSendData;
-	/*if (refstDBResult.vecstDBResultLines.size() < 1) {
-		DebugLog("DB return data is nothing to store");
 
-		JsonRoot["response"] = E_PROTO_RES_NOTHING;
-		JsonRoot["size"] = 0;
+	JsonRoot["res"] = std::to_string(dwWantedProtocolNumber);
+
+	Json::StyledWriter JsonWriter;
+	strSendData = JsonWriter.write(JsonRoot);
+
+	DWORD dwRet;
+	dwRet = SendDataToClient(strSendData);
+	if (dwRet != E_RET_SUCCESS) {
+		return dwRet;
+	}
+	return dwRet;
+}
+
+
+DWORD CAYWorkerThread::SendResDataToClientByProtocolNumber(DWORD dwProtocolNumberToSend, ST_SEND_DATA &refstSendData)
+{
+	if (dwProtocolNumberToSend == E_PROTO_RES_NEXT_STEP_EXIST) {
+		Json::Value JsonRoot;
+		std::string strSendData;
+
+		JsonRoot["res"] = std::to_string(dwProtocolNumberToSend);
+		JsonRoot["next_size"] = std::to_string(refstSendData.strSendData.size());
+
 		Json::StyledWriter JsonWriter;
 		strSendData = JsonWriter.write(JsonRoot);
-		refstrSendData = strSendData;
-		return E_RET_SUCCESS;
-	}*/
-	
-	///////////// Sign In //////////////
-	if (refdwNumberOfRequest == E_PROTO_REQ_DATA_SIGNIN) {
-		CSignIn *pSignIn = NULL;
-		pSignIn = new CSignIn();
-		if (pSignIn == NULL) {
-			return E_RET_FAIL;
-		}
-		
+
 		DWORD dwRet;
-		dwRet = pSignIn->CheckSignInData(m_pstProtoSignIn, refstDBResult);
-		if (dwRet == E_RET_SUCCESS) {
-			refdwResponse = E_PROTO_RES_SUCCESS;
+		dwRet = SendDataToClient(strSendData);
+		if (dwRet != E_RET_SUCCESS) {
+			return dwRet;
 		}
-		else if (dwRet == E_RET_FAIL) {
-			refdwResponse = E_PROTO_RES_DATA_NOT_EXIST;
-		}
-		else {
-			refdwResponse = (int)dwRet;
-		}
-		refstrSendData = "";
-	}
-	///////////// Sign Up //////////////
-	else if (refdwNumberOfRequest == E_PROTO_REQ_DATA_SIGNUP) {
-		if (refstDBResult.vecstDBResultLines.size() > 0) {
-			refdwResponse = E_PROTO_RES_DATA_ACCOUNT_EXIST;
-		}
-		else {
-			refdwResponse = E_PROTO_RES_SUCCESS;
-		}
-		refstrSendData = "";
-	}
-	///////////// Stores //////////////
-	else if (refdwNumberOfRequest == E_PROTO_REQ_DATA_STORES) {
-		refstrSendData = "";
-		if (refstDBResult.vecstDBResultLines.size() < 1) {
-			refdwResponse = E_PROTO_RES_DATA_STORES_NOT_EXIST;
-			return E_RET_SUCCESS;
-		}
-		/*
-			Response data is following..
-			1. std::string	strStoreName;
-			2. std::string	strReputation;
-			3. std::string  strIndex
-		*/
-		DWORD dwLineCount;
-		Json::Value JsonData;
-		for (dwLineCount = 0; dwLineCount < refstDBResult.vecstDBResultLines.size(); dwLineCount++) {
-			ST_DB_RESULT_LINE stDBResultLine = refstDBResult.vecstDBResultLines[dwLineCount];
-			if (stDBResultLine.vecstrResult.size() != 3) {
-				/*
-					DB Result Query have 3 argument
-				*/
-				refdwResponse = E_PROTO_RES_QUERY_FAIL;
-				break;
-			}
-
-			DWORD dwParamCount;
-			for (dwParamCount = 0; dwParamCount < stDBResultLine.vecstrResult.size(); dwParamCount++) {
-				switch (dwParamCount)
-				{
-				case 0:
-					JsonData["storename"] = stDBResultLine.vecstrResult[dwParamCount];
-					break;
-				case 1:
-					JsonData["reputation"] = stDBResultLine.vecstrResult[dwParamCount];
-					break;
-				case 2:
-					JsonData["index"] = stDBResultLine.vecstrResult[dwParamCount];
-					break;
-				default:
-					break;
-				}
-			}
-			JsonRoot["data"].append(JsonData);
-		}
-
-		JsonRoot["count"] = (int)dwLineCount;
-		Json::StyledWriter JsonWriter;
-		strSendData = JsonWriter.write(JsonRoot);
-		refstrSendData = strSendData;
-		refdwResponse = E_PROTO_RES_SUCCESS;
-		return E_RET_SUCCESS;
-	}
-	///////////// Menus //////////////
-	else if (refdwNumberOfRequest == E_PROTO_REQ_DATA_MENUS) {
-		refstrSendData = "";
-		if (refstDBResult.vecstDBResultLines.size() < 1) {
-			refdwResponse = E_PROTO_RES_DATA_MENUS_NOT_EXIST;
-			return E_RET_SUCCESS;
-		}
-		/*
-			Response data is following..
-			1. std::string	strMenuName;
-			2. std::string	strReputation;
-			3. std::string	strPrice;
-			4. std::string	strIndex;
-		*/
-		DWORD dwLineCount;
-		Json::Value JsonData;
-		for (dwLineCount = 0; dwLineCount < refstDBResult.vecstDBResultLines.size(); dwLineCount++) {
-			ST_DB_RESULT_LINE stDBResultLine = refstDBResult.vecstDBResultLines[dwLineCount];
-			if (stDBResultLine.vecstrResult.size() != 4) {
-				/*
-					DB Result Query have 4 argument
-				*/
-				refdwResponse = E_PROTO_RES_QUERY_FAIL;
-				break;
-			}
-
-			DWORD dwParamCount;
-			for (dwParamCount = 0; dwParamCount < stDBResultLine.vecstrResult.size(); dwParamCount++) {
-				switch (dwParamCount)
-				{
-				case 0:
-					JsonData["menuname"] = stDBResultLine.vecstrResult[dwParamCount];
-					break;
-				case 1:
-					JsonData["reputation"] = stDBResultLine.vecstrResult[dwParamCount];
-					break;
-				case 2:
-					JsonData["price"] = stDBResultLine.vecstrResult[dwParamCount];
-					break;
-				case 3:
-					JsonData["index"] = stDBResultLine.vecstrResult[dwParamCount];
-					break;
-				default:
-					break;
-				}
-			}
-			JsonRoot["data"].append(JsonData);
-		}
-
-		JsonRoot["count"] = (int)dwLineCount;
-		Json::StyledWriter JsonWriter;
-		strSendData = JsonWriter.write(JsonRoot);
-		refstrSendData = strSendData;
-		refdwResponse = E_PROTO_RES_SUCCESS;
-		return E_RET_SUCCESS;
-	}
-	///////////// Comments //////////////
-	else if (refdwNumberOfRequest == E_PROTO_REQ_DATA_COMMENTS) {
-		refstrSendData = "";
-		if (refstDBResult.vecstDBResultLines.size() < 1) {
-			refdwResponse = E_PROTO_RES_DATA_MENUS_NOT_EXIST;
-			return E_RET_SUCCESS;
-		}
-		/*
-		Response data is following..
-		1. std::string	strWriter;
-		2. std::string	strReputation;
-		3. std::string  strText
-		4. std::string  strWritetime
-		*/
-		DWORD dwLineCount;
-		Json::Value JsonData;
-		for (dwLineCount = 0; dwLineCount < refstDBResult.vecstDBResultLines.size(); dwLineCount++) {
-			ST_DB_RESULT_LINE stDBResultLine = refstDBResult.vecstDBResultLines[dwLineCount];
-			if (stDBResultLine.vecstrResult.size() != 4) {
-				/*
-					DB Result Query have 4 argument
-				*/
-				refdwResponse = E_PROTO_RES_QUERY_FAIL;
-				break;
-			}
-
-			DWORD dwParamCount;
-			for (dwParamCount = 0; dwParamCount < stDBResultLine.vecstrResult.size(); dwParamCount++) {
-				switch (dwParamCount)
-				{
-				case 0:
-					JsonData["writer"] = stDBResultLine.vecstrResult[dwParamCount];
-					break;
-				case 1:
-					JsonData["reputation"] = stDBResultLine.vecstrResult[dwParamCount];
-					break;
-				case 2:
-					JsonData["text"] = stDBResultLine.vecstrResult[dwParamCount];
-					break;
-				case 3:
-					JsonData["writetime"] = stDBResultLine.vecstrResult[dwParamCount];
-					break;
-				default:
-					break;
-				}
-			}
-			JsonRoot["data"].append(JsonData);
-		}
-
-		JsonRoot["count"] = (int)dwLineCount;
-		Json::StyledWriter JsonWriter;
-		strSendData = JsonWriter.write(JsonRoot);
-		refstrSendData = strSendData;
-		refdwResponse = E_PROTO_RES_SUCCESS;
-		return E_RET_SUCCESS;
-	}
-	else if (refdwNumberOfRequest == E_PROTO_REQ_DATA_COMMENTS_INSERT) {
-		/*
-			Insert request have to return 'ok' or 'no'
-		*/
-		refdwResponse = E_PROTO_RES_SUCCESS;
-		return E_RET_SUCCESS;
-	}
-	///////////// Menu //////////////
-	else if (refdwNumberOfRequest == E_PROTO_REQ_MENU_QUERY) {
-		/*
-			Return data is following..
-			1. DWORD		dwMenuNumber;
-			2. std::string	strMenuName;
-			3. DWORD		dwMenuPrice;
-			4. std::string	strStoreName;
-		*/
-		JsonRoot["response"]	= E_PROTO_RES_QUERY_SUCESS;
-		JsonRoot["size"]		= 0;
-
-		DWORD dwLineCount;
-		Json::Value JsonData;
-		for (dwLineCount = 0; dwLineCount < refstDBResult.vecstDBResultLines.size(); dwLineCount++) {
-			ST_DB_RESULT_LINE stDBResultLine = refstDBResult.vecstDBResultLines[dwLineCount];
-			if (stDBResultLine.vecstrResult.size() != 4) {
-				/*
-					DB Result Query have 4 argument
-				*/
-				JsonRoot["response"] = E_PROTO_RES_QUERY_FAIL;
-				break;
-			}
-			DWORD dwParamCount;
-			for (dwParamCount = 0; dwParamCount < stDBResultLine.vecstrResult.size(); dwParamCount++) {
-				switch (dwParamCount)
-				{
-				case 0:
-					JsonData["menunumber"] = ::atoi(stDBResultLine.vecstrResult[dwParamCount].c_str());
-					break;
-				case 1:
-					JsonData["menuname"] = stDBResultLine.vecstrResult[dwParamCount];
-					break;
-				case 2:
-					JsonData["menuprice"] = ::atoi(stDBResultLine.vecstrResult[dwParamCount].c_str());
-					break;
-				case 3:
-					JsonData["storename"] = stDBResultLine.vecstrResult[dwParamCount];
-					break;
-				default:
-					break;
-				}
-			}
-			JsonRoot["data"].append(JsonData);
-		}
-
-		JsonRoot["size"] = (int)dwLineCount;
-		Json::StyledWriter JsonWriter;
-		strSendData = JsonWriter.write(JsonRoot);
-		refstrSendData = strSendData;
-	}
-	else if (refdwNumberOfRequest == E_PROTO_REQ_MENU_INSERT) {
-		JsonRoot["response"] = E_PROTO_RES_INSERT_SUCCESS;
-		JsonRoot["size"] = 0;
-
-		Json::StyledWriter JsonWriter;
-		strSendData = JsonWriter.write(JsonRoot);
-		refstrSendData = strSendData;
-	}
-	///////////// Client //////////////
-	else if (refdwNumberOfRequest == E_PROTO_REQ_CLIENT_QUERY) {
-		/*
-			Return data is following..
-			1. std::string		strClientID;
-			2. std::string		strClientMail;
-			3. std::string		strClientPhoneNumber;
-			4. DWORD			dwClientNumber;
-		*/
-		JsonRoot["response"]	= E_PROTO_RES_QUERY_SUCESS;
-		JsonRoot["size"]		= 0;
-
-		DWORD dwLineCount;
-		Json::Value JsonData;
-		for (dwLineCount = 0; dwLineCount < refstDBResult.vecstDBResultLines.size(); dwLineCount++) {
-			ST_DB_RESULT_LINE stDBResultLine = refstDBResult.vecstDBResultLines[dwLineCount];
-			if (stDBResultLine.vecstrResult.size() != 4) {
-				/*
-					DB Result Query have 4 argument
-				*/
-				JsonRoot["response"] = E_PROTO_RES_QUERY_FAIL;
-				break;
-			}
-			DWORD dwParamCount;
-			for (dwParamCount = 0; dwParamCount < stDBResultLine.vecstrResult.size(); dwParamCount++) {
-				switch (dwParamCount)
-				{
-				case 0:
-					JsonData["clientid"] = stDBResultLine.vecstrResult[dwParamCount];
-					break;
-				case 1:
-					JsonData["clientmail"] = stDBResultLine.vecstrResult[dwParamCount];
-					break;
-				case 2:
-					JsonData["clientphonenumber"] = stDBResultLine.vecstrResult[dwParamCount];
-					break;
-				case 3:
-					JsonData["clientNumber"] = ::atoi(stDBResultLine.vecstrResult[dwParamCount].c_str());
-					break;
-				default:
-					break;
-				}
-			}
-			JsonRoot["data"].append(JsonData);
-		}
-
-		JsonRoot["size"] = (int)dwLineCount;
-		Json::StyledWriter JsonWriter;
-		strSendData = JsonWriter.write(JsonRoot);
-		refstrSendData = strSendData;
-	}
-	else if (refdwNumberOfRequest == E_PROTO_REQ_CLIENT_INSERT) {
-		JsonRoot["response"] = E_PROTO_RES_INSERT_SUCCESS;
-		JsonRoot["size"] = 0;
-
-		Json::StyledWriter JsonWriter;
-		strSendData = JsonWriter.write(JsonRoot);
-		refstrSendData = strSendData;
-	}
-	///////////// Comment //////////////
-	else if (refdwNumberOfRequest == E_PROTO_REQ_COMMNET_QUERY) {
-		/*
-			Return data is following..
-			1. DWORD			dwCommentNumber
-			2. std::string		strClientId
-			3. std::string		strCommentTime
-			4. std::string		strCommentContent
-			5. DWORD			dwStoreNumber
-		*/
-		JsonRoot["response"]	= E_PROTO_RES_QUERY_SUCESS;
-		JsonRoot["size"]		= 0;
-
-		DWORD dwLineCount;
-		Json::Value JsonData;
-		for (dwLineCount = 0; dwLineCount < refstDBResult.vecstDBResultLines.size(); dwLineCount++) {
-			ST_DB_RESULT_LINE stDBResultLine = refstDBResult.vecstDBResultLines[dwLineCount];
-			if (stDBResultLine.vecstrResult.size() != 4) {
-				/*
-					DB Result Query have 5 argument
-				*/
-				JsonRoot["response"] = E_PROTO_RES_QUERY_FAIL;
-				break;
-			}
-			DWORD dwParamCount;
-			for (dwParamCount = 0; dwParamCount < stDBResultLine.vecstrResult.size(); dwParamCount++) {
-				switch (dwParamCount)
-				{
-				case 0:
-					JsonData["commentnumber"] = ::atoi(stDBResultLine.vecstrResult[dwParamCount].c_str());
-					break;
-				case 1:
-					JsonData["clientid"] = stDBResultLine.vecstrResult[dwParamCount];
-					break;
-				case 2:
-					JsonData["commenttime"] = stDBResultLine.vecstrResult[dwParamCount];
-					break;
-				case 3:
-					JsonData["commentcontent"] = stDBResultLine.vecstrResult[dwParamCount].c_str();
-					break;
-				case 4:
-					JsonData["storenumber"] = ::atoi(stDBResultLine.vecstrResult[dwParamCount].c_str());
-					break;
-				default:
-					break;
-				}
-			}
-			JsonRoot["data"].append(JsonData);
-		}
-
-		JsonRoot["size"] = (int)dwLineCount;
-		Json::StyledWriter JsonWriter;
-		strSendData = JsonWriter.write(JsonRoot);
-		refstrSendData = strSendData;
-	}
-	else if (refdwNumberOfRequest == E_PROTO_REQ_COMMNET_INSERT) {
-		JsonRoot["response"] = E_PROTO_RES_INSERT_SUCCESS;
-		JsonRoot["size"] = 0;
-
-		Json::StyledWriter JsonWriter;
-		strSendData = JsonWriter.write(JsonRoot);
-		refstrSendData = strSendData;
-	}
-	///////////// Shop //////////////
-	else if (refdwNumberOfRequest == E_PROTO_REQ_SHOP_QUERY) {
-		/*
-			Return data is following..
-			1. DWORD			dwShopNumber;
-			2. std::string		strShopName;
-			3. std::string		strShopAddress;
-			4. std::string		strShopPhoneNumber;
-			5. std::string		strShopCategory;
-			6. std::string		strShopHomepage;
-			7. std::string		strShopRunningTime;
-			8. std::string		strShopHoliday;
-			9. std::string		strShopETC;
-			10. BOOL			bShopSmoking;
-			11. std::string		strShopParking;
-			12. std::string		strShopAlcohol;
-			13. std::string		strShopFacility;
-			14. std::string		strShopIntroduction;
-		*/
-		JsonRoot["response"] = E_PROTO_RES_QUERY_SUCESS;
-		JsonRoot["size"] = 0;
-
-		DWORD dwLineCount;
-		Json::Value JsonData;
-		for (dwLineCount = 0; dwLineCount < refstDBResult.vecstDBResultLines.size(); dwLineCount++) {
-			ST_DB_RESULT_LINE stDBResultLine = refstDBResult.vecstDBResultLines[dwLineCount];
-			if (stDBResultLine.vecstrResult.size() != 14) {
-				/*
-				DB Result Query have 5 argument
-				*/
-				JsonRoot["response"] = E_PROTO_RES_QUERY_FAIL;
-				break;
-			}
-			DWORD dwParamCount;
-			for (dwParamCount = 0; dwParamCount < stDBResultLine.vecstrResult.size(); dwParamCount++) {
-				switch (dwParamCount)
-				{
-				case 0:
-					JsonData["shopnumber"] = ::atoi(stDBResultLine.vecstrResult[dwParamCount].c_str());
-					break;
-				case 1:
-					JsonData["shopname"] = stDBResultLine.vecstrResult[dwParamCount];
-					break;
-				case 2:
-					JsonData["shopaddress"] = stDBResultLine.vecstrResult[dwParamCount];
-					break;
-				case 3:
-					JsonData["shopphonenumber"] = stDBResultLine.vecstrResult[dwParamCount].c_str();
-					break;
-				case 4:
-					JsonData["shopcategory"] = stDBResultLine.vecstrResult[dwParamCount].c_str();
-					break;
-				case 5:
-					JsonData["shophomepage"] = stDBResultLine.vecstrResult[dwParamCount].c_str();
-					break;
-				case 6:
-					JsonData["shoprunningtime"] = stDBResultLine.vecstrResult[dwParamCount].c_str();
-					break;
-				case 7:
-					JsonData["shopholiday"] = stDBResultLine.vecstrResult[dwParamCount].c_str();
-					break;
-				case 8:
-					JsonData["shopetc"] = stDBResultLine.vecstrResult[dwParamCount].c_str();
-					break;
-				case 9:
-					JsonData["shopsmoking"] = stDBResultLine.vecstrResult[dwParamCount].c_str();
-					break;
-				case 10:
-					JsonData["shopparking"] = stDBResultLine.vecstrResult[dwParamCount].c_str();
-					break;
-				case 11:
-					JsonData["shopalcohol"] = stDBResultLine.vecstrResult[dwParamCount].c_str();
-					break;
-				case 12:
-					JsonData["shopfacility"] = stDBResultLine.vecstrResult[dwParamCount].c_str();
-					break;
-				case 13:
-					JsonData["shopintroduction"] = stDBResultLine.vecstrResult[dwParamCount].c_str();
-					break;
-				case 14:
-					JsonData["storenumber"] = stDBResultLine.vecstrResult[dwParamCount].c_str();
-					break;
-				default:
-					break;
-				}
-			}
-			JsonRoot["data"].append(JsonData);
-		}
-
-		JsonRoot["size"] = (int)dwLineCount;
-		Json::StyledWriter JsonWriter;
-		strSendData = JsonWriter.write(JsonRoot);
-		refstrSendData = strSendData;
-	}
-	else if (refdwNumberOfRequest == E_PROTO_REQ_SHOP_INSERT) {
-		JsonRoot["response"] = E_PROTO_RES_INSERT_SUCCESS;
-		JsonRoot["size"] = 0;
-
-		Json::StyledWriter JsonWriter;
-		strSendData = JsonWriter.write(JsonRoot);
-		refstrSendData = strSendData;
 	}
 	else {
 		return E_RET_FAIL;
@@ -985,9 +317,9 @@ DWORD CAYWorkerThread::SendDataToClient(std::string &refstrSendData)
 			bContinue = FALSE;
 			continue;
 		}
-		
+
 		/*
-			if all data is not sent to client yet, continue to send to rest of data
+		if all data is not sent to client yet, continue to send to rest of data
 		*/
 		nSent = nRet;
 	}
@@ -995,63 +327,304 @@ DWORD CAYWorkerThread::SendDataToClient(std::string &refstrSendData)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-DWORD CAYWorkerThread::SendResponseToClient(DWORD &refdwNumberOfRequest, DWORD &refdwResponse, std::string &refstrSendData)
+DWORD CAYWorkerThread::ReceiveDataFromClient(char *pRecvedBuf, DWORD refdwNextSizeOfData)
 {
-	DWORD dwRet;
-	DWORD dwSizeOfData = refstrSendData.size();
+	int nRecv;
+	nRecv = ::recv(m_stWorkerThread.hClientSocket, pRecvedBuf, refdwNextSizeOfData, 0);
+	if (nRecv == SOCKET_ERROR) {
+		ErrorLog("Fail to recv data from client");
+		return E_RET_FAIL;
+	}
+	return E_RET_SUCCESS;
+}
 
-	/*
-		Send Header Msg To Client
-	*/
-	dwRet = SendResponseHeaderToClient(refdwNumberOfRequest, refdwResponse, dwSizeOfData);
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+DWORD CAYWorkerThread::PROTO_101_ABOUT_USER(ST_RECV_HEADER_DATA &refstRecvHeaderData)
+{
+	DWORD dwNextSizeOfData = refstRecvHeaderData.dwNextSizeOfData;
+	char *pRecvedBuf = new (std::nothrow) char[dwNextSizeOfData];
+	if (pRecvedBuf == NULL) {
+		return E_RET_FAIL;
+	}
+	memset(pRecvedBuf, 0x00, dwNextSizeOfData);
+
+	DWORD dwRet;
+	dwRet = SendSimpleResByProtocolNumber(E_PROTO_RES_READY_FOR_DATA);
 	if (dwRet != E_RET_SUCCESS) {
 		return dwRet;
 	}
 
-	/*
-		Send Data Msg To Client
-	*/
-	if (dwSizeOfData > 0)  {
-		// Waiting for 1 second
-		::Sleep(1000);
-		dwRet = SendResponseDataToClient(refdwNumberOfRequest, refstrSendData);
+	dwRet = ReceiveDataFromClient(pRecvedBuf, dwNextSizeOfData);
+	if (dwRet != E_RET_SUCCESS) {
+		delete pRecvedBuf;
+		return dwRet;
+	}
+
+	DWORD dwProtocolNumberToSend;
+	dwRet = PROTO_101_OPERATION_ABOUT_USER(pRecvedBuf);
+	if (dwRet != E_RET_SUCCESS) {
+		dwProtocolNumberToSend = E_PROTO_RES_FAIL_OPERATION;
+	}
+	else {
+		dwProtocolNumberToSend = E_PROTO_RES_FINISH;
+	}
+
+	dwRet = SendSimpleResByProtocolNumber(dwProtocolNumberToSend);
+	if (dwRet != E_RET_SUCCESS) {
+		return dwRet;
+	}
+	return dwRet;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+DWORD CAYWorkerThread::PROTO_101_OPERATION_ABOUT_USER(char *pRecvedBuf)
+{
+	ST_RECV_DATA stRecvData;
+	stRecvData.strReceivedData = pRecvedBuf;
+	delete pRecvedBuf;
+
+	ST_PROTOCOL_REQ_101_ABOUT_USER *m_pstProto101_AboutUser = NULL;
+	m_pstProto101_AboutUser = new (std::nothrow) ST_PROTOCOL_REQ_101_ABOUT_USER;
+	if (m_pstProto101_AboutUser == NULL) {
+		return E_RET_FAIL;
+	}
+
+	::memset(m_pstProto101_AboutUser, 0x00, sizeof(ST_PROTOCOL_REQ_101_ABOUT_USER));
+
+	DWORD dwRet;
+	dwRet = ParseDataByJSON((VOID *)m_pstProto101_AboutUser, stRecvData);
+	if (dwRet != E_RET_SUCCESS) {
+		return dwRet;
+	}
+
+	ST_DB_RESULT stDBResult;
+	dwRet = RequestToDataBase((VOID *)m_pstProto101_AboutUser, stDBResult);
+	if (dwRet != E_RET_SUCCESS) {
+		return dwRet;
+	}
+	return dwRet;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+DWORD CAYWorkerThread::PROTO_201_RECOMMENTED_STORE(ST_RECV_HEADER_DATA &refstRecvHeaderData)
+{
+
+	DWORD dwNextSizeOfData = refstRecvHeaderData.dwNextSizeOfData;
+	char *pRecvedBuf = new (std::nothrow) char[dwNextSizeOfData];
+	if (pRecvedBuf == NULL) {
+		return E_RET_FAIL;
+	}
+	memset(pRecvedBuf, 0x00, dwNextSizeOfData);
+
+	DWORD dwRet;
+	dwRet = SendSimpleResByProtocolNumber(E_PROTO_RES_READY_FOR_DATA);
+	if (dwRet != E_RET_SUCCESS) {
+		return dwRet;
+	}
+
+	dwRet = ReceiveDataFromClient(pRecvedBuf, dwNextSizeOfData);
+	if (dwRet != E_RET_SUCCESS) {
+		delete pRecvedBuf;
+		return dwRet;
+	}
+
+	DWORD dwProtocolNumberToSend;
+	ST_SEND_DATA stSendData;
+	dwRet = PROTO_201_OPERATION_RECOMMENTED_STORE(pRecvedBuf, stSendData);
+	if (dwRet != E_RET_SUCCESS) {
+		dwProtocolNumberToSend = E_PROTO_RES_FAIL_OPERATION;
+		dwRet = SendSimpleResByProtocolNumber(dwProtocolNumberToSend);
 		if (dwRet != E_RET_SUCCESS) {
 			return dwRet;
 		}
+		return dwRet;
 	}
-	
+
+	dwProtocolNumberToSend = E_PROTO_RES_NEXT_STEP_EXIST;
+	dwRet = SendResDataToClientByProtocolNumber(dwProtocolNumberToSend, stSendData);
+	if (dwRet != E_RET_SUCCESS) {
+		return dwRet;
+	}
+
+	pRecvedBuf = new (std::nothrow) char[DEFAULT_RECV_DATA];
+	if (pRecvedBuf == NULL) {
+		return E_RET_FAIL;
+	}
+	memset(pRecvedBuf, 0x00, DEFAULT_RECV_DATA);
+	dwRet = ReceiveDataFromClient(pRecvedBuf, DEFAULT_RECV_DATA);
+	if (dwRet != E_RET_SUCCESS) {
+		delete pRecvedBuf;
+		return dwRet;
+	}
+	std::string strRecvData = pRecvedBuf;
+	delete pRecvedBuf;
+
+	dwRet = ParseSimpleReceivedDataByJSON(dwProtocolNumberToSend, strRecvData);
+	if (dwRet != E_RET_SUCCESS) {
+		return dwRet;
+	}
+
+	dwRet = SendDataToClient(stSendData.strSendData);
+	if (dwRet != E_RET_SUCCESS) {
+		return dwRet;
+	}
+
 	return dwRet;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-DWORD CAYWorkerThread::SendResponseHeaderToClient(DWORD &refdwNumberOfRequest, DWORD &refdwResponse, DWORD &refstSizeOfData)
+DWORD CAYWorkerThread::PROTO_201_OPERATION_RECOMMENTED_STORE(char *pRecvedBuf, ST_SEND_DATA &refstSendData)
+{
+	ST_RECV_DATA stRecvData;
+	stRecvData.strReceivedData = pRecvedBuf;
+	delete pRecvedBuf;
+
+	ST_PROTOCOL_REQ_201_RECOMMENDED_STORE *m_pstProto201_Recommended_store = NULL;
+	m_pstProto201_Recommended_store = new (std::nothrow) ST_PROTOCOL_REQ_201_RECOMMENDED_STORE;
+	if (m_pstProto201_Recommended_store == NULL) {
+		return E_RET_FAIL;
+	}
+
+	::memset(m_pstProto201_Recommended_store, 0x00, sizeof(ST_PROTOCOL_REQ_201_RECOMMENDED_STORE));
+
+	DWORD dwRet;
+	dwRet = ParseDataByJSON((VOID *)m_pstProto201_Recommended_store, stRecvData);
+	if (dwRet != E_RET_SUCCESS) {
+		return dwRet;
+	}
+
+	ST_DB_RESULT stDBResult;
+	dwRet = RequestToDataBase((VOID *)m_pstProto201_Recommended_store, stDBResult);
+	if (dwRet != E_RET_SUCCESS) {
+		return dwRet;
+	}
+
+	DWORD dwProtocolNumber = E_PROTO_REQ_RECOMMENDED_STORE;
+	dwRet = MakeSendPacket(dwProtocolNumber, stDBResult, refstSendData);
+	if (dwRet != E_RET_SUCCESS) {
+		return dwRet;
+	}
+
+	return dwRet;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+DWORD CAYWorkerThread::PROTO_201_RECOMMENTED_MENU(ST_RECV_HEADER_DATA &refstRecvHeaderData)
+{
+	return E_RET_SUCCESS;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+DWORD CAYWorkerThread::MakeSendPacket(DWORD dwNumberOfRequest, ST_DB_RESULT &refstDBResult, ST_SEND_DATA &refstSendData)
+{
+	DWORD dwRet;
+	if (dwNumberOfRequest == E_PROTO_REQ_RECOMMENDED_STORE) {
+		dwRet = MakeSendPacket_201_Data(refstDBResult, refstSendData);
+	}
+	else {
+		dwRet = E_RET_FAIL;
+	}
+	return dwRet;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+DWORD CAYWorkerThread::MakeSendPacket_201_Data(ST_DB_RESULT &refstDBResult, ST_SEND_DATA &refstSendData)
 {
 	Json::Value JsonRoot;
-	std::string strSendData;
+	Json::Value JsonResData;
+	Json::Value JsonStores;
 
-	JsonRoot["response"] = (int)refdwResponse;
-	JsonRoot["size"] = (int)refstSizeOfData;
+	std::vector<ST_DB_RESULT_LINE>::iterator iterstDBResultLine;
+	for (iterstDBResultLine = refstDBResult.vecstDBResultLines.begin(); iterstDBResultLine != refstDBResult.vecstDBResultLines.end(); iterstDBResultLine) {
+		/*
+			DB Parameter
+			1. store_evaluation_taste
+			2. store_evaluation_kind
+			3. store_evaluation_mood
+			4. store_id
+			5. store_name
+			6. store_location
+			7. store_info_etc
+			8. location
+			9. store_short_intro
+			10. store_hashtag
+			11. store_address
+			12. store_tel
+			13. store_open_time
+			14. store_close_time
+		*/
+
+		ST_DB_RESULT_LINE stDBResultLine = (*iterstDBResultLine);
+		if (stDBResultLine.vecstrResult.size() != 14) {
+			break;
+		}
+
+		ST_PROTOCOL_RES_201_RECOMMENDED_STORE stProtoRes201RecommendedStore;
+		stProtoRes201RecommendedStore.dwStoreEvaluationTaste		= ::atoi(stDBResultLine.vecstrResult[0].c_str());
+		stProtoRes201RecommendedStore.dwStoreEvaluationKind			= ::atoi(stDBResultLine.vecstrResult[1].c_str());
+		stProtoRes201RecommendedStore.dwStoreEvaluationMood			= ::atoi(stDBResultLine.vecstrResult[2].c_str());
+		stProtoRes201RecommendedStore.dwStoreID						= ::atoi(stDBResultLine.vecstrResult[3].c_str());
+		stProtoRes201RecommendedStore.strStoreName					= stDBResultLine.vecstrResult[4];
+		stProtoRes201RecommendedStore.dwStoreLocation				= ::atoi(stDBResultLine.vecstrResult[5].c_str());
+		stProtoRes201RecommendedStore.strStoreInfoETC				= stDBResultLine.vecstrResult[6];
+		stProtoRes201RecommendedStore.dwLocation					= ::atoi(stDBResultLine.vecstrResult[7].c_str());
+		stProtoRes201RecommendedStore.strStoreShortIntro			= stDBResultLine.vecstrResult[8];
+		stProtoRes201RecommendedStore.strStoreHashTag				= stDBResultLine.vecstrResult[9];
+		stProtoRes201RecommendedStore.strStoreAddress				= stDBResultLine.vecstrResult[10];
+		stProtoRes201RecommendedStore.strStoreTel					= stDBResultLine.vecstrResult[11];
+		stProtoRes201RecommendedStore.strStoreOpenTime				= stDBResultLine.vecstrResult[12];
+		stProtoRes201RecommendedStore.strStoreCloseTime				= stDBResultLine.vecstrResult[13];
+
+		Json::Value JsonStoreEvaluation;
+		Json::Value JsonStorePriceRange;
+		Json::Value JsonStoreShortInfo;
+
+		JsonStoreEvaluation["taste"] = std::to_string(stProtoRes201RecommendedStore.dwStoreEvaluationTaste);
+		JsonStoreEvaluation["kind"] = std::to_string(stProtoRes201RecommendedStore.dwStoreEvaluationKind);
+		JsonStoreEvaluation["mood"] = std::to_string(stProtoRes201RecommendedStore.dwStoreEvaluationMood);
+
+		// To do ...
+		JsonStorePriceRange["min_price"] = "";
+		JsonStorePriceRange["max_price"] = "";
+
+		// To do ...
+		JsonStoreShortInfo["number_of_like"] = "";
+		JsonStoreShortInfo["number_of_evaluation"] = "";
+		JsonStoreShortInfo["number_of_comment"] = "";
+
+		Json::Value JsonStore;
+		JsonStore["store_id"] = std::to_string(stProtoRes201RecommendedStore.dwStoreID);
+		JsonStore["store_name"] = stProtoRes201RecommendedStore.strStoreName;
+		JsonStore["store_location"] = std::to_string(stProtoRes201RecommendedStore.dwStoreLocation);
+		JsonStore["store_short_intro"] = stProtoRes201RecommendedStore.strStoreShortIntro;
+		JsonStore["store_hashtag"] = stProtoRes201RecommendedStore.strStoreHashTag;
+		JsonStore["store_evaluation"] = JsonStoreEvaluation;
+		JsonStore["store_price_range"] = JsonStorePriceRange;
+		JsonStore["store_short_info"] = JsonStoreShortInfo;
+
+		JsonStores.append(JsonStore);
+	}
+	DWORD dwRetNumber = refstDBResult.vecstDBResultLines.size();
+	Json::Value JsonRetNumber;
+	Json::Value JsonStoresArray;
+
+	JsonRetNumber["ret_number"] = std::to_string(dwRetNumber);
+	JsonStoresArray["stores"] = JsonStores;
+
+	JsonResData["res"] = std::to_string(E_PROTO_RES_FINISH);
+	JsonResData["data"] = JsonRetNumber;
+	JsonResData["data"] = JsonStoresArray;
 
 	Json::StyledWriter JsonWriter;
+	std::string strSendData;
 	strSendData = JsonWriter.write(JsonRoot);
 
-	DWORD dwRet;
-	dwRet = SendDataToClient(strSendData);
-	if (dwRet != E_RET_SUCCESS) {
-		return dwRet;
-	}
-	return dwRet;
-}
+	refstSendData.strSendData = strSendData;
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-DWORD CAYWorkerThread::SendResponseDataToClient(DWORD &refdwNumberOfRequest, std::string &refstrSendData)
-{
-	DWORD dwRet;
-	dwRet = SendDataToClient(refstrSendData);
-	if (dwRet != E_RET_SUCCESS) {
-		return dwRet;
-	}
-	return dwRet;
+	return E_RET_SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1061,106 +634,41 @@ DWORD CAYWorkerThread::StartWorkerThread(char *pReceiveBuf, DWORD dwByteTransfer
 	try
 	{
 		/*
-			Mobile <----> Server
-			1. Mobile ---> Server (Mobile send Header msg)
-			2. Mobile <--- Server (Server send response msg about Header)
-			3. Mobile ---> Server (Mobile send Data Msg)
-			4. Mobile <--- Server (Server send response header msg)
-			5. Mobile <--- Server (Server send response data msg)		
+			Protocol documentation is wrote in excel file.
+			To see protocol in detail, it's good for me to open and check the file
 		*/
+		std::string strReceivedData;
+		strReceivedData.clear();
+		ConvertReceivedDataToString(pReceiveBuf, dwByteTransferred, strReceivedData);
+		if (strReceivedData.length() == 0) {
+			throw std::exception("Fail to convert buf data to string");
+		}
 
-		/*
-			Step 1.
-		*/
-		// Receive Header from client
 		ST_RECV_HEADER_DATA stRecvHeaderData;
-		dwRet = ReceiveDataFromClient(pReceiveBuf, dwByteTransferred, stRecvHeaderData);
+		dwRet = ParseReceivedDataByJSON(strReceivedData, stRecvHeaderData);
 		if (dwRet != E_RET_SUCCESS) {
-			throw std::exception("Fail to operate ReceiveDataFromClient");
+			throw std::exception("Fail to analyze received data by json");
 		}
 
-		// Parse Header Data By JSON
-		dwRet = ParseReceivedHeaderByJSON(stRecvHeaderData);
+		dwRet = CheckFirstRequestNumber(stRecvHeaderData);
 		if (dwRet != E_RET_SUCCESS) {
-			throw std::exception("Fail to operate ParseReceivedHeaderByJSON");
+			throw std::exception("Invalid first connection protocol");
 		}
 
-		/*
-			Step 2.
-		*/
-		dwRet = SendHeaderToClient(stRecvHeaderData);
+		dwRet = BranchByRequestNumber(stRecvHeaderData);
 		if (dwRet != E_RET_SUCCESS) {
-			throw std::exception("Fail to operate SendHeaderToClient");
-		}
-
-		/*
-			Step 3.
-			In sequence of step 3, server have to communicate with database.
-			so, server take some second to get data that client want.
-			After finishin operation of server, it send data twice (response header, response data)
-			- response header is included with size of response data
-		*/
-		ST_RECV_DATA stRecvData;
-		dwRet = ReceiveDataFromClient(stRecvHeaderData, stRecvData);
-		if (dwRet != E_RET_SUCCESS) {
-			throw std::exception("Fail to operate ReceiveDataFromClient");
-		}
-
-		DWORD dwNumberOfRequest;
-		dwRet = ParseDataByJSON(dwNumberOfRequest, stRecvData);
-		if (dwRet != E_RET_SUCCESS) {
-			throw std::exception("Fail to operate ParseDataByJSON");
-		}
-
-		ST_DB_RESULT stDBResult;
-		dwRet = RequestToDataBase(dwNumberOfRequest, stDBResult);
-		if (dwRet != E_RET_SUCCESS) {
-			throw std::exception("Fail to operate RequestToDataBase");
-		}
-	
-		std::string strSendData;
-		DWORD dwResponse;
-		dwRet = MakeSendPacket(dwNumberOfRequest, stDBResult, dwResponse, strSendData);
-		if (dwRet != E_RET_SUCCESS) {
-			throw std::exception("Fail to operate MakeSendPacket");
-		}
-		/*
-			Step 4, 5
-		*/
-		dwRet = SendResponseToClient(dwNumberOfRequest, dwResponse, strSendData);
-		if (dwRet != E_RET_SUCCESS) {
-			throw std::exception("Fail to operate SendResponseToClient");
+			throw std::exception("Invalid next protocol");
 		}
 	}
 	catch (std::exception &e)
 	{
 		ErrorLog(e.what());
-		if (m_pstProtoSignIn)
-			delete m_pstProtoSignIn;
-		if (m_pstProtoSignUp)
-			delete m_pstProtoSignUp;
-		if (m_pstProtoMenu) 
-			delete m_pstProtoMenu;
-		if (m_pstProtoClient)
-			delete m_pstProtoClient;
-		if (m_pstProtoComment)
-			delete m_pstProtoComment;
-		if (m_pstProtoShop)
-			delete m_pstProtoShop;
+		dwRet = SendSimpleResByProtocolNumber(E_PROTO_RES_FAIL_OPERATION);
+		if (dwRet != E_RET_SUCCESS) {
+			ErrorLog("Fail to send Error Msg to client");
+		}
 		return E_RET_FAIL;
 	}
-
-	if (m_pstProtoSignIn)
-		delete m_pstProtoSignIn;
-	if (m_pstProtoSignUp)
-		delete m_pstProtoSignUp;
-	if (m_pstProtoMenu)
-		delete m_pstProtoMenu;
-	if (m_pstProtoClient)
-		delete m_pstProtoClient;
-	if (m_pstProtoComment)
-		delete m_pstProtoComment;
-	if (m_pstProtoShop)
-		delete m_pstProtoShop;
+	DebugLog("Success to communicate with client");
 	return E_RET_SUCCESS;
 } 

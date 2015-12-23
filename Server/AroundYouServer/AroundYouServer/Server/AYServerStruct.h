@@ -51,16 +51,9 @@ struct ST_SERVER_STATUS
 	DWORD dwNumberOfCurrentSocket;
 };
 
-struct ST_RECV_HEADER_DATA
-{
-	DWORD dwNumberOfRequest;
-	DWORD dwSizeOfData;
-	std::string strRecvData;
-};
-
 struct ST_RECV_DATA
 {
-	std::string strRecvData;
+	std::string strReceivedData;
 };
 
 #endif

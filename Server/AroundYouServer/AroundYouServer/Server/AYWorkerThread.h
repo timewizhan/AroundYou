@@ -5,6 +5,7 @@
 #include "..\DataBase\DataBase.h"
 #include "AYServerStruct.h"
 #include "AYProtocol.h"
+#include "AYWorkerThreadStruct.h"
 
 class CAYWorkerThread
 {
@@ -15,30 +16,48 @@ class CAYWorkerThread
 	ST_RECV_DATA		m_stRecvData;
 
 	/*
-		Protocol structure
+		The following methods are related to common methods,
+		which are used for normal operation
 	*/
-	ST_PROTOCOL_SIGNIN	*m_pstProtoSignIn;
-	ST_PROTOCOL_SIGNUP	*m_pstProtoSignUp;
+	VOID ConvertReceivedDataToString(char *pReceiveBuf, DWORD dwByteTransferred, std::string &refstrReceivedData);
+	DWORD ParseSimpleReceivedDataByJSON(DWORD dwSentResProtocolNumber, std::string &refstrRecvData);
+	DWORD ParseReceivedDataByJSON(const std::string &refstrReceivedData, ST_RECV_HEADER_DATA &refstRecvHeaderData);
 
-	ST_PROTOCOL_CLIENT	*m_pstProtoClient;
-	ST_PROTOCOL_MENU	*m_pstProtoMenu;
-	ST_PROTOCOL_COMMENT *m_pstProtoComment;
-	ST_PROTOCOL_SHOP	*m_pstProtoShop;
+	DWORD CheckFirstRequestNumber(ST_RECV_HEADER_DATA &refstRecvHeaderData);
+	DWORD BranchByRequestNumber(ST_RECV_HEADER_DATA &refstRecvHeaderData);
+	DWORD ParseDataByJSON(VOID *pProto, ST_RECV_DATA &refstRecvData);
+	DWORD RequestToDataBase(VOID *pProtoRoot, ST_DB_RESULT &refstDBResult);
 
-	DWORD ReceiveDataFromClient(char *pReceiveBuf, DWORD dwByteTransferred, ST_RECV_HEADER_DATA &refstRecvHeaderData);
-	DWORD ParseReceivedHeaderByJSON(ST_RECV_HEADER_DATA &refstRecvHeaderData);
-	DWORD SendHeaderToClient(ST_RECV_HEADER_DATA &refstRecvHeaderData);
-	DWORD ReceiveDataFromClient(ST_RECV_HEADER_DATA &refstRecvHeaderData, ST_RECV_DATA &refstRecvData);
+	/*
+		The following methods are related to communication with client
+		methods to communicate with client are read/write operation
+	*/
 
-	DWORD ParseDataByJSON(DWORD &refdwNumberOfRequest, ST_RECV_DATA &refstRecvData);
-	DWORD RequestToDataBase(DWORD &refdwNumberOfRequest, ST_DB_RESULT &refstDBResult);
-	DWORD MakeSendPacket(DWORD &refdwNumberOfRequest, ST_DB_RESULT &refstDBResult, DWORD &refdwResponse, std::string &refstrSendData);
-	DWORD SendResponseToClient(DWORD &refdwNumberOfRequest, DWORD &refdwResponse, std::string &refstrSendData);
-	DWORD SendResponseHeaderToClient(DWORD &refdwNumberOfRequest, DWORD &refdwResponse, DWORD &refstSizeOfData);
-	DWORD SendResponseDataToClient(DWORD &refdwNumberOfRequest, std::string &refstrSendData);
+	DWORD SendSimpleResByProtocolNumber(DWORD dwWantedProtocolNumber);
+	DWORD SendResDataToClientByProtocolNumber(DWORD dwProtocolNumberToSend, ST_SEND_DATA &refstSendData);
 
-	// Common Send Method
+	// Common Send/Receive Method
 	DWORD SendDataToClient(std::string &refstrSendData);
+	DWORD ReceiveDataFromClient(char *pRecvedBuf, DWORD dwNextSizeOfData);
+
+	/*
+		The following methods are related to protocol.
+		each number is protocol number
+	*/
+	// 101 Protocol (User)
+	DWORD PROTO_101_ABOUT_USER(ST_RECV_HEADER_DATA &refstRecvHeaderData);
+	DWORD PROTO_101_OPERATION_ABOUT_USER(char *pRecvedBuf);
+
+	// 201 Protocol (Recommended Store)
+	DWORD PROTO_201_RECOMMENTED_STORE(ST_RECV_HEADER_DATA &refstRecvHeaderData);
+	DWORD PROTO_201_OPERATION_RECOMMENTED_STORE(char *pRecvedBuf, ST_SEND_DATA &refstSendData);
+
+	// 202 Protocol (Recommended Menu)
+	DWORD PROTO_201_RECOMMENTED_MENU(ST_RECV_HEADER_DATA &refstRecvHeaderData);
+
+	DWORD MakeSendPacket(DWORD dwNumberOfRequest, ST_DB_RESULT &refstDBResult, ST_SEND_DATA &refstSendData);
+	DWORD MakeSendPacket_201_Data(ST_DB_RESULT &refstDBResult, ST_SEND_DATA &refstSendData);
+
 public:
 	CAYWorkerThread(SOCKET ClientSocket);
 	~CAYWorkerThread();
