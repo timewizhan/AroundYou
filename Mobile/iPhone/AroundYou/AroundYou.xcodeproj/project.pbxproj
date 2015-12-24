@@ -39,6 +39,10 @@
 		8E981DDA1C26CDF90036CC17 /* SelectCustomPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E981DD91C26CDF90036CC17 /* SelectCustomPageViewController.swift */; };
 		8EC1A2931C1DAF2A00B6BC93 /* MainPageContainerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EC1A2921C1DAF2A00B6BC93 /* MainPageContainerController.swift */; };
 		8EC1A2951C20656100B6BC93 /* SelectPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EC1A2941C20656100B6BC93 /* SelectPageViewController.swift */; };
+		8ED33ADD1C2AF40400F8A56E /* SelectStoreDetailPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ED33ADC1C2AF40400F8A56E /* SelectStoreDetailPageViewController.swift */; };
+		8ED33ADF1C2AF41E00F8A56E /* SelectMenuDetailPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ED33ADE1C2AF41E00F8A56E /* SelectMenuDetailPageViewController.swift */; };
+		8ED33AE11C2B8F4800F8A56E /* UserCommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ED33AE01C2B8F4800F8A56E /* UserCommentViewController.swift */; };
+		8ED33AE31C2B913400F8A56E /* DetailStorePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ED33AE21C2B913400F8A56E /* DetailStorePageViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -91,6 +95,10 @@
 		8E981DD91C26CDF90036CC17 /* SelectCustomPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectCustomPageViewController.swift; sourceTree = "<group>"; };
 		8EC1A2921C1DAF2A00B6BC93 /* MainPageContainerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = MainPageContainerController.swift; sourceTree = "<group>"; };
 		8EC1A2941C20656100B6BC93 /* SelectPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectPageViewController.swift; sourceTree = "<group>"; };
+		8ED33ADC1C2AF40400F8A56E /* SelectStoreDetailPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectStoreDetailPageViewController.swift; sourceTree = "<group>"; };
+		8ED33ADE1C2AF41E00F8A56E /* SelectMenuDetailPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectMenuDetailPageViewController.swift; sourceTree = "<group>"; };
+		8ED33AE01C2B8F4800F8A56E /* UserCommentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserCommentViewController.swift; sourceTree = "<group>"; };
+		8ED33AE21C2B913400F8A56E /* DetailStorePageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailStorePageViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -154,6 +162,10 @@
 				8E326BFF1C218ED700A58361 /* ListPageViewController.swift */,
 				8E326C3F1C23433800A58361 /* PopUpEvaluationViewController.swift */,
 				8E326C411C23513100A58361 /* SummaryViewController.swift */,
+				8ED33ADC1C2AF40400F8A56E /* SelectStoreDetailPageViewController.swift */,
+				8ED33ADE1C2AF41E00F8A56E /* SelectMenuDetailPageViewController.swift */,
+				8ED33AE01C2B8F4800F8A56E /* UserCommentViewController.swift */,
+				8ED33AE21C2B913400F8A56E /* DetailStorePageViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -324,9 +336,11 @@
 				8E326BFE1C2185D900A58361 /* EmbededMainCustomSegue.swift in Sources */,
 				8E0B84A71BBE4A9000CC5688 /* BuildJSONString.swift in Sources */,
 				8E0B84A51BBE20DC00CC5688 /* ErrorType.swift in Sources */,
+				8ED33AE31C2B913400F8A56E /* DetailStorePageViewController.swift in Sources */,
 				8E3D5FFE1C0F36480045949C /* SideMenuBarViewController.swift in Sources */,
 				4D7F7B221BCFB271009DF9FF /* SWRevealViewController.m in Sources */,
 				8E5EDB101BD096AB00193851 /* MenuDetailViewTableViewController.swift in Sources */,
+				8ED33ADD1C2AF40400F8A56E /* SelectStoreDetailPageViewController.swift in Sources */,
 				8E5EDB0D1BD0921F00193851 /* MenuContainerViewController.swift in Sources */,
 				8E326BFC1C217B3400A58361 /* MainCustomPageViewController.swift in Sources */,
 				8E0B85601BC2924500CC5688 /* CommentCell.swift in Sources */,
@@ -340,6 +354,8 @@
 				8E0B849D1BBA730400CC5688 /* NetworkingProtocol.swift in Sources */,
 				8E0B855C1BC2880400CC5688 /* StarViewController.swift in Sources */,
 				8E326C001C218ED700A58361 /* ListPageViewController.swift in Sources */,
+				8ED33ADF1C2AF41E00F8A56E /* SelectMenuDetailPageViewController.swift in Sources */,
+				8ED33AE11C2B8F4800F8A56E /* UserCommentViewController.swift in Sources */,
 				8E981DDA1C26CDF90036CC17 /* SelectCustomPageViewController.swift in Sources */,
 				8E326C421C23513100A58361 /* SummaryViewController.swift in Sources */,
 			);

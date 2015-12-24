@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9059" systemVersion="14F1509" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="HBk-Bu-plM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="14F1509" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="HBk-Bu-plM">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
     </dependencies>
     <scenes>
         <!--Main Page Top View Controller-->
@@ -109,7 +109,6 @@
                                 <rect key="frame" x="47" y="124" width="280" height="128"/>
                             </imageView>
                         </subviews>
-                        <animations/>
                         <color key="backgroundColor" red="1" green="0.3294117647" blue="0.30980392159999998" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
@@ -134,7 +133,6 @@
                     <view key="view" contentMode="scaleToFill" id="TUR-rO-Cv2">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
@@ -459,7 +457,6 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="hyI-xP-Kf4">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <animations/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -613,10 +610,10 @@
             </objects>
             <point key="canvasLocation" x="2183.5" y="1173"/>
         </scene>
-        <!--View Controller-->
+        <!--Select Store Detail Page View Controller-->
         <scene sceneID="bfN-qc-Jeg">
             <objects>
-                <viewController id="cKC-Up-F83" sceneMemberID="viewController">
+                <viewController id="cKC-Up-F83" customClass="SelectStoreDetailPageViewController" customModule="AroundYou" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="ga8-7F-O5Q"/>
                         <viewControllerLayoutGuide type="bottom" id="tng-rY-SrF"/>
@@ -673,7 +670,8 @@
                                         <rect key="frame" x="165" y="3" width="45" height="15"/>
                                         <state key="normal" image="page2_027"/>
                                         <connections>
-                                            <segue destination="u4d-os-s1M" kind="showDetail" id="0Xv-Jw-MOD"/>
+                                            <action selector="clickDetailStorePage:" destination="cKC-Up-F83" eventType="touchUpInside" id="Zro-oN-jfh"/>
+                                            <segue destination="u4d-os-s1M" kind="custom" identifier="DetailStorePage" customClass="EmbededMainCustomSegue" customModule="AroundYou" customModuleProvider="target" id="0Xv-Jw-MOD"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -683,7 +681,8 @@
                                 <rect key="frame" x="85" y="407" width="45" height="15"/>
                                 <state key="normal" image="page2_027"/>
                                 <connections>
-                                    <segue destination="Ys5-bk-pFt" kind="showDetail" id="EwB-Tf-1RS"/>
+                                    <action selector="clickMenuPage:" destination="cKC-Up-F83" eventType="touchUpInside" id="fbv-hE-8I9"/>
+                                    <segue destination="Ys5-bk-pFt" kind="custom" identifier="ListMenuPage" customClass="EmbededMainCustomSegue" customModule="AroundYou" customModuleProvider="target" id="EwB-Tf-1RS"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -696,10 +695,10 @@
             </objects>
             <point key="canvasLocation" x="1909.5" y="1928"/>
         </scene>
-        <!--View Controller-->
+        <!--Select Menu Detail Page View Controller-->
         <scene sceneID="AMf-FI-nQg">
             <objects>
-                <viewController id="gQj-y3-ZLC" sceneMemberID="viewController">
+                <viewController id="gQj-y3-ZLC" customClass="SelectMenuDetailPageViewController" customModule="AroundYou" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="pQ7-Dz-5ox"/>
                         <viewControllerLayoutGuide type="bottom" id="jrE-v1-YVm"/>
@@ -760,7 +759,8 @@
                                 <rect key="frame" x="295" y="518" width="60" height="50"/>
                                 <state key="normal" image="page2-1_046"/>
                                 <connections>
-                                    <segue destination="cKC-Up-F83" kind="showDetail" id="Jnk-CN-8kc"/>
+                                    <action selector="clickReturnToDetailStore:" destination="gQj-y3-ZLC" eventType="touchUpInside" id="EEY-7Z-40r"/>
+                                    <segue destination="cKC-Up-F83" kind="custom" identifier="ReturnSelectStoreDetailPage" customClass="EmbededMainCustomSegue" customModule="AroundYou" customModuleProvider="target" id="b4K-9P-LIz"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -863,10 +863,10 @@
             </objects>
             <point key="canvasLocation" x="1635.5" y="2687"/>
         </scene>
-        <!--View Controller-->
+        <!--Detail Store Page View Controller-->
         <scene sceneID="fEz-fs-Dhp">
             <objects>
-                <viewController id="u4d-os-s1M" sceneMemberID="viewController">
+                <viewController id="u4d-os-s1M" customClass="DetailStorePageViewController" customModule="AroundYou" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="fjE-E9-grJ"/>
                         <viewControllerLayoutGuide type="bottom" id="GRf-Sd-ytj"/>
@@ -907,7 +907,8 @@
                                 <rect key="frame" x="107" y="364" width="45" height="15"/>
                                 <state key="normal" image="page2_027"/>
                                 <connections>
-                                    <segue destination="Fya-6r-g5H" kind="showDetail" id="fxD-zP-9Rx"/>
+                                    <action selector="clickUserComment:" destination="u4d-os-s1M" eventType="touchUpInside" id="jTP-hn-gJm"/>
+                                    <segue destination="Fya-6r-g5H" kind="custom" identifier="UserCommentPage" customClass="EmbededMainCustomSegue" customModule="AroundYou" customModuleProvider="target" id="fxD-zP-9Rx"/>
                                 </connections>
                             </button>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="page2-1_041" translatesAutoresizingMaskIntoConstraints="NO" id="7Dx-9K-VgM">
@@ -966,10 +967,10 @@
             </objects>
             <point key="canvasLocation" x="2149.5" y="2687"/>
         </scene>
-        <!--View Controller-->
+        <!--User Comment View Controller-->
         <scene sceneID="EZD-UZ-FH2">
             <objects>
-                <viewController id="Fya-6r-g5H" sceneMemberID="viewController">
+                <viewController id="Fya-6r-g5H" customClass="UserCommentViewController" customModule="AroundYou" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Ddb-WN-GUv"/>
                         <viewControllerLayoutGuide type="bottom" id="7lF-1U-vf6"/>
@@ -1541,7 +1542,7 @@
         <image name="page3_043" width="1007" height="26"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="b4K-9P-LIz"/>
         <segue reference="n0x-fh-Tdo"/>
-        <segue reference="Jnk-CN-8kc"/>
     </inferredMetricsTieBreakers>
 </document>
