@@ -48,10 +48,13 @@
     <ClCompile Include="DataBase\PostgreSQL.cpp">
       <Filter>DataBase</Filter>
     </ClCompile>
-    <ClCompile Include="Server\SignIn.cpp">
+    <ClCompile Include="Server\Store.cpp">
       <Filter>Server\Role</Filter>
     </ClCompile>
-    <ClCompile Include="Server\Store.cpp">
+    <ClCompile Include="Server\Menu.cpp">
+      <Filter>Server\Role</Filter>
+    </ClCompile>
+    <ClCompile Include="Server\Comment.cpp">
       <Filter>Server\Role</Filter>
     </ClCompile>
   </ItemGroup>
@@ -92,14 +95,17 @@
     <ClInclude Include="Server\AYProtocol.h">
       <Filter>Server</Filter>
     </ClInclude>
-    <ClInclude Include="Server\SignIn.h">
-      <Filter>Server\Role</Filter>
-    </ClInclude>
     <ClInclude Include="Server\Store.h">
       <Filter>Server\Role</Filter>
     </ClInclude>
     <ClInclude Include="Server\AYWorkerThreadStruct.h">
       <Filter>Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Server\Menu.h">
+      <Filter>Server\Role</Filter>
+    </ClInclude>
+    <ClInclude Include="Server\Comment.h">
+      <Filter>Server\Role</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -99,7 +99,8 @@
     </ClCompile>
     <ClCompile Include="Server\AYServerError.cpp" />
     <ClCompile Include="Server\AYWorkerThread.cpp" />
-    <ClCompile Include="Server\SignIn.cpp" />
+    <ClCompile Include="Server\Comment.cpp" />
+    <ClCompile Include="Server\Menu.cpp" />
     <ClCompile Include="Server\Store.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -116,7 +117,8 @@
     <ClInclude Include="Server\AYServerStruct.h" />
     <ClInclude Include="Server\AYWorkerThread.h" />
     <ClInclude Include="Server\AYWorkerThreadStruct.h" />
-    <ClInclude Include="Server\SignIn.h" />
+    <ClInclude Include="Server\Comment.h" />
+    <ClInclude Include="Server\Menu.h" />
     <ClInclude Include="Server\Store.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

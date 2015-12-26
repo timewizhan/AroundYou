@@ -17,6 +17,18 @@ enum E_PROTOCOL_REQUEST_TYPE
 	E_PROTO_REQ_NEXT_RECOMMENDED_STORE,
 
 	E_PROTO_REQ_RECOMMENDED_MENU,
+	E_PROTO_REQ_NEXT_RECOMMENDED_MENU,
+
+	E_PROTO_REQ_SELECTED_STORE,
+	E_PROTO_REQ_NEXT_SELECTED_STORE,
+
+	E_PROTO_REQ_SELECTED_MENU,
+	E_PROTO_REQ_NEXT_SELECTED_MENU,
+
+	E_PROTO_REQ_INPUT_EVALUATION,
+
+	E_PROTO_REQ_INPUT_COMMENT,
+	E_PROTO_REQ_SHOW_COMMENT_LIST,
 	
 	E_PROTO_UNKNOWN
 };
@@ -60,6 +72,10 @@ struct ST_PROTOCOL_ROOT
 	//DWORD dwSizeOfData;
 };
 
+/*
+	Request
+*/
+
 struct ST_PROTOCOL_REQ_101_ABOUT_USER : public ST_PROTOCOL_ROOT
 {
 	std::string strCallID;
@@ -70,6 +86,59 @@ struct ST_PROTOCOL_REQ_201_RECOMMENDED_STORE : public ST_PROTOCOL_ROOT
 	DWORD dwLocation;
 	DWORD dwNumberOfRequestedMaximun;
 };
+
+
+struct ST_PROTOCOL_REQ_202_RECOMMENDED_MENU : public ST_PROTOCOL_ROOT
+{
+	DWORD dwLocation;
+	DWORD dwNumberOfRequestedMaximun;
+};
+
+struct ST_PROTOCOL_REQ_301_SELECTED_STORE : public ST_PROTOCOL_ROOT
+{
+	DWORD dwLocation;
+	DWORD dwStoreID;
+	DWORD dwCallID;
+};
+
+struct ST_PROTOCOL_REQ_302_SELECTED_MENU : public ST_PROTOCOL_ROOT
+{
+	DWORD dwLocation;
+	DWORD dwStoreID;
+};
+
+struct ST_PROTOCOL_REQ_401_INPUT_EVALUATION : public ST_PROTOCOL_ROOT
+{
+	DWORD dwStoreID;
+	DWORD dwMenuID;
+	DWORD dwTaste;
+	DWORD dwKind;
+	DWORD dwMood;
+	DWORD dwCallID;
+};
+
+struct ST_PROTOCOL_REQ_501_INPUT_COMMENT : public ST_PROTOCOL_ROOT
+{
+	DWORD dwStoreID;
+	DWORD dwLocation;
+	DWORD dwCallID;
+	std::string strCommentWriting;
+	std::string strCommentAuthor;
+	std::string strCommentTime;
+};
+
+struct ST_PROTOCOL_REQ_502_SHOW_COMMENT_LIST : public ST_PROTOCOL_ROOT
+{
+	DWORD dwStoreID;
+	DWORD dwLocation;
+	DWORD dwCommentReqCount;
+	DWORD dwNumberOfRequestedMaximun;
+};
+
+
+/*
+	Response
+*/
 
 struct ST_PROTOCOL_RES_201_RECOMMENDED_STORE : public ST_PROTOCOL_ROOT
 {
@@ -89,10 +158,35 @@ struct ST_PROTOCOL_RES_201_RECOMMENDED_STORE : public ST_PROTOCOL_ROOT
 	std::string strStoreCloseTime;
 };
 
-struct ST_PROTOCOL_201_RECOMMENDED_MENU : public ST_PROTOCOL_ROOT
+struct ST_PROTOCOL_RES_202_RECOMMENDED_MENU : public ST_PROTOCOL_ROOT
 {
-	DWORD dwLocation;
-	DWORD dwNumberOfRequestedMaximun;
+	DWORD dwStoreID;
+	DWORD dwMenuID;
+	DWORD dwMenuPrice;
+	DWORD dwMenuEvaluation;
+	std::string strMenuName;
+};
+
+struct ST_PROTOCOL_RES_301_SELECT_STORE : public ST_PROTOCOL_ROOT
+{
+	DWORD dwMenuID;
+	DWORD dwMenuPrice;
+	DWORD dwMenuEvaluation;
+	std::string strMenuName;
+};
+
+struct ST_PROTOCOL_RES_302_SELECT_MENU : public ST_PROTOCOL_ROOT
+{
+	DWORD dwMenuID;
+	DWORD dwMenuEvaluation;
+	std::string strMenuName;
+};
+
+struct ST_PROTOCOL_RES_502_SHOW_COMMENT_LIST : public ST_PROTOCOL_ROOT
+{
+	std::string strCommentWriting;
+	std::string strCommentAuthor;
+	std::string strCommentTime;
 };
 
 struct ST_PROTOCOL_SIGNIN : public ST_PROTOCOL_ROOT

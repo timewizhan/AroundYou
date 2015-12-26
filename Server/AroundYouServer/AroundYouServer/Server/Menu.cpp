@@ -1,24 +1,24 @@
-#include "Store.h"
+#include "Menu.h"
 
-bool CompareStoreEvaluation(ST_DB_RESULT_LINE &refstFirstDBResultLine, ST_DB_RESULT_LINE &refstSecondDBResultLine)
+bool CompareMenuEvaluation(ST_DB_RESULT_LINE &refstFirstDBResultLine, ST_DB_RESULT_LINE &refstSecondDBResultLine)
 {
 	DOUBLE dFirstValue = ::atof(refstFirstDBResultLine.vecstrResult[0].c_str());
 	DOUBLE dSecondValue = ::atof(refstSecondDBResultLine.vecstrResult[0].c_str());
 	return dFirstValue > dSecondValue;
 }
 
-DWORD CStore::SortStoreEvaluationByAscendingOrder(ST_DB_RESULT &refstDBResult)
+DWORD CMenu::SortStoreEvaluationByAscendingOrder(ST_DB_RESULT &refstDBResult)
 {
 	ST_DB_RESULT stDBResult = refstDBResult;
-	
+
 	// use custom method that c++ provide
-	std::sort(stDBResult.vecstDBResultLines.begin(), stDBResult.vecstDBResultLines.end(), CompareStoreEvaluation);
+	std::sort(stDBResult.vecstDBResultLines.begin(), stDBResult.vecstDBResultLines.end(), CompareMenuEvaluation);
 	refstDBResult = stDBResult;
 
 	return E_RET_SUCCESS;
 }
 
-VOID CStore::PruningOrderedDataByRequestedNumber(ST_DB_RESULT &refstDBResult, DWORD dwRequestedNumber)
+VOID CMenu::PruningOrderedDataByRequestedNumber(ST_DB_RESULT &refstDBResult, DWORD dwRequestedNumber)
 {
 	if (refstDBResult.vecstDBResultLines.size() < dwRequestedNumber) {
 		return;
