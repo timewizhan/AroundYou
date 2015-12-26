@@ -57,17 +57,22 @@ DWORD CAYWorkerThread::ParseSimpleReceivedDataByJSON(DWORD dwSentResProtocolNumb
 			dwRet = E_RET_FAIL;
 		}
 	}
-	if (dwSentResProtocolNumber == E_PROTO_REQ_NEXT_RECOMMENDED_MENU) {
+	else if (dwSentResProtocolNumber == E_PROTO_REQ_NEXT_RECOMMENDED_MENU) {
 		if (dwProtocolNumber != E_PROTO_REQ_READY_FOR_DATA) {
 			dwRet = E_RET_FAIL;
 		}
 	}
-	if (dwSentResProtocolNumber == E_PROTO_REQ_NEXT_SELECTED_STORE) {
+	else if (dwSentResProtocolNumber == E_PROTO_REQ_NEXT_SELECTED_STORE) {
 		if (dwProtocolNumber != E_PROTO_REQ_READY_FOR_DATA) {
 			dwRet = E_RET_FAIL;
 		}
 	}
-	if (dwSentResProtocolNumber == E_PROTO_REQ_NEXT_SELECTED_MENU) {
+	else if (dwSentResProtocolNumber == E_PROTO_REQ_NEXT_SELECTED_MENU) {
+		if (dwProtocolNumber != E_PROTO_REQ_READY_FOR_DATA) {
+			dwRet = E_RET_FAIL;
+		}
+	}
+	else if (dwSentResProtocolNumber == E_PROTO_REQ_NEXT_SHOW_COMMENT_LIST) {
 		if (dwProtocolNumber != E_PROTO_REQ_READY_FOR_DATA) {
 			dwRet = E_RET_FAIL;
 		}
