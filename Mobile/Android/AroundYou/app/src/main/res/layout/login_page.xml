@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ff544f">
+
+    <ImageView
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageAppName"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/app_name"
+        android:layout_marginTop="75dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="250dp"
+            android:layout_height="40dp"
+            android:id="@+id/imageLoginBar"
+            android:src="@drawable/login_bar"
+            android:layout_gravity="center_horizontal"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/imageLoginBarMove"
+            android:src="@drawable/login_bar_move"
+            android:layout_alignParentTop="true"
+            android:layout_alignLeft="@+id/imageLoginBar"
+            android:layout_alignStart="@+id/imageLoginBar" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="35dp"
+            android:id="@+id/imageLoginJoin"
+            android:src="@drawable/login_join"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="105dp" />
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="35dp"
+            android:id="@+id/imageLoginFaceBook"
+            android:src="@drawable/login_facebook"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="15dp" />
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="25dp"
+            android:id="@+id/imageLoginKaKao"
+            android:src="@drawable/login_kakao"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="10dp" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/editText"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:text="Please pull the button to the left"
+            android:background="#ff544f"
+            android:layout_marginTop="10dp"
+            android:textColor="#ffffff"
+            android:enabled="false"
+            android:focusable="false"
+            android:editable="true" />
+    </RelativeLayout>
+
+</LinearLayout>
