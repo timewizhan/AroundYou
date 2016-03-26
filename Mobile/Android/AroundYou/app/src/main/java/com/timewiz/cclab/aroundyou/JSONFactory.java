@@ -2,12 +2,13 @@ package com.timewiz.cclab.aroundyou;
 
 import android.util.Log;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -35,7 +36,7 @@ public class JSONFactory {
             jsonRoot.put("req", eReqToSend.ordinal());
             strResult = jsonRoot.toString();
         }
-        catch (JSONException e) {
+        catch (Exception e) {
             Log.e("JSONFactory", "Fail to build json string (DEFAULT REQUEST)");
         }
         return strResult;
@@ -50,7 +51,7 @@ public class JSONFactory {
             jsonRoot.put("next_size", nSizeOfNextData);
             strResult = jsonRoot.toString();
         }
-        catch (JSONException e) {
+        catch (Exception e) {
             Log.e("JSONFactory", "Fail to build json string (E_PROTO_REQ_CONNECTION_START)");
         }
         return strResult;
@@ -71,7 +72,7 @@ public class JSONFactory {
 
             strResult = jsonRoot.toString();
         }
-        catch (JSONException e) {
+        catch (Exception e) {
             Log.e("JSONFactory", "Fail to build json string (PROTOCOL_REQ_201_RECOMMENDED_STORE)");
         }
         return strResult;
@@ -84,15 +85,14 @@ public class JSONFactory {
         PROTOCOL_RES_DEFAULT protoResDefault = new PROTOCOL_RES_DEFAULT();
         try {
             JSONObject jsonRoot = (JSONObject) jsonParser.parse(strInput);
-            int nRes = (int) jsonRoot.get("res");
-
-            protoResDefault.nResponse = nRes;
+            long nRes = (long) jsonRoot.get("res");
+            protoResDefault.nResponse = (int) nRes;
         }
         catch (ParseException e) {
             Log.e("JSONFactory", "Fail to parse json string (PROTOCOL_RES_DEFAULT)");
         }
-        catch (JSONException e) {
-
+        catch (Exception e) {
+            Log.e("JSONFactory", "Fail to parse json string (Exception)");
         }
         return protoResDefault;
     }
@@ -103,16 +103,16 @@ public class JSONFactory {
         PROTOCOL_RESQ_DEFAULT_ARG protoResDefaultArg = new PROTOCOL_RESQ_DEFAULT_ARG();
         try {
             JSONObject jsonRoot = (JSONObject) jsonParser.parse(strInput);
-            int nRes = (int) jsonRoot.get("res");
-            int nNextSize = (int) jsonRoot.get("next_size");
+            long nRes = (long) jsonRoot.get("res");
+            long nNextSize = (long) jsonRoot.get("next_size");
 
-            protoResDefaultArg.nResponse = nRes;
-            protoResDefaultArg.nNextSize = nNextSize;
+            protoResDefaultArg.nResponse = (int) nRes;
+            protoResDefaultArg.nNextSize = (int) nNextSize;
         }
         catch (ParseException e) {
             Log.e("JSONFactory", "Fail to parse json string (PROTOCOL_RESQ_DEFAULT_ARG)");
         }
-        catch (JSONException e) {
+        catch (Exception e) {
 
         }
         return protoResDefaultArg;
@@ -126,27 +126,25 @@ public class JSONFactory {
         try {
             JSONObject jsonRoot = (JSONObject) jsonParser.parse(strInput);
 
-            int nRes = (int) jsonRoot.get("res");
             JSONObject jsonData = (JSONObject) jsonRoot.get("data");
-
-            int nRetNumber = (int) jsonData.get("ret_number");
             JSONArray jsonStores = (JSONArray) jsonData.get("stores");
-
-            for (int i = 0; i < jsonStores.length(); i++) {
+            for (int i = 0; i < jsonStores.size(); i++) {
                 JSONObject jsonStore = (JSONObject) jsonStores.get(i);
                 PROTOCOL_RES_201_RECOMMENDED_STORE protoRes201RecommendedStore = new PROTOCOL_RES_201_RECOMMENDED_STORE();
 
-                protoRes201RecommendedStore.dwStoreID = (int) jsonStore.get("store_id");
+                protoRes201RecommendedStore.dwStoreID = (int)((long) jsonStore.get("store_id"));
                 protoRes201RecommendedStore.strStoreName = (String) jsonStore.get("store_name");
-                protoRes201RecommendedStore.dwStoreLocation = (int) jsonStore.get("store_location");
+                protoRes201RecommendedStore.dwStoreLocation = (int)((long)jsonStore.get("store_location"));
 
                 JSONObject jsonStoreEvaluation = (JSONObject) jsonStore.get("store_evaluation");
-                protoRes201RecommendedStore.dwStoreEvaluationTaste = (int) jsonStoreEvaluation.get("taste");
-                protoRes201RecommendedStore.dwStoreEvaluationKind = (int) jsonStoreEvaluation.get("kind");
-                protoRes201RecommendedStore.dwStoreEvaluationMood = (int) jsonStoreEvaluation.get("mood");
+                protoRes201RecommendedStore.dwStoreEvaluationTaste = (int)((long) jsonStoreEvaluation.get("taste"));
+                protoRes201RecommendedStore.dwStoreEvaluationKind = (int)((long) jsonStoreEvaluation.get("kind"));
+                protoRes201RecommendedStore.dwStoreEvaluationMood = (int)((long) jsonStoreEvaluation.get("mood"));
 
                 protoRes201RecommendedStore.strStoreShortIntro = (String) jsonStore.get("store_short_intro");
                 protoRes201RecommendedStore.strStoreHashTag = (String) jsonStore.get("store_hashtag");
+
+                arrayRes201.add(protoRes201RecommendedStore);
 
                 // Todo
                 /*
@@ -166,9 +164,7 @@ public class JSONFactory {
         catch (ParseException e) {
             Log.e("JSONFactory", "Fail to parse json string (PROTOCOL_RES_201_RECOMMENDED_STORE)");
         }
-        catch (JSONException e) {
 
-        }
         return arrayRes201;
     }
 }
