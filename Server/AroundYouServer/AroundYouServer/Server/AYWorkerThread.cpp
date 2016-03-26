@@ -51,36 +51,10 @@ DWORD CAYWorkerThread::ParseSimpleReceivedDataByJSON(DWORD dwSentResProtocolNumb
 	}
 
 	DWORD dwRet = E_RET_SUCCESS;
-	DWORD dwProtocolNumber = ::atoi(JsonRoot.get("req", 0).asString().c_str());
-	if (dwSentResProtocolNumber == E_PROTO_REQ_NEXT_RECOMMENDED_STORE) {
-		if (dwProtocolNumber != E_PROTO_REQ_READY_FOR_DATA) {
-			dwRet = E_RET_FAIL;
-		}
+	DWORD dwProtocolNumber = JsonRoot.get("req", 0).asInt();
+	if (dwProtocolNumber != E_PROTO_REQ_READY_FOR_DATA) {
+		dwRet = E_RET_FAIL;
 	}
-	else if (dwSentResProtocolNumber == E_PROTO_REQ_NEXT_RECOMMENDED_MENU) {
-		if (dwProtocolNumber != E_PROTO_REQ_READY_FOR_DATA) {
-			dwRet = E_RET_FAIL;
-		}
-	}
-	else if (dwSentResProtocolNumber == E_PROTO_REQ_NEXT_SELECTED_STORE) {
-		if (dwProtocolNumber != E_PROTO_REQ_READY_FOR_DATA) {
-			dwRet = E_RET_FAIL;
-		}
-	}
-	else if (dwSentResProtocolNumber == E_PROTO_REQ_NEXT_SELECTED_MENU) {
-		if (dwProtocolNumber != E_PROTO_REQ_READY_FOR_DATA) {
-			dwRet = E_RET_FAIL;
-		}
-	}
-	else if (dwSentResProtocolNumber == E_PROTO_REQ_NEXT_SHOW_COMMENT_LIST) {
-		if (dwProtocolNumber != E_PROTO_REQ_READY_FOR_DATA) {
-			dwRet = E_RET_FAIL;
-		}
-	}
-	else {
-		// nothing
-	}
-
 	return dwRet;
 }
 
@@ -96,9 +70,9 @@ DWORD CAYWorkerThread::ParseReceivedDataByJSON(const std::string &refstrReceived
 		return E_RET_FAIL;
 	}
 
-	refstRecvHeaderData.dwReqNumber			= ::atoi(JsonRoot.get("req", 0).asString().c_str());
-	refstRecvHeaderData.dwNextReqNumber		= ::atoi(JsonRoot.get("next_req", 0).asString().c_str());
-	refstRecvHeaderData.dwNextSizeOfData	= ::atoi(JsonRoot.get("next_size", 0).asString().c_str());
+	refstRecvHeaderData.dwReqNumber			= JsonRoot.get("req", 0).asInt();
+	refstRecvHeaderData.dwNextReqNumber		= JsonRoot.get("next_req", 0).asInt();
+	refstRecvHeaderData.dwNextSizeOfData	= JsonRoot.get("next_size", 0).asInt();
 	return E_RET_SUCCESS;
 }
 
@@ -164,8 +138,7 @@ DWORD CAYWorkerThread::ParseDataByJSON(VOID *pProto, ST_RECV_DATA &refstRecvData
 		return E_RET_FAIL;
 	}
 
-	std::string strRequest = JsonRoot.get("req", 0).asString();
-	DWORD dwRequest = ::atoi(strRequest.c_str());
+	DWORD dwRequest = JsonRoot.get("req", 0).asInt();
 
 	///////////// User //////////////
 	if (dwRequest == E_PROTO_REQ_USER_SIGN_IN || dwRequest == E_PROTO_REQ_USER_SIGN_UP) {
@@ -174,8 +147,8 @@ DWORD CAYWorkerThread::ParseDataByJSON(VOID *pProto, ST_RECV_DATA &refstRecvData
 	}
 	else if (dwRequest == E_PROTO_REQ_RECOMMENDED_STORE) {
 		((ST_PROTOCOL_REQ_201_RECOMMENDED_STORE *)pProto)->dwRequest					= dwRequest;
-		((ST_PROTOCOL_REQ_201_RECOMMENDED_STORE *)pProto)->dwLocation					= ::atoi(JsonRoot["data"].get("location", 0).asString().c_str());
-		((ST_PROTOCOL_REQ_201_RECOMMENDED_STORE *)pProto)->dwNumberOfRequestedMaximun	= ::atoi(JsonRoot["data"].get("res_number", 0).asString().c_str());
+		((ST_PROTOCOL_REQ_201_RECOMMENDED_STORE *)pProto)->dwLocation					= JsonRoot["data"].get("location", 0).asInt();
+		((ST_PROTOCOL_REQ_201_RECOMMENDED_STORE *)pProto)->dwNumberOfRequestedMaximun	= JsonRoot["data"].get("res_number", 0).asInt();
 	}
 	else if (dwRequest == E_PROTO_REQ_RECOMMENDED_MENU) {
 		((ST_PROTOCOL_REQ_202_RECOMMENDED_MENU *)pProto)->dwRequest						= dwRequest;
@@ -299,8 +272,7 @@ DWORD CAYWorkerThread::RequestToDataBase(VOID *pProtoRoot, ST_DB_RESULT &refstDB
 								"store_info_etc, "
 								"location, "
 								"store_short_intro, "
-								"store_hashtag, "
-								"store_address, "
+								"store_hash_tag, "
 								"store_tel, "
 								"store_open_time, "
 								"store_close_time "
@@ -519,7 +491,7 @@ DWORD CAYWorkerThread::SendSimpleResByProtocolNumber(DWORD dwWantedProtocolNumbe
 	Json::Value JsonRoot;
 	std::string strSendData;
 
-	JsonRoot["res"] = std::to_string(dwWantedProtocolNumber);
+	JsonRoot["res"] = static_cast<int>(dwWantedProtocolNumber);
 
 	Json::StyledWriter JsonWriter;
 	strSendData = JsonWriter.write(JsonRoot);
@@ -539,8 +511,8 @@ DWORD CAYWorkerThread::SendResDataToClientByProtocolNumber(DWORD dwProtocolNumbe
 		Json::Value JsonRoot;
 		std::string strSendData;
 
-		JsonRoot["res"] = std::to_string(dwProtocolNumberToSend);
-		JsonRoot["next_size"] = std::to_string(refstSendData.strSendData.size());
+		JsonRoot["res"]			= static_cast<int>(dwProtocolNumberToSend);
+		JsonRoot["next_size"]	= static_cast<int>(refstSendData.strSendData.size());
 
 		Json::StyledWriter JsonWriter;
 		strSendData = JsonWriter.write(JsonRoot);
@@ -572,7 +544,7 @@ DWORD CAYWorkerThread::SendDataToClient(std::string &refstrSendData)
 			continue;
 		}
 		else if (nRet == nSizeOfData) {
-			DebugLog("Success to send data to client [%s]", refstrSendData.c_str());
+			DebugLog("Success to send data to client");
 			bContinue = FALSE;
 			continue;
 		}
@@ -1331,12 +1303,11 @@ DWORD CAYWorkerThread::MakeSendPacket(DWORD dwNumberOfRequest, ST_DB_RESULT &ref
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 DWORD CAYWorkerThread::MakeSendPacket_201_Data(ST_DB_RESULT &refstDBResult, ST_SEND_DATA &refstSendData)
 {
-	Json::Value JsonRoot;
 	Json::Value JsonResData;
 	Json::Value JsonStores;
 
 	std::vector<ST_DB_RESULT_LINE>::iterator iterstDBResultLine;
-	for (iterstDBResultLine = refstDBResult.vecstDBResultLines.begin(); iterstDBResultLine != refstDBResult.vecstDBResultLines.end(); iterstDBResultLine) {
+	for (iterstDBResultLine = refstDBResult.vecstDBResultLines.begin(); iterstDBResultLine != refstDBResult.vecstDBResultLines.end(); iterstDBResultLine++) {
 		/*
 			DB Parameter
 			1. store_evaluation_taste
@@ -1356,7 +1327,7 @@ DWORD CAYWorkerThread::MakeSendPacket_201_Data(ST_DB_RESULT &refstDBResult, ST_S
 		*/
 
 		ST_DB_RESULT_LINE stDBResultLine = (*iterstDBResultLine);
-		if (stDBResultLine.vecstrResult.size() != 14) {
+		if (stDBResultLine.vecstrResult.size() != 13) {
 			break;
 		}
 
@@ -1371,18 +1342,17 @@ DWORD CAYWorkerThread::MakeSendPacket_201_Data(ST_DB_RESULT &refstDBResult, ST_S
 		stProtoRes201RecommendedStore.dwLocation					= ::atoi(stDBResultLine.vecstrResult[7].c_str());
 		stProtoRes201RecommendedStore.strStoreShortIntro			= stDBResultLine.vecstrResult[8];
 		stProtoRes201RecommendedStore.strStoreHashTag				= stDBResultLine.vecstrResult[9];
-		stProtoRes201RecommendedStore.strStoreAddress				= stDBResultLine.vecstrResult[10];
-		stProtoRes201RecommendedStore.strStoreTel					= stDBResultLine.vecstrResult[11];
-		stProtoRes201RecommendedStore.strStoreOpenTime				= stDBResultLine.vecstrResult[12];
-		stProtoRes201RecommendedStore.strStoreCloseTime				= stDBResultLine.vecstrResult[13];
+		stProtoRes201RecommendedStore.strStoreTel					= stDBResultLine.vecstrResult[10];
+		stProtoRes201RecommendedStore.strStoreOpenTime				= stDBResultLine.vecstrResult[11];
+		stProtoRes201RecommendedStore.strStoreCloseTime				= stDBResultLine.vecstrResult[12];
 
 		Json::Value JsonStoreEvaluation;
 		Json::Value JsonStorePriceRange;
 		Json::Value JsonStoreShortInfo;
 
-		JsonStoreEvaluation["taste"] = std::to_string(stProtoRes201RecommendedStore.dwStoreEvaluationTaste);
-		JsonStoreEvaluation["kind"] = std::to_string(stProtoRes201RecommendedStore.dwStoreEvaluationKind);
-		JsonStoreEvaluation["mood"] = std::to_string(stProtoRes201RecommendedStore.dwStoreEvaluationMood);
+		JsonStoreEvaluation["taste"]	= static_cast<int>(stProtoRes201RecommendedStore.dwStoreEvaluationTaste);
+		JsonStoreEvaluation["kind"]		= static_cast<int>(stProtoRes201RecommendedStore.dwStoreEvaluationKind);
+		JsonStoreEvaluation["mood"]		= static_cast<int>(stProtoRes201RecommendedStore.dwStoreEvaluationMood);
 
 		// To do ...
 		JsonStorePriceRange["min_price"] = "";
@@ -1394,14 +1364,14 @@ DWORD CAYWorkerThread::MakeSendPacket_201_Data(ST_DB_RESULT &refstDBResult, ST_S
 		JsonStoreShortInfo["number_of_comment"] = "";
 
 		Json::Value JsonStore;
-		JsonStore["store_id"] = std::to_string(stProtoRes201RecommendedStore.dwStoreID);
-		JsonStore["store_name"] = stProtoRes201RecommendedStore.strStoreName;
-		JsonStore["store_location"] = std::to_string(stProtoRes201RecommendedStore.dwStoreLocation);
-		JsonStore["store_short_intro"] = stProtoRes201RecommendedStore.strStoreShortIntro;
-		JsonStore["store_hashtag"] = stProtoRes201RecommendedStore.strStoreHashTag;
-		JsonStore["store_evaluation"] = JsonStoreEvaluation;
-		JsonStore["store_price_range"] = JsonStorePriceRange;
-		JsonStore["store_short_info"] = JsonStoreShortInfo;
+		JsonStore["store_id"]			= static_cast<int>(stProtoRes201RecommendedStore.dwStoreID);
+		JsonStore["store_name"]			= stProtoRes201RecommendedStore.strStoreName;
+		JsonStore["store_location"]		= static_cast<int>(stProtoRes201RecommendedStore.dwStoreLocation);
+		JsonStore["store_short_intro"]	= stProtoRes201RecommendedStore.strStoreShortIntro;
+		JsonStore["store_hashtag"]		= stProtoRes201RecommendedStore.strStoreHashTag;
+		JsonStore["store_evaluation"]	= JsonStoreEvaluation;
+		JsonStore["store_price_range"]	= JsonStorePriceRange;
+		JsonStore["store_short_info"]	= JsonStoreShortInfo;
 
 		JsonStores.append(JsonStore);
 	}
@@ -1409,16 +1379,16 @@ DWORD CAYWorkerThread::MakeSendPacket_201_Data(ST_DB_RESULT &refstDBResult, ST_S
 	Json::Value JsonRetNumber;
 	Json::Value JsonStoresArray;
 
-	JsonRetNumber["ret_number"] = std::to_string(dwRetNumber);
-	JsonStoresArray["stores"] = JsonStores;
+	JsonRetNumber["ret_number"]			= static_cast<int>(dwRetNumber);
+	JsonStoresArray["stores"]			= JsonStores;
 
-	JsonResData["res"] = std::to_string(E_PROTO_RES_FINISH);
-	JsonResData["data"] = JsonRetNumber;
-	JsonResData["data"] = JsonStoresArray;
+	JsonResData["res"]					= E_PROTO_RES_FINISH;
+	JsonResData["data"]					= JsonRetNumber;
+	JsonResData["data"]					= JsonStoresArray;
 
 	Json::StyledWriter JsonWriter;
 	std::string strSendData;
-	strSendData = JsonWriter.write(JsonRoot);
+	strSendData = JsonWriter.write(JsonResData);
 
 	refstSendData.strSendData = strSendData;
 
@@ -1693,7 +1663,6 @@ DWORD CAYWorkerThread::StartWorkerThread(char *pReceiveBuf, DWORD dwByteTransfer
 		if (dwRet != E_RET_SUCCESS) {
 			throw std::exception("Invalid first connection protocol");
 		}
-
 		dwRet = BranchByRequestNumber(stRecvHeaderData);
 		if (dwRet != E_RET_SUCCESS) {
 			throw std::exception("Invalid next protocol");

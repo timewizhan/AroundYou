@@ -194,6 +194,7 @@ DWORD CAYServer::InitServerValue(DWORD dwPort, DWORD dwBackLog)
 	m_stServerInit.stServerAddrIn.sin_port = ::htons((unsigned short)dwPort);
 
 	std::string strAddress = vecstrGetAddress[0].c_str();
+	//std::string strAddress = "165.132.120.160";
 	::inet_pton(AF_INET, strAddress.c_str(), &m_stServerInit.stServerAddrIn.sin_addr.s_addr);
 
 	int nRet;
