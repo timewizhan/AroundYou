@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+    android:id="@+id/includeMainView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    layout="@layout/main_view_header">
+</include>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff">
+
+        <RelativeLayout
+            android:layout_width="180dp"
+            android:layout_height="80dp">
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="40dp"
+                android:src="@drawable/list_recommend_store_enable"
+                android:id="@+id/imageListRecommendStore"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:src="@drawable/main_divide_bar"
+                android:id="@+id/imageListBar"
+                android:layout_alignTop="@+id/imageListRecommendStore"
+                android:layout_toRightOf="@+id/imageListRecommendStore"
+                android:layout_toEndOf="@+id/imageListRecommendStore" />
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="40dp"
+                android:src="@drawable/list_recommend_menu_disable"
+                android:id="@+id/imageListRecommendMenu"
+                android:layout_alignTop="@+id/imageListBar"
+                android:layout_toRightOf="@+id/imageListBar"
+                android:layout_toEndOf="@+id/imageListBar" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="80dp"
+                android:src="@drawable/list_order_frame"
+                android:id="@+id/imageOrderFrame" />
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="20dp"
+                android:src="@drawable/list_order_popular_enable"
+                android:id="@+id/imageOrderPopular"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="10dp" />
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="20dp"
+                android:src="@drawable/list_order_hangul_disable"
+                android:id="@+id/imageOrderHangul"
+                android:layout_alignTop="@+id/imageOrderPopular"
+                android:layout_toRightOf="@+id/imageOrderPopular"
+                android:layout_toEndOf="@+id/imageOrderPopular"
+                android:layout_marginLeft="13dp" />
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="15dp"
+                android:src="@drawable/list_order_price_diable"
+                android:id="@+id/imageOrderPrice"
+                android:layout_alignTop="@+id/imageOrderHangul"
+                android:layout_toRightOf="@+id/imageOrderHangul"
+                android:layout_toEndOf="@+id/imageOrderHangul"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="2dp" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/listView"
+        android:background="#ffffff" />
+
+</LinearLayout>

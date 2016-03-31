@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/includeDetailMenuMainView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/detail_view_header">
+    </include>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="20dp"
+                android:id="@+id/imageDetailMenu"
+                android:src="@drawable/detail_menu"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="( 1 )"
+                android:id="@+id/textMenuCount"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/imageDetailMenu"
+                android:textColor="#000000"
+                android:textSize="10dp" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="- 각 메뉴 왼쪽의 점수를 터치하면, 해당 메뉴에 점수를 부여할 수 있습니다."
+            android:id="@+id/textMenuInfo"
+            android:textColor="#ff544f"
+            android:textSize="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:background="#ffffff">
+
+        <WebView
+            android:layout_width="300dp"
+            android:layout_height="200dp"
+            android:id="@+id/webViewDetailMenu"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp" />
+
+        <ImageView
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:src="@drawable/rating_enable"
+            android:id="@+id/imagePos1"
+            android:layout_toLeftOf="@+id/imagePos2"
+            android:layout_below="@+id/webViewDetailMenu"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp" />
+
+        <ImageView
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:src="@drawable/rating_enable"
+            android:id="@+id/imagePos2"
+            android:layout_toLeftOf="@+id/imagePos3"
+            android:layout_below="@+id/webViewDetailMenu"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp" />
+
+        <ImageView
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:src="@drawable/rating_enable"
+            android:id="@+id/imagePos3"
+            android:layout_below="@+id/webViewDetailMenu"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp" />
+
+        <ImageView
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:src="@drawable/rating_enable"
+            android:id="@+id/imagePos4"
+            android:layout_toRightOf="@+id/imagePos3"
+            android:layout_below="@+id/webViewDetailMenu"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp" />
+
+        <ImageView
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:src="@drawable/rating_enable"
+            android:id="@+id/imagePos5"
+            android:layout_toRightOf="@+id/imagePos4"
+            android:layout_below="@+id/webViewDetailMenu"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include
+            android:id="@+id/includeDetailMenuMainView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            layout="@layout/simple_info_detail">
+        </include>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ffffff">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="30dp"
+            android:src="@drawable/select_etc"
+            android:id="@+id/imageSelectETC"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="10dp" />
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="30dp"
+            android:src="@drawable/select_sms"
+            android:id="@+id/imageSelectSMS"
+            android:layout_alignTop="@+id/imageSelectETC"
+            android:layout_toRightOf="@+id/imageSelectETC"
+            android:layout_toEndOf="@+id/imageSelectETC"
+            android:layout_marginLeft="5dp" />
+
+        <ImageView
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:src="@drawable/select_kakao"
+            android:id="@+id/imageSelectKakao"
+            android:layout_alignTop="@+id/imageSelectSMS"
+            android:layout_toRightOf="@+id/imageSelectSMS"
+            android:layout_toEndOf="@+id/imageSelectSMS"
+            android:layout_marginLeft="5dp" />
+
+        <ImageView
+            android:layout_width="90dp"
+            android:layout_height="30dp"
+            android:src="@drawable/select_facebook"
+            android:id="@+id/imageFaceBook"
+            android:layout_alignTop="@+id/imageSelectKakao"
+            android:layout_toRightOf="@+id/imageSelectKakao"
+            android:layout_toEndOf="@+id/imageSelectKakao"
+            android:layout_marginLeft="5dp" />
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="70dp"
+            android:id="@+id/imageDetailGotoStore"
+            android:src="@drawable/detail_goto_store"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="5dp" />
+    </RelativeLayout>
+
+</LinearLayout>

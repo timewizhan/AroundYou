@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -124,8 +125,20 @@ public class LoginActivity extends Activity {
             int nAllowedPos = (m_nBoundaryValue / 3) * 2;
             if (nTouchX > nAllowedPos) {
                 Log.i("LoginActivity", "Go to next activity");
-                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                goToNextAcitivty();
             }
+        }
+
+        private void goToNextAcitivty() {
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+
+            PhoneInfo phoneInfo = new PhoneInfo();
+            DataLoginToMain dataLoginToMain = new DataLoginToMain();
+            dataLoginToMain.setPhoneNumber(phoneInfo.getPhoneNumber());
+
+            intent.putExtra("DataLoginToMain", dataLoginToMain);
+
+            startActivity(intent);
         }
     }
 
@@ -151,6 +164,18 @@ public class LoginActivity extends Activity {
 
         public int getTouchY() {
             return m_iTouchY;
+        }
+    }
+
+    class PhoneInfo {
+        TelephonyManager m_TelephonyManager;
+
+        public PhoneInfo() {
+            m_TelephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        }
+
+        public String getPhoneNumber() {
+            return m_TelephonyManager.getLine1Number();
         }
     }
 

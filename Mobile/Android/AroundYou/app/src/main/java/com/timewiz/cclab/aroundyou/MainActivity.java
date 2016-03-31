@@ -3,9 +3,11 @@ package com.timewiz.cclab.aroundyou;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
@@ -21,7 +23,7 @@ import java.util.ArrayList;
 /**
  * Created by jmhan on 2016-03-13.
  */
-public class MainActivity extends Activity implements View.OnClickListener {
+public class MainActivity extends Activity implements View.OnClickListener{
     private PreProcess m_PreProcess;
     private WebViewImage m_WebViewImage;
     private DetailInfo m_DetailInfo;
@@ -36,6 +38,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         setConstuctor();
         setListener();
+        setDeliveredDataFromBefore();
     }
 
     private ImageView m_imageSlideBarMenu;
@@ -73,6 +76,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
         m_imageLeftArrow.setOnClickListener(this);
         m_imageRightArrow.setOnClickListener(this);
         m_layoutMainView.setOnClickListener(this);
+    }
+
+    private void setDeliveredDataFromBefore() {
+        Intent intent = getIntent();
+        DataLoginToMain dataLoginToMain = (DataLoginToMain) intent.getSerializableExtra("DataLoginToMain");
+
+        String strPhoneNumber = dataLoginToMain.getNumber();
+        UserAccount.getInstance().setPhoneNumber(strPhoneNumber);
     }
 
     @Override
@@ -149,7 +160,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         m_DetailInfo.clickNextDetailInfo(m_nCurrentPos);
     }
 
-    private class WebViewImage {
+
+    private class WebViewImage implements View.OnTouchListener{
         private WebView m_webView;
         public WebViewImage() {
             m_webView = (WebView) findViewById(R.id.webViewImageFromServer);
@@ -157,6 +169,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             m_webView.setVerticalScrollBarEnabled(false);
             m_webView.setHorizontalScrollBarEnabled(false);
             m_webView.setInitialScale(100);
+            m_webView.setOnTouchListener(this);
         }
 
         public void clickNextWebView(int nPos) {
@@ -178,6 +191,23 @@ public class MainActivity extends Activity implements View.OnClickListener {
             String strURL = strBasicWebViewURL + "/" + dwLocation + "/" + dwStoreID + "/" + strStoreOrMenu;
 
             return strURL;
+        }
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            Intent intent = null;
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    if (m_nStoreOrMenu == 0) {
+                        intent = new Intent(MainActivity.this, StoreActivity.class);
+                    }
+                    else {
+                        intent = new Intent(MainActivity.this, MenuActivity.class);
+                    }
+                    startActivity(intent);
+                    break;
+            }
+            return false;
         }
     }
 

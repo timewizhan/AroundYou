@@ -110,10 +110,26 @@ public class Communication {
         Login Activity
         101 : recommended store
     */
-    private Errno Communication_Proto_101() {
-        Errno errno = Errno.E_RET_SUCCESS;
+    private String Communication_Proto_101(PROTOCOL_ROOT protoRoot) {
+        Errno errno = Errno.E_RET_FAIL;
 
-        return errno;
+        PROTOCOL_REQ_101_ABOUT_USER protoReqAboutUser = (PROTOCOL_REQ_101_ABOUT_USER) protoRoot;
+        protoReqAboutUser.strCallID = ((PROTOCOL_REQ_101_ABOUT_USER) protoRoot).strCallID;
+        String strProtoReqAboutUser = m_JSONFactory.buildReqForProto101(protoReqAboutUser);
+
+        errno = Communication_Header_Common(E_PROTOCOL_REQUEST_TYPE.E_PROTO_REQ_USER_LOG_IN, strProtoReqAboutUser.length());
+        if (errno != Errno.E_RET_SUCCESS) {
+            return "";
+        }
+
+        String strRecvData;
+        strRecvData = Communication_Common(strProtoReqAboutUser, 0);
+        PROTOCOL_RES_DEFAULT protoResDefault = m_JSONFactory.buildResDefault(strRecvData);
+        if (protoResDefault.nResponse != E_PROTOCOL_RESPONSE_TYPE.E_PROTO_RES_FINISH.ordinal()) {
+            Log.e("Communication", "Not match with response protocol");
+            return "";
+        }
+        return strRecvData;
     }
 
     /*
@@ -143,6 +159,143 @@ public class Communication {
 
         String strProtoResRecommendedStore = m_JSONFactory.buildReqDefault(E_PROTOCOL_REQUEST_TYPE.E_PROTO_REQ_READY_FOR_DATA);
         strRecvData = Communication_Common(strProtoResRecommendedStore, protoResDefaultArg.nNextSize);
+
+        PROTOCOL_RES_DEFAULT protoResDefault = m_JSONFactory.buildResDefault(strRecvData);
+        if (protoResDefault.nResponse != E_PROTOCOL_RESPONSE_TYPE.E_PROTO_RES_FINISH.ordinal()) {
+            Log.e("Communication", "Not match with response protocol");
+            return "";
+        }
+        return strRecvData;
+    }
+
+    private String Communication_Proto_202(PROTOCOL_ROOT protoRoot) {
+        Errno errno = Errno.E_RET_FAIL;
+
+        PROTOCOL_REQ_202_RECOMMENDED_MENU protoReqRecommendedMenu = (PROTOCOL_REQ_202_RECOMMENDED_MENU) protoRoot;
+        protoReqRecommendedMenu.nNumberOfRequsetedMaximum = 10;
+        String strProtoReqRecommendedMenu = m_JSONFactory.buildReqForProto202(protoReqRecommendedMenu);
+
+        errno = Communication_Header_Common(E_PROTOCOL_REQUEST_TYPE.E_PROTO_REQ_RECOMMENDED_MENU, strProtoReqRecommendedMenu.length());
+        if (errno != Errno.E_RET_SUCCESS) {
+            return "";
+        }
+
+        String strRecvData;
+        strRecvData = Communication_Common(strProtoReqRecommendedMenu, 0);
+        PROTOCOL_RESQ_DEFAULT_ARG protoResDefaultArg = m_JSONFactory.buildResDefaultArg(strRecvData);
+        if (protoResDefaultArg.nResponse != E_PROTOCOL_RESPONSE_TYPE.E_PROTO_RES_NEXT_STEP_EXIST.ordinal()) {
+            Log.e("Communication", "Not match with response protocol");
+            return "";
+        }
+
+        String strProtoResRecommendedMenu = m_JSONFactory.buildReqDefault(E_PROTOCOL_REQUEST_TYPE.E_PROTO_REQ_READY_FOR_DATA);
+        strRecvData = Communication_Common(strProtoResRecommendedMenu, protoResDefaultArg.nNextSize);
+
+        PROTOCOL_RES_DEFAULT protoResDefault = m_JSONFactory.buildResDefault(strRecvData);
+        if (protoResDefault.nResponse != E_PROTOCOL_RESPONSE_TYPE.E_PROTO_RES_FINISH.ordinal()) {
+            Log.e("Communication", "Not match with response protocol");
+            return "";
+        }
+        return strRecvData;
+    }
+
+    /*
+        Main Activity
+        301 : select store
+        302 : select menu
+     */
+    private String Communication_Proto_301(PROTOCOL_ROOT protoRoot) {
+        Errno errno = Errno.E_RET_FAIL;
+
+        PROTOCOL_REQ_301_SELECTED_STORE protoReqSelectedStore = (PROTOCOL_REQ_301_SELECTED_STORE) protoRoot;
+        String strProtoReqSelectedStore = m_JSONFactory.buildReqForProto301(protoReqSelectedStore);
+
+        errno = Communication_Header_Common(E_PROTOCOL_REQUEST_TYPE.E_PROTO_REQ_SELECTED_STORE, strProtoReqSelectedStore.length());
+        if (errno != Errno.E_RET_SUCCESS) {
+            return "";
+        }
+
+        String strRecvData;
+        strRecvData = Communication_Common(strProtoReqSelectedStore, 0);
+        PROTOCOL_RESQ_DEFAULT_ARG protoResDefaultArg = m_JSONFactory.buildResDefaultArg(strRecvData);
+        if (protoResDefaultArg.nResponse != E_PROTOCOL_RESPONSE_TYPE.E_PROTO_RES_NEXT_STEP_EXIST.ordinal()) {
+            Log.e("Communication", "Not match with response protocol");
+            return "";
+        }
+
+        String strProtoResSelectedStore = m_JSONFactory.buildReqDefault(E_PROTOCOL_REQUEST_TYPE.E_PROTO_REQ_READY_FOR_DATA);
+        strRecvData = Communication_Common(strProtoResSelectedStore, protoResDefaultArg.nNextSize);
+
+        PROTOCOL_RES_DEFAULT protoResDefault = m_JSONFactory.buildResDefault(strRecvData);
+        if (protoResDefault.nResponse != E_PROTOCOL_RESPONSE_TYPE.E_PROTO_RES_FINISH.ordinal()) {
+            Log.e("Communication", "Not match with response protocol");
+            return "";
+        }
+        return strRecvData;
+    }
+
+    private String Communication_Proto_302(PROTOCOL_ROOT protoRoot) {
+        Errno errno = Errno.E_RET_FAIL;
+
+        PROTOCOL_REQ_302_SELECTED_MENU protoReqSelectedMenu = (PROTOCOL_REQ_302_SELECTED_MENU) protoRoot;
+        String strProtoReqSelectedMenu = m_JSONFactory.buildReqForProto301(protoReqSelectedMenu);
+
+        errno = Communication_Header_Common(E_PROTOCOL_REQUEST_TYPE.E_PROTO_REQ_SELECTED_MENU, strProtoReqSelectedMenu.length());
+        if (errno != Errno.E_RET_SUCCESS) {
+            return "";
+        }
+
+        String strRecvData;
+        strRecvData = Communication_Common(strProtoReqSelectedMenu, 0);
+        PROTOCOL_RESQ_DEFAULT_ARG protoResDefaultArg = m_JSONFactory.buildResDefaultArg(strRecvData);
+        if (protoResDefaultArg.nResponse != E_PROTOCOL_RESPONSE_TYPE.E_PROTO_RES_NEXT_STEP_EXIST.ordinal()) {
+            Log.e("Communication", "Not match with response protocol");
+            return "";
+        }
+
+        String strProtoResSelectedMenu = m_JSONFactory.buildReqDefault(E_PROTOCOL_REQUEST_TYPE.E_PROTO_REQ_READY_FOR_DATA);
+        strRecvData = Communication_Common(strProtoResSelectedMenu, protoResDefaultArg.nNextSize);
+
+        PROTOCOL_RES_DEFAULT protoResDefault = m_JSONFactory.buildResDefault(strRecvData);
+        if (protoResDefault.nResponse != E_PROTOCOL_RESPONSE_TYPE.E_PROTO_RES_FINISH.ordinal()) {
+            Log.e("Communication", "Not match with response protocol");
+            return "";
+        }
+        return strRecvData;
+    }
+
+    /*
+        401 : pop up
+     */
+
+    /*
+        501 : comment input
+        502 : comment list
+
+        Store Activity
+        503 : menu view
+     */
+    private String Communication_Proto_503(PROTOCOL_ROOT protoRoot) {
+        Errno errno = Errno.E_RET_FAIL;
+
+        PROTOCOL_REQ_503_DETAIL_MENU protoReqDetailMenu = (PROTOCOL_REQ_503_DETAIL_MENU) protoRoot;
+        String strProtoReqDetailMenu = m_JSONFactory.buildReqForProto503(protoReqDetailMenu);
+
+        errno = Communication_Header_Common(E_PROTOCOL_REQUEST_TYPE.E_PROTO_REQ_DETAIL_MENU, strProtoReqDetailMenu.length());
+        if (errno != Errno.E_RET_SUCCESS) {
+            return "";
+        }
+
+        String strRecvData;
+        strRecvData = Communication_Common(strProtoReqDetailMenu, 0);
+        PROTOCOL_RESQ_DEFAULT_ARG protoResDefaultArg = m_JSONFactory.buildResDefaultArg(strRecvData);
+        if (protoResDefaultArg.nResponse != E_PROTOCOL_RESPONSE_TYPE.E_PROTO_RES_NEXT_STEP_EXIST.ordinal()) {
+            Log.e("Communication", "Not match with response protocol");
+            return "";
+        }
+
+        String strProtoResDetailMenu = m_JSONFactory.buildReqDefault(E_PROTOCOL_REQUEST_TYPE.E_PROTO_REQ_READY_FOR_DATA);
+        strRecvData = Communication_Common(strProtoResDetailMenu, protoResDefaultArg.nNextSize);
 
         PROTOCOL_RES_DEFAULT protoResDefault = m_JSONFactory.buildResDefault(strRecvData);
         if (protoResDefault.nResponse != E_PROTOCOL_RESPONSE_TYPE.E_PROTO_RES_FINISH.ordinal()) {
