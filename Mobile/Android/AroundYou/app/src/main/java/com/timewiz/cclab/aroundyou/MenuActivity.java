@@ -7,17 +7,21 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.TextView;
 
 /**
  * Created by jmhan on 2016-03-29.
  */
 public class MenuActivity extends Activity{
-    private PreProcess m_PreProcess;
     private Communication m_Communication;
     private PROTOCOL_ROOT protoReq300;
     private PROTOCOL_RES_302_SELECT_MENU m_protoSelectMenu;
     private SimpleMenuDetail m_SimpleMenuDetail;
+    private DataMainToMenu dataMainToMenu;
+    private WebViewImage m_WebViewImage;
+    private DetailViewHeader m_DetailViewHeader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,23 +34,25 @@ public class MenuActivity extends Activity{
     }
 
     private void setConstuctor() {
-        m_PreProcess = new PreProcess();
         m_Communication = new Communication();
         m_protoSelectMenu = new PROTOCOL_RES_302_SELECT_MENU();
         m_SimpleMenuDetail = new SimpleMenuDetail();
+        m_WebViewImage = new WebViewImage();
+
+        View v = findViewById(android.R.id.content).getRootView();
+        //m_DetailViewHeader = new DetailViewHeader(v);
     }
 
     private void setDeliveredDataFromBefore() {
-        /*
         Intent intent = getIntent();
-        DataMainToMenu dataMainToMenu = (DataMainToMenu) intent.getSerializableExtra("DataMainToMenu");
+        dataMainToMenu = (DataMainToMenu) intent.getSerializableExtra("DataMainToMenu");
 
         PROTOCOL_REQ_302_SELECTED_MENU protoReq302SelectMenu = new PROTOCOL_REQ_302_SELECTED_MENU();
         protoReq302SelectMenu.nStoreID = dataMainToMenu.dwStoreID;
-        protoReq302SelectMenu.nCallID = 0;
         protoReq302SelectMenu.nLocation = dataMainToMenu.dwLocation;
+        protoReq302SelectMenu.strCallID = dataMainToMenu.strCallID;
 
-        protoReq300 = (PROTOCOL_ROOT) protoReq302SelectMenu;*/
+        protoReq300 = (PROTOCOL_ROOT) protoReq302SelectMenu;
     }
 
     private void setSimpleInfo() {
@@ -54,11 +60,13 @@ public class MenuActivity extends Activity{
         SimpleInfo simpleInfo = new SimpleInfo(v);
 
         SimpleInfoData simpleInfoData = new SimpleInfoData();
+        simpleInfoData.nStoreEvaluationTaste = dataMainToMenu.dwMenuEvaluation;
+        simpleInfoData.nStoreEvaluationKind = dataMainToMenu.dwMenuEvaluation;
+        simpleInfoData.nStoreEvaluationMood = dataMainToMenu.dwMenuEvaluation;
+        simpleInfoData.strStoreName = dataMainToMenu.strMenuName;
+        simpleInfoData.strStoreHashTag = "";
+        simpleInfoData.strStoreShortIntro = "";
 
-        // Test
-        simpleInfoData.dwStoreEvaluationKind = 1;
-        simpleInfoData.dwStoreEvaluationMood = 1;
-        simpleInfoData.dwStoreEvaluationTaste = 1;
         simpleInfo.setSimpleDetailInfo(simpleInfoData);
     }
 
@@ -66,7 +74,32 @@ public class MenuActivity extends Activity{
     protected void onStart() {
         super.onStart();
 
-        //m_PreProcess.execute();
+        m_SimpleMenuDetail.setMenuDetail();
+        m_WebViewImage.viewWebView();
+    }
+
+    private class WebViewImage{
+        private WebView m_webView;
+        public WebViewImage() {
+            m_webView = (WebView) findViewById(R.id.webViewDetailMenu);
+            m_webView.setWebViewClient(new WebViewClient());
+            m_webView.setVerticalScrollBarEnabled(false);
+            m_webView.setHorizontalScrollBarEnabled(false);
+            m_webView.setInitialScale(100);
+        }
+
+        public void viewWebView() {
+            String strURL = buildWebViewURL(dataMainToMenu.dwLocation, dataMainToMenu.dwStoreID);
+            m_webView.loadUrl(strURL);
+        }
+
+        private final String strBasicWebViewURL = "http://165.132.120.155:4000";
+        private String buildWebViewURL(int dwLocation, int dwStoreID) {
+            String strStoreOrMenu = "menu";
+            String strURL = strBasicWebViewURL + "/" + dwLocation + "/" + dwStoreID + "/" + strStoreOrMenu;
+
+            return strURL;
+        }
     }
 
     private class SimpleMenuDetail {
@@ -78,46 +111,6 @@ public class MenuActivity extends Activity{
 
         public void setMenuDetail() {
             m_textDetailMenu.setText("( " + m_protoSelectMenu.nMenuTotalCount + " )");
-        }
-    }
-
-    private class PreProcess extends AsyncTask<Void, Void, Void> {
-        ProgressDialog asyncDialog = new ProgressDialog(MenuActivity.this);
-
-        @Override
-        protected void onPreExecute() {
-            asyncDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            asyncDialog.setMessage("Loading...");
-
-            // show dialog
-            asyncDialog.show();
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            try {
-                Errno errno;
-                String strOutData;
-                strOutData = m_Communication.communicateWithServer(E_PROTOCOL_TYPE.E_PROTO_SELECT_302, protoReq300);
-                if (strOutData.length() < 1) {
-                    throw new Exception();
-                }
-
-                JSONFactory jsonFactory = JSONFactory.getJSONInstance();
-                m_protoSelectMenu = jsonFactory.buildResForProto302(strOutData);
-            } catch (Exception e) {
-                Log.e("StoreActivity", "Fail to operate works in background");
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            asyncDialog.dismiss();
-            super.onPostExecute(result);
-
-            Log.i("StoreActivity", "Complete receiving data from server");
         }
     }
 }

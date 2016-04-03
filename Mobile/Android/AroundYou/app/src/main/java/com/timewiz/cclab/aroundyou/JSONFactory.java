@@ -62,7 +62,7 @@ public class JSONFactory {
         JSONObject jsonRoot = new JSONObject();
         String strResult = null;
         try {
-            jsonRoot.put("req", E_PROTOCOL_REQUEST_TYPE.E_PROTO_REQ_USER_SIGN_IN.ordinal());
+            jsonRoot.put("req", E_PROTOCOL_REQUEST_TYPE.E_PROTO_REQ_USER_LOG_IN.ordinal());
 
             JSONObject jsonData = new JSONObject();
             jsonData.put("call_id", proto.strCallID);
@@ -129,7 +129,7 @@ public class JSONFactory {
             JSONObject jsonData = new JSONObject();
             jsonData.put("location", proto.nLocation);
             jsonData.put("store_id", proto.nStoreID);
-            jsonData.put("call_id", proto.nCallID);
+            jsonData.put("call_id", proto.strCallID);
 
             jsonRoot.put("data", jsonData);
 
@@ -151,7 +151,7 @@ public class JSONFactory {
             JSONObject jsonData = new JSONObject();
             jsonData.put("location", proto.nLocation);
             jsonData.put("store_id", proto.nStoreID);
-            jsonData.put("call_id", proto.nCallID);
+            jsonData.put("call_id", proto.strCallID);
 
             jsonRoot.put("data", jsonData);
 
@@ -313,20 +313,13 @@ public class JSONFactory {
             JSONObject jsonRoot = (JSONObject) jsonParser.parse(strInput);
 
             JSONObject jsonData = (JSONObject) jsonRoot.get("data");
-            JSONObject jsonStoreInfo = (JSONObject) jsonData.get("store_info");
-            protoRes301.strStoreAddress = (String) jsonStoreInfo.get("store_address");
-            protoRes301.strStoreTel = (String) jsonStoreInfo.get("store_tel");
-            protoRes301.strStoreTime = (String) jsonStoreInfo.get("store_time");
-
-            JSONObject jsonUser = (JSONObject) jsonData.get("user");
-            protoRes301.nStoreLike = (int)((long) jsonUser.get("store_time"));
 
             JSONObject jsonMenuInfo = (JSONObject) jsonData.get("menus");
             protoRes301.nMenuTotalCount = (int)((long) jsonMenuInfo.get("menu_total_count"));
 
-            JSONObject jsonMenus = (JSONObject) jsonData.get("menu");
+            JSONArray jsonMenus = (JSONArray) jsonMenuInfo.get("menu");
             protoRes301.arrayMenus = new ArrayList<PROTOCOL_RES_301_SELECT_STORE_MENUS>();
-            for (int i = 0; i < protoRes301.nMenuTotalCount; i++) {
+            for (int i = 0; i < jsonMenus.size(); i++) {
                 JSONObject jsonMenu = (JSONObject) jsonMenus.get(i);
                 PROTOCOL_RES_301_SELECT_STORE_MENUS protoRes301SelectStoreMenu = new PROTOCOL_RES_301_SELECT_STORE_MENUS();
 

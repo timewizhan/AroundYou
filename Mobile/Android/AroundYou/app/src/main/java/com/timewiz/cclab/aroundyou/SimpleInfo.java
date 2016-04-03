@@ -74,9 +74,9 @@ public class SimpleInfo {
         }
 
         public void setRankInfo(SimpleInfoData simpleInfoData) {
-            int nTaste = simpleInfoData.dwStoreEvaluationTaste;
-            int nKind = simpleInfoData.dwStoreEvaluationKind;
-            int nMood = simpleInfoData.dwStoreEvaluationMood;
+            int nTaste = simpleInfoData.nStoreEvaluationTaste;
+            int nKind = simpleInfoData.nStoreEvaluationKind;
+            int nMood = simpleInfoData.nStoreEvaluationMood;
 
             setDeliciousRank(nTaste);
             setAttitudeRank(nKind);
@@ -130,15 +130,15 @@ public class SimpleInfo {
 }
 
 class SimpleInfoData {
-    public int dwStoreEvaluationTaste;
-    public int dwStoreEvaluationKind;
-    public int dwStoreEvaluationMood;
+    public int nStoreEvaluationTaste;
+    public int nStoreEvaluationKind;
+    public int nStoreEvaluationMood;
     public String strStoreName;
     public String strStoreHashTag;
     public String strStoreShortIntro;
 
     public SimpleInfoData() {
-        dwStoreEvaluationTaste = dwStoreEvaluationKind = dwStoreEvaluationMood = 0;
+        nStoreEvaluationTaste = nStoreEvaluationKind = nStoreEvaluationMood = 0;
         strStoreName = strStoreHashTag = strStoreShortIntro = "";
     }
 }

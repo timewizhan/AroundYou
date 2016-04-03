@@ -38,11 +38,21 @@ public class Communication {
 
             switch (eType) {
                 case E_PROTO_LOGIN_101:
+                    strOutput = Communication_Proto_101(protoRoot);
                     break;
                 case E_PROTO_MAIN_201:
                     strOutput = Communication_Proto_201(protoRoot);
                     break;
                 case E_PROTO_MAIN_202:
+                    strOutput = Communication_Proto_202(protoRoot);
+                    break;
+                case E_PROTO_SELECT_301:
+                    strOutput = Communication_Proto_301(protoRoot);
+                    break;
+                case E_PROTO_SELECT_302:
+                    strOutput = Communication_Proto_302(protoRoot);
+                    break;
+                case E_PROTO_DETAIL_503:
                     break;
                 default:
                     // nothing

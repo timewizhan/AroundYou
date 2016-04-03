@@ -1,12 +1,14 @@
 package com.timewiz.cclab.aroundyou;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.Image;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
@@ -19,6 +21,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class LoginActivity extends Activity {
+    private PreProcess m_PreProcess;
+    private PhoneInfo m_phoneInfo;
     CTouchXY m_CTouchXY;
     CImageMover m_CImageMover;
 
@@ -27,6 +31,8 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_page);
 
+        m_PreProcess = new PreProcess();
+        m_phoneInfo = new PhoneInfo();
         m_CTouchXY = new CTouchXY();
         m_CImageMover = new CImageMover();
     }
@@ -125,20 +131,8 @@ public class LoginActivity extends Activity {
             int nAllowedPos = (m_nBoundaryValue / 3) * 2;
             if (nTouchX > nAllowedPos) {
                 Log.i("LoginActivity", "Go to next activity");
-                goToNextAcitivty();
+                m_PreProcess.execute();
             }
-        }
-
-        private void goToNextAcitivty() {
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-
-            PhoneInfo phoneInfo = new PhoneInfo();
-            DataLoginToMain dataLoginToMain = new DataLoginToMain();
-            dataLoginToMain.setPhoneNumber(phoneInfo.getPhoneNumber());
-
-            intent.putExtra("DataLoginToMain", dataLoginToMain);
-
-            startActivity(intent);
         }
     }
 
@@ -176,6 +170,62 @@ public class LoginActivity extends Activity {
 
         public String getPhoneNumber() {
             return m_TelephonyManager.getLine1Number();
+        }
+    }
+
+    private class PreProcess extends AsyncTask<Void, Void, Void> {
+        ProgressDialog asyncDialog = new ProgressDialog(LoginActivity.this);
+
+        @Override
+        protected void onPreExecute() {
+            asyncDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            asyncDialog.setMessage("Loading...");
+
+            // show dialog
+            asyncDialog.show();
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            try {
+                Communication communication = new Communication();
+
+                PROTOCOL_ROOT protoReq100 = getProtoLoginReq();
+                String strOutData;
+                strOutData = communication.communicateWithServer(E_PROTOCOL_TYPE.E_PROTO_LOGIN_101, protoReq100);
+                if (strOutData.length() < 1) {
+                    throw new Exception();
+                }
+            } catch (Exception e) {
+                Log.e("LoginActivity", "Fail to operate works in background");
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            asyncDialog.dismiss();
+            super.onPostExecute(result);
+
+            Log.i("LoginActivity", "Succeed to log in");
+            goToNextAcitivty();
+        }
+
+        private PROTOCOL_ROOT getProtoLoginReq() {
+            PROTOCOL_REQ_101_ABOUT_USER protoReq101 = new PROTOCOL_REQ_101_ABOUT_USER();
+            protoReq101.strCallID = m_phoneInfo.getPhoneNumber();
+            return (PROTOCOL_ROOT) protoReq101;
+        }
+
+        private void goToNextAcitivty() {
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+
+            DataLoginToMain dataLoginToMain = new DataLoginToMain();
+            dataLoginToMain.setPhoneNumber(m_phoneInfo.getPhoneNumber());
+
+            intent.putExtra("DataLoginToMain", dataLoginToMain);
+            startActivity(intent);
         }
     }
 

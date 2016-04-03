@@ -25,7 +25,7 @@
         <WebView
             android:layout_width="300dp"
             android:layout_height="200dp"
-            android:id="@+id/webView"
+            android:id="@+id/webViewSelectStore"
             android:layout_centerHorizontal="true" />
 
         <ImageView
@@ -34,7 +34,7 @@
             android:src="@drawable/rating_enable"
             android:id="@+id/imagePos1"
             android:layout_toLeftOf="@+id/imagePos2"
-            android:layout_below="@+id/webView"
+            android:layout_below="@+id/webViewSelectStore"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="5dp" />
 
@@ -44,7 +44,7 @@
             android:src="@drawable/rating_enable"
             android:id="@+id/imagePos2"
             android:layout_toLeftOf="@+id/imagePos3"
-            android:layout_below="@+id/webView"
+            android:layout_below="@+id/webViewSelectStore"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="5dp"
             android:layout_marginLeft="5dp" />
@@ -54,7 +54,7 @@
             android:layout_height="10dp"
             android:src="@drawable/rating_enable"
             android:id="@+id/imagePos3"
-            android:layout_below="@+id/webView"
+            android:layout_below="@+id/webViewSelectStore"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="5dp"
             android:layout_marginLeft="5dp"
@@ -66,7 +66,7 @@
             android:src="@drawable/rating_enable"
             android:id="@+id/imagePos4"
             android:layout_toRightOf="@+id/imagePos3"
-            android:layout_below="@+id/webView"
+            android:layout_below="@+id/webViewSelectStore"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="5dp"
             android:layout_marginRight="5dp" />
@@ -77,7 +77,7 @@
             android:src="@drawable/rating_enable"
             android:id="@+id/imagePos5"
             android:layout_toRightOf="@+id/imagePos4"
-            android:layout_below="@+id/webView"
+            android:layout_below="@+id/webViewSelectStore"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="5dp" />
 
@@ -144,7 +144,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Menu 1"
-                        android:id="@+id/textView3"
+                        android:id="@+id/textStoreMenu1"
                         android:textColor="#000000" />
                 </TableRow>
 
@@ -162,7 +162,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Menu 2"
-                        android:id="@+id/textView4"
+                        android:id="@+id/textStoreMenu2"
                         android:textColor="#000000" />
                 </TableRow>
 
@@ -180,7 +180,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Menu 3"
-                        android:id="@+id/textView5"
+                        android:id="@+id/textStoreMenu3"
                         android:textColor="#000000" />
                 </TableRow>
             </TableLayout>

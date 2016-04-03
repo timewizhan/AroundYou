@@ -115,15 +115,15 @@ class PROTOCOL_REQ_202_RECOMMENDED_MENU extends PROTOCOL_REQ_ROOT {
 }
 
 class PROTOCOL_REQ_301_SELECTED_STORE extends PROTOCOL_REQ_ROOT {
-    public int nLocation;
-    public int nStoreID;
-    public int nCallID;
+    int nLocation;
+    int nStoreID;
+    String strCallID;
 }
 
 class PROTOCOL_REQ_302_SELECTED_MENU extends PROTOCOL_REQ_ROOT {
     int nLocation;
     int nStoreID;
-    int nCallID;
+    String strCallID;
 };
 
 class PROTOCOL_REQ_503_DETAIL_MENU extends PROTOCOL_REQ_ROOT {

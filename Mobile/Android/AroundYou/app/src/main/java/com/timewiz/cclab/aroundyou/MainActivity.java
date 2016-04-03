@@ -26,10 +26,13 @@ import java.util.ArrayList;
 public class MainActivity extends Activity implements View.OnClickListener{
     private PreProcess m_PreProcess;
     private WebViewImage m_WebViewImage;
-    private DetailInfo m_DetailInfo;
-    private ArrayList<PROTOCOL_RES_201_RECOMMENDED_STORE> m_arrayProtoRecommendedStore;
     private Communication m_Communication;
-    private PROTOCOL_ROOT protoReq200;
+    private SimpleInfo m_SimpleInfo;
+
+    private PROTOCOL_ROOT protoReq201;
+    private PROTOCOL_ROOT protoReq202;
+    private ArrayList<PROTOCOL_RES_201_RECOMMENDED_STORE> m_arrayProtoRecommendedStore;
+    private ArrayList<PROTOCOL_RES_202_RECOMMENDED_MENU> m_arrayProtoRecommendedMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,25 +50,31 @@ public class MainActivity extends Activity implements View.OnClickListener{
     private ImageView m_imageRecommendMenu;
     private ImageView m_imageLeftArrow;
     private ImageView m_imageRightArrow;
+    private ImageView m_imageBestRank;
     private LinearLayout m_layoutMainView;
 
     private void setConstuctor() {
         m_PreProcess = new PreProcess();
         m_WebViewImage = new WebViewImage();
-        m_DetailInfo = new DetailInfo();
         m_arrayProtoRecommendedStore = new ArrayList<PROTOCOL_RES_201_RECOMMENDED_STORE>();
         m_Communication = new Communication();
-        protoReq200 = new PROTOCOL_REQ_201_RECOMMENDED_STORE();
+
+        protoReq201 = new PROTOCOL_REQ_201_RECOMMENDED_STORE();
+        protoReq202 = new PROTOCOL_REQ_202_RECOMMENDED_MENU();
 
         m_imageSlideBarMenu = (ImageView) findViewById(R.id.imageSlideBarMenu);
         m_imageAppName = (ImageView) findViewById(R.id.imageAppName);
         m_imageRecommendStore = (ImageView) findViewById(R.id.imageRecommendStoreEnable);
         m_imageRecommendMenu = (ImageView) findViewById(R.id.imageRecommendMenuDisable);
+        m_imageBestRank = (ImageView) findViewById(R.id.imageBestRank);
         m_imageLeftArrow = (ImageView) findViewById(R.id.imageLeftArrow);
         m_imageLeftArrow.setVisibility(View.INVISIBLE);
 
         m_imageRightArrow = (ImageView) findViewById(R.id.imageRightArrow);
         m_layoutMainView = (LinearLayout) findViewById(R.id.layoutMainView);
+
+        View v = findViewById(android.R.id.content).getRootView();
+        m_SimpleInfo = new SimpleInfo(v);
     }
 
     private void setListener() {
@@ -113,12 +122,16 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 m_imageRecommendStore.setImageResource(R.drawable.main_recommend_store_enable);
                 m_imageRecommendMenu.setImageResource(R.drawable.main_recommend_menu_disable);
                 m_nStoreOrMenu = 0;
+
+                checkPosIndex();
                 break;
             case R.id.imageRecommendMenuDisable:
                 Log.i("MainActivity", "Click image (imageRecommendMenuDisable)");
                 m_imageRecommendStore.setImageResource(R.drawable.main_recommend_store_disable);
                 m_imageRecommendMenu.setImageResource(R.drawable.main_recommend_menu_enable);
                 m_nStoreOrMenu = 1;
+
+                checkPosIndex();
                 break;
             case R.id.imageLeftArrow:
                 m_nCurrentPos--;
@@ -156,10 +169,123 @@ public class MainActivity extends Activity implements View.OnClickListener{
             m_imageRightArrow.setVisibility(View.VISIBLE);
         }
 
-        m_WebViewImage.clickNextWebView(m_nCurrentPos);
-        m_DetailInfo.clickNextDetailInfo(m_nCurrentPos);
+        if (m_nCurrentPos == 0) {
+            m_imageBestRank.setVisibility(View.VISIBLE);
+            m_imageBestRank.setImageResource(R.drawable.best_rank_1);
+        }
+        else if (m_nCurrentPos == 1) {
+            m_imageBestRank.setVisibility(View.VISIBLE);
+            m_imageBestRank.setImageResource(R.drawable.best_rank_2);
+        }
+        else if (m_nCurrentPos == 2) {
+            m_imageBestRank.setVisibility(View.VISIBLE);
+            m_imageBestRank.setImageResource(R.drawable.best_rank_3);
+        }
+        else {
+            m_imageBestRank.setVisibility(View.INVISIBLE);
+        }
+
+        clickCurrentDetailInfo(m_nCurrentPos);
     }
 
+    private void clickCurrentDetailInfo(int nCurrentPos) {
+        SimpleInfoData simpleInfoData = new SimpleInfoData();
+
+        if (m_nStoreOrMenu == 0) {
+            PROTOCOL_RES_201_RECOMMENDED_STORE protoRes201RecommendedStore;
+            if (m_arrayProtoRecommendedStore.size() < nCurrentPos + 1) {
+                simpleInfoData.strStoreName = "No info";
+                simpleInfoData.strStoreHashTag = "No info";
+                simpleInfoData.strStoreShortIntro = "No info";
+
+                simpleInfoData.nStoreEvaluationKind = 0;
+                simpleInfoData.nStoreEvaluationMood = 0;
+                simpleInfoData.nStoreEvaluationTaste = 0;
+            }
+            else {
+                protoRes201RecommendedStore = m_arrayProtoRecommendedStore.get(nCurrentPos);
+
+                simpleInfoData.strStoreName = protoRes201RecommendedStore.strStoreName;
+                simpleInfoData.strStoreHashTag = protoRes201RecommendedStore.strStoreHashTag;
+                simpleInfoData.strStoreShortIntro = protoRes201RecommendedStore.strStoreShortIntro;
+
+                simpleInfoData.nStoreEvaluationKind = protoRes201RecommendedStore.dwStoreEvaluationKind;
+                simpleInfoData.nStoreEvaluationMood = protoRes201RecommendedStore.dwStoreEvaluationMood;
+                simpleInfoData.nStoreEvaluationTaste = protoRes201RecommendedStore.dwStoreEvaluationTaste;
+
+                m_WebViewImage.clickNextWebView(m_nCurrentPos);
+            }
+        }
+        else {
+            PROTOCOL_RES_202_RECOMMENDED_MENU protoRes202RecommendedMenu;
+            if (m_arrayProtoRecommendedMenu.size() < nCurrentPos + 1) {
+                simpleInfoData.strStoreName = "No info";
+                simpleInfoData.strStoreHashTag = "No info";
+                simpleInfoData.strStoreShortIntro = "No info";
+
+                simpleInfoData.nStoreEvaluationKind = 0;
+                simpleInfoData.nStoreEvaluationMood = 0;
+                simpleInfoData.nStoreEvaluationTaste = 0;
+            }
+            else {
+                protoRes202RecommendedMenu = m_arrayProtoRecommendedMenu.get(nCurrentPos);
+
+                simpleInfoData.strStoreName = protoRes202RecommendedMenu.strMenuName;
+                simpleInfoData.strStoreHashTag = "";
+                simpleInfoData.strStoreShortIntro = "";
+
+                simpleInfoData.nStoreEvaluationKind = protoRes202RecommendedMenu.nMenuEvaluation;
+                simpleInfoData.nStoreEvaluationMood = protoRes202RecommendedMenu.nMenuEvaluation;
+                simpleInfoData.nStoreEvaluationTaste = protoRes202RecommendedMenu.nMenuEvaluation;
+
+                m_WebViewImage.clickNextWebView(m_nCurrentPos);
+            }
+        }
+
+        m_SimpleInfo.setSimpleDetailInfo(simpleInfoData);
+    }
+
+    private void makeIntentForStoreActivity(Intent intent) {
+        DataMainToStore dataMainToStore = new DataMainToStore();
+        PROTOCOL_RES_201_RECOMMENDED_STORE storeData = m_arrayProtoRecommendedStore.get(m_nCurrentPos);
+
+        dataMainToStore.nStoreID = storeData.dwStoreID;
+        dataMainToStore.nStoreLocation = storeData.dwStoreLocation;
+        dataMainToStore.nLocation = storeData.dwLocation;
+        dataMainToStore.nStoreEvaluationTaste = storeData.dwStoreEvaluationTaste;
+        dataMainToStore.nStoreEvaluationKind = storeData.dwStoreEvaluationKind;
+        dataMainToStore.nStoreEvaluationMood = storeData.dwStoreEvaluationMood;
+        dataMainToStore.strCallID = UserAccount.getInstance().getPhoneNumber();
+        dataMainToStore.strStoreName = storeData.strStoreName;
+        dataMainToStore.strStoreInfoETC = storeData.strStoreInfoETC;
+        dataMainToStore.strStoreShortIntro = storeData.strStoreShortIntro;
+        dataMainToStore.strStoreHashTag = storeData.strStoreHashTag;
+        dataMainToStore.strStoreAddress = storeData.strStoreAddress;
+        dataMainToStore.strStoreTel = storeData.strStoreTel;
+        dataMainToStore.strStoreOpenTime = storeData.strStoreOpenTime;
+        dataMainToStore.strStoreCloseTime = storeData.strStoreCloseTime;
+
+        intent.putExtra("DataMainToStore", dataMainToStore);
+    }
+
+    private void makeIntentForMenuActivity(Intent intent) {
+        DataMainToMenu dataMainToMenu = new DataMainToMenu();
+        PROTOCOL_RES_202_RECOMMENDED_MENU menuData = m_arrayProtoRecommendedMenu.get(m_nCurrentPos);
+
+        dataMainToMenu.dwStoreID = menuData.nStoreID;
+        dataMainToMenu.dwLocation = menuData.nStoreLocation;
+        dataMainToMenu.dwMenuID = menuData.nMenuID;
+        dataMainToMenu.dwMenuPrice = 0;
+        dataMainToMenu.dwMenuEvaluation = menuData.nMenuEvaluation;
+        dataMainToMenu.strMenuName = menuData.strMenuName;
+        dataMainToMenu.strCallID = UserAccount.getInstance().getPhoneNumber();
+
+        intent.putExtra("DataMainToMenu", dataMainToMenu);
+    }
+
+    private void makeIntentForItemsListActivity(Intent intent) {
+
+    }
 
     private class WebViewImage implements View.OnTouchListener{
         private WebView m_webView;
@@ -181,7 +307,11 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 m_webView.loadUrl(strURL);
             }
             else {
-                // Todo
+                PROTOCOL_RES_202_RECOMMENDED_MENU protoRes202RecommendedMenu;
+                protoRes202RecommendedMenu = m_arrayProtoRecommendedMenu.get(m_nCurrentPos);
+
+                String strURL = buildWebViewURL(protoRes202RecommendedMenu.nStoreLocation, protoRes202RecommendedMenu.nStoreID);
+                m_webView.loadUrl(strURL);
             }
         }
 
@@ -200,142 +330,17 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 case MotionEvent.ACTION_DOWN:
                     if (m_nStoreOrMenu == 0) {
                         intent = new Intent(MainActivity.this, StoreActivity.class);
+                        makeIntentForStoreActivity(intent);
                     }
                     else {
                         intent = new Intent(MainActivity.this, MenuActivity.class);
+                        makeIntentForMenuActivity(intent);
                     }
                     startActivity(intent);
                     break;
             }
             return false;
         }
-    }
-
-    private class DetailInfo {
-        private TextInfo m_TextInfo;
-        private RankInfo m_RankInfo;
-        private UserInfo m_UserInfo;
-
-        public DetailInfo() {
-            m_TextInfo = new TextInfo();
-            m_RankInfo = new RankInfo();
-            m_UserInfo = new UserInfo();
-        }
-
-        public void clickNextDetailInfo(int nPos) {
-            m_TextInfo.setTextInfo(nPos);
-            m_RankInfo.setRankInfo(nPos);
-        }
-    }
-
-    private class TextInfo {
-        private TextView m_TextRecommendedName;
-        private TextView m_TextHashTag;
-        private TextView m_TextIntroduction;
-
-        public TextInfo() {
-            m_TextRecommendedName = (TextView) findViewById(R.id.textRecommendName);
-            m_TextHashTag = (TextView) findViewById(R.id.textHashTag);
-            m_TextIntroduction = (TextView) findViewById(R.id.textIntroduction);
-        }
-
-        public void setTextInfo(int nPos) {
-            PROTOCOL_RES_201_RECOMMENDED_STORE protoRes201RecommendedStore;
-            protoRes201RecommendedStore = m_arrayProtoRecommendedStore.get(nPos);
-
-            m_TextRecommendedName.setText(protoRes201RecommendedStore.strStoreName);
-            m_TextHashTag.setText(protoRes201RecommendedStore.strStoreHashTag);
-            m_TextIntroduction.setText(protoRes201RecommendedStore.strStoreShortIntro);
-        }
-    }
-
-    private class RankInfo {
-        private ImageView[] arrImageDelicious;
-        private ImageView[] arrImageAttitude;
-        private ImageView[] arrImageMood;
-        private TextView textReputation;
-
-        public RankInfo() {
-            arrImageDelicious = new ImageView[5];
-            arrImageDelicious[0] =  (ImageView) findViewById(R.id.imageRatingDelicious_1);
-            arrImageDelicious[1] =  (ImageView) findViewById(R.id.imageRatingDelicious_2);
-            arrImageDelicious[2] =  (ImageView) findViewById(R.id.imageRatingDelicious_3);
-            arrImageDelicious[3] =  (ImageView) findViewById(R.id.imageRatingDelicious_4);
-            arrImageDelicious[4] =  (ImageView) findViewById(R.id.imageRatingDelicious_5);
-
-            arrImageAttitude = new ImageView[5];
-            arrImageAttitude[0] =  (ImageView) findViewById(R.id.imageRatingAttitude_1);
-            arrImageAttitude[1] =  (ImageView) findViewById(R.id.imageRatingAttitude_2);
-            arrImageAttitude[2] =  (ImageView) findViewById(R.id.imageRatingAttitude_3);
-            arrImageAttitude[3] =  (ImageView) findViewById(R.id.imageRatingAttitude_4);
-            arrImageAttitude[4] =  (ImageView) findViewById(R.id.imageRatingAttitude_5);
-
-            arrImageMood = new ImageView[5];
-            arrImageMood[0] =  (ImageView) findViewById(R.id.imageRatingMood_1);
-            arrImageMood[1] =  (ImageView) findViewById(R.id.imageRatingMood_2);
-            arrImageMood[2] =  (ImageView) findViewById(R.id.imageRatingMood_3);
-            arrImageMood[3] =  (ImageView) findViewById(R.id.imageRatingMood_4);
-            arrImageMood[4] =  (ImageView) findViewById(R.id.imageRatingMood_5);
-
-            textReputation = (TextView) findViewById(R.id.textReputation);
-        }
-
-        public void setRankInfo(int nPos) {
-            PROTOCOL_RES_201_RECOMMENDED_STORE protoRes201RecommendedStore;
-            protoRes201RecommendedStore = m_arrayProtoRecommendedStore.get(m_nCurrentPos);
-
-            int nTaste = protoRes201RecommendedStore.dwStoreEvaluationTaste;
-            int nKind = protoRes201RecommendedStore.dwStoreEvaluationKind;
-            int nMood = protoRes201RecommendedStore.dwStoreEvaluationMood;
-
-            setDeliciousRank(nTaste);
-            setAttitudeRank(nKind);
-            setMoodRank(nMood);
-            setReputation(nTaste, nKind, nMood);
-        }
-
-        private final int nMax = 5;
-        private void setDeliciousRank(int nValue) {
-            for (int i = 0; i < nValue; i++) {
-                arrImageDelicious[i].setImageResource(R.drawable.rating_enable);
-            }
-            for (int i = nValue; i < nMax; i++) {
-                arrImageDelicious[i].setImageResource(R.drawable.rating_disable);
-            }
-        }
-
-        private void setAttitudeRank(int nValue) {
-            for (int i = 0; i < nValue; i++) {
-                arrImageAttitude[i].setImageResource(R.drawable.rating_enable);
-            }
-            for (int i = nValue; i < nMax; i++) {
-                arrImageAttitude[i].setImageResource(R.drawable.rating_disable);
-            }
-        }
-
-        private void setMoodRank(int nValue) {
-            for (int i = 0; i < nValue; i++) {
-                arrImageMood[i].setImageResource(R.drawable.rating_enable);
-            }
-            for (int i = nValue; i < nMax; i++) {
-                arrImageMood[i].setImageResource(R.drawable.rating_disable);
-            }
-        }
-
-        private final int MAX_NUM = 3;
-        private void setReputation(int nTaste, int nKind, int nMood) {
-            int nSum = nTaste + nKind + nMood;
-            float fReputation = nSum / MAX_NUM;
-            DecimalFormat format = new DecimalFormat(".#");
-            String strReputation = format.format(fReputation);
-
-            textReputation.setText(strReputation);
-        }
-
-    }
-
-    private class UserInfo {
-        // Todo
     }
 
     private class PreProcess extends AsyncTask<Void, Void, Void> {
@@ -356,13 +361,21 @@ public class MainActivity extends Activity implements View.OnClickListener{
             try {
                 Errno errno;
                 String strOutData;
-                strOutData = m_Communication.communicateWithServer(E_PROTOCOL_TYPE.E_PROTO_MAIN_201, protoReq200);
+                strOutData = m_Communication.communicateWithServer(E_PROTOCOL_TYPE.E_PROTO_MAIN_201, protoReq201);
                 if (strOutData.length() < 1) {
                     throw new Exception();
                 }
 
                 JSONFactory jsonFactory = JSONFactory.getJSONInstance();
                 m_arrayProtoRecommendedStore = jsonFactory.buildResForProto201(strOutData);
+
+                strOutData = "";
+                strOutData = m_Communication.communicateWithServer(E_PROTOCOL_TYPE.E_PROTO_MAIN_202, protoReq202);
+                if (strOutData.length() < 1) {
+                    throw new Exception();
+                }
+                m_arrayProtoRecommendedMenu = jsonFactory.buildResForProto202(strOutData);
+
             } catch (Exception e) {
                 Log.e("MainActivity", "Fail to operate works in background");
             }

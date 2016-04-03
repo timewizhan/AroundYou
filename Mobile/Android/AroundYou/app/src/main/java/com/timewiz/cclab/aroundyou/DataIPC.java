@@ -24,12 +24,13 @@ class DataLoginToMain implements Serializable {
 
 // MainActivity -> StoreActivity
 class DataMainToStore implements Serializable  {
-    int dwStoreID;
-    int dwStoreLocation;
-    int dwLocation;
-    int dwStoreEvaluationTaste;
-    int dwStoreEvaluationKind;
-    int dwStoreEvaluationMood;
+    int nStoreID;
+    int nStoreLocation;
+    int nLocation;
+    int nStoreEvaluationTaste;
+    int nStoreEvaluationKind;
+    int nStoreEvaluationMood;
+    String strCallID;
     String strStoreName;
     String strStoreInfoETC;
     String strStoreShortIntro;
@@ -47,6 +48,7 @@ class DataMainToMenu implements Serializable  {
     int dwMenuID;
     int dwMenuPrice;
     int dwMenuEvaluation;
+    String strCallID;
     String strMenuName;
 }
 
