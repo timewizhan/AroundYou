@@ -94,6 +94,7 @@ DWORD CAYWorkerThread::BranchByRequestNumber(ST_RECV_HEADER_DATA &refstRecvHeade
 	DWORD dwNextReqNumber = refstRecvHeaderData.dwNextReqNumber;
 	switch (dwNextReqNumber)
 	{
+	case E_PROTO_REQ_USER_LOG_IN:
 	case E_PROTO_REQ_USER_SIGN_IN:
 	case E_PROTO_REQ_USER_SIGN_UP:
 		dwRet = PROTO_101_ABOUT_USER(refstRecvHeaderData);
@@ -141,9 +142,9 @@ DWORD CAYWorkerThread::ParseDataByJSON(VOID *pProto, ST_RECV_DATA &refstRecvData
 	DWORD dwRequest = JsonRoot.get("req", 0).asInt();
 
 	///////////// User //////////////
-	if (dwRequest == E_PROTO_REQ_USER_SIGN_IN || dwRequest == E_PROTO_REQ_USER_SIGN_UP) {
+	if (dwRequest == E_PROTO_REQ_USER_LOG_IN || dwRequest == E_PROTO_REQ_USER_SIGN_IN || dwRequest == E_PROTO_REQ_USER_SIGN_UP) {
 		((ST_PROTOCOL_REQ_101_ABOUT_USER *)pProto)->dwRequest = dwRequest;
-		((ST_PROTOCOL_REQ_101_ABOUT_USER *)pProto)->strCallID = JsonRoot.get("call_id", 0).asString();
+		((ST_PROTOCOL_REQ_101_ABOUT_USER *)pProto)->strCallID = JsonRoot["data"].get("call_id", 0).asString();
 	}
 	else if (dwRequest == E_PROTO_REQ_RECOMMENDED_STORE) {
 		((ST_PROTOCOL_REQ_201_RECOMMENDED_STORE *)pProto)->dwRequest					= dwRequest;
@@ -152,19 +153,20 @@ DWORD CAYWorkerThread::ParseDataByJSON(VOID *pProto, ST_RECV_DATA &refstRecvData
 	}
 	else if (dwRequest == E_PROTO_REQ_RECOMMENDED_MENU) {
 		((ST_PROTOCOL_REQ_202_RECOMMENDED_MENU *)pProto)->dwRequest						= dwRequest;
-		((ST_PROTOCOL_REQ_202_RECOMMENDED_MENU *)pProto)->dwLocation					= ::atoi(JsonRoot["data"].get("location", 0).asString().c_str());
-		((ST_PROTOCOL_REQ_202_RECOMMENDED_MENU *)pProto)->dwNumberOfRequestedMaximun	= ::atoi(JsonRoot["data"].get("res_number", 0).asString().c_str());
+		((ST_PROTOCOL_REQ_202_RECOMMENDED_MENU *)pProto)->dwLocation					= JsonRoot["data"].get("location", 0).asInt();
+		((ST_PROTOCOL_REQ_202_RECOMMENDED_MENU *)pProto)->dwNumberOfRequestedMaximun	= JsonRoot["data"].get("res_number", 0).asInt();
 	}
 	else if (dwRequest == E_PROTO_REQ_SELECTED_STORE) {
 		((ST_PROTOCOL_REQ_301_SELECTED_STORE *)pProto)->dwRequest						= dwRequest;
-		((ST_PROTOCOL_REQ_301_SELECTED_STORE *)pProto)->dwStoreID						= ::atoi(JsonRoot["data"].get("store_id", 0).asString().c_str());
-		((ST_PROTOCOL_REQ_301_SELECTED_STORE *)pProto)->dwLocation						= ::atoi(JsonRoot["data"].get("location", 0).asString().c_str());
-		((ST_PROTOCOL_REQ_301_SELECTED_STORE *)pProto)->dwCallID						= ::atoi(JsonRoot["data"].get("call_id", 0).asString().c_str());
+		((ST_PROTOCOL_REQ_301_SELECTED_STORE *)pProto)->dwStoreID						= JsonRoot["data"].get("store_id", 0).asInt();
+		((ST_PROTOCOL_REQ_301_SELECTED_STORE *)pProto)->dwLocation						= JsonRoot["data"].get("location", 0).asInt();
+		((ST_PROTOCOL_REQ_301_SELECTED_STORE *)pProto)->strCallID						= JsonRoot["data"].get("call_id", 0).asString();
 	}
 	else if (dwRequest == E_PROTO_REQ_SELECTED_MENU) {
 		((ST_PROTOCOL_REQ_302_SELECTED_MENU *)pProto)->dwRequest						= dwRequest;
-		((ST_PROTOCOL_REQ_302_SELECTED_MENU *)pProto)->dwStoreID						= ::atoi(JsonRoot["data"].get("store_id", 0).asString().c_str());
-		((ST_PROTOCOL_REQ_302_SELECTED_MENU *)pProto)->dwLocation						= ::atoi(JsonRoot["data"].get("location", 0).asString().c_str());
+		((ST_PROTOCOL_REQ_302_SELECTED_MENU *)pProto)->dwStoreID						= JsonRoot["data"].get("store_id", 0).asInt();
+		((ST_PROTOCOL_REQ_302_SELECTED_MENU *)pProto)->dwLocation						= JsonRoot["data"].get("location", 0).asInt();
+		((ST_PROTOCOL_REQ_302_SELECTED_MENU *)pProto)->strCallID						= JsonRoot["data"].get("call_id", 0).asString();
 	}
 	else if (dwRequest == E_PROTO_REQ_INPUT_EVALUATION) {
 		((ST_PROTOCOL_REQ_401_INPUT_EVALUATION *)pProto)->dwRequest						= dwRequest;
@@ -221,9 +223,9 @@ DWORD CAYWorkerThread::RequestToDataBase(VOID *pProtoRoot, ST_DB_RESULT &refstDB
 	ST_PROTOCOL_ROOT *pstProtoRoot = (ST_PROTOCOL_ROOT *)pProtoRoot;
 	DWORD dwRequest = pstProtoRoot->dwRequest;
 
-	if (dwRequest == E_PROTO_REQ_USER_SIGN_IN || dwRequest == E_PROTO_REQ_USER_SIGN_UP) {
+	if (dwRequest == E_PROTO_REQ_USER_LOG_IN || dwRequest == E_PROTO_REQ_USER_SIGN_IN || dwRequest == E_PROTO_REQ_USER_SIGN_UP) {
 		ST_PROTOCOL_REQ_101_ABOUT_USER *pstProto101 = (ST_PROTOCOL_REQ_101_ABOUT_USER *)pProtoRoot;
-		stDBSQLQuery.strSQL = "SELECT call_id FROM user WHERE call_id = \'" + pstProto101->strCallID + "\'";
+		stDBSQLQuery.strSQL = "SELECT \'call_id\' FROM user WHERE \'call_id\' = \'" + pstProto101->strCallID + "\'";
 		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
 		if (dwRet != E_RET_SUCCESS) {
 			ErrorLog("Fail to query data from DataBase");
@@ -235,7 +237,7 @@ DWORD CAYWorkerThread::RequestToDataBase(VOID *pProtoRoot, ST_DB_RESULT &refstDB
 			return E_RET_SUCCESS;
 		}
 
-		stDBSQLInsert.strSQL = "INSERT INTO user(call_id) VALUES (" + pstProto101->strCallID + ")";
+		stDBSQLInsert.strSQL = "INSERT INTO \"user\" (call_id) VALUES (\'" + pstProto101->strCallID + "\')";
 		dwRet = InsertToDB(hDataBase, stDBSQLInsert);
 		if (dwRet != E_RET_SUCCESS) {
 			ErrorLog("Fail to query data from DataBase");
@@ -307,8 +309,7 @@ DWORD CAYWorkerThread::RequestToDataBase(VOID *pProtoRoot, ST_DB_RESULT &refstDB
 			"menu_evaluation, "
 			"store_id, "
 			"menu_id, "
-			"menu_name, "
-			"menu_price "
+			"menu_name "
 			"FROM menu";
 
 		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
@@ -322,7 +323,7 @@ DWORD CAYWorkerThread::RequestToDataBase(VOID *pProtoRoot, ST_DB_RESULT &refstDB
 		if (dwRet != E_RET_SUCCESS) {
 			return E_RET_FAIL;
 		}
-		Menu.PruningOrderedDataByRequestedNumber(stDBResult, pstProto202->dwNumberOfRequestedMaximun);
+
 		refstDBResult = stDBResult;
 	}
 	else if (dwRequest == E_PROTO_REQ_SELECTED_STORE) {
@@ -334,72 +335,33 @@ DWORD CAYWorkerThread::RequestToDataBase(VOID *pProtoRoot, ST_DB_RESULT &refstDB
 			3. menu_id
 			4. menu_price
 		*/
-
+		
 		stDBSQLQuery.strSQL = "SELECT "
 			"menu_evaluation, "
 			"menu_name, "
 			"menu_id, "
-			"menu_price, "
+			"menu_price "
 			"FROM "
-			"WHERE store_id=" + std::to_string(pstProto301->dwStoreID) +
-			"menu";
+			"menu "
+			"WHERE store_id = \'" + std::to_string(pstProto301->dwStoreID) + "\'"
+			;
 
-		ST_DB_RESULT stDBMenuResult;
-		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBMenuResult);
+		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
 		if (dwRet != E_RET_SUCCESS) {
 			ErrorLog("Fail to query data from DataBase");
 			return E_RET_FAIL;
 		}
 
 		CMenu Menu;
-		dwRet = Menu.SortStoreEvaluationByAscendingOrder(stDBMenuResult);
+		dwRet = Menu.SortStoreEvaluationByAscendingOrder(stDBResult);
 		if (dwRet != E_RET_SUCCESS) {
 			return E_RET_FAIL;
 		}
-		Menu.PruningOrderedDataByRequestedNumber(stDBMenuResult, 3);
 
-		stDBSQLQuery.strSQL.clear();
-		stDBSQLQuery.strSQL = "SELECT "
-			"store_address, "
-			"store_tel, "
-			"store_open_time, "
-			"store_close_time, "
-			"FROM "
-			"WHERE store_id=" + std::to_string(pstProto301->dwCallID) +
-			"store";
-
-		ST_DB_RESULT stDBStoreResult;
-		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBStoreResult);
-		if (dwRet != E_RET_SUCCESS) {
-			ErrorLog("Fail to query data from DataBase");
-			return E_RET_FAIL;
-		}
-
-		stDBSQLQuery.strSQL.clear();
-		stDBSQLQuery.strSQL = "SELECT "
-			"like_store_id, "
-			"FROM "
-			"WHERE call_id=" + std::to_string(pstProto301->dwCallID) +
-			"user";
-
-		ST_DB_RESULT stDBUserResult;
-		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBUserResult);
-		if (dwRet != E_RET_SUCCESS) {
-			ErrorLog("Fail to query data from DataBase");
-			return E_RET_FAIL;
-		}
-
-		stDBResult.vecstDBResultLines.push_back(stDBStoreResult.vecstDBResultLines[0]);
-		stDBResult.vecstDBResultLines.push_back(stDBUserResult.vecstDBResultLines[0]);
-		std::vector<ST_DB_RESULT_LINE>::iterator iterstDBResultLine;
-		for (iterstDBResultLine = stDBMenuResult.vecstDBResultLines.begin(); iterstDBResultLine != stDBMenuResult.vecstDBResultLines.end(); iterstDBResultLine++) {
-			ST_DB_RESULT_LINE stDBResultLine = (*iterstDBResultLine);
-			stDBResult.vecstDBResultLines.push_back(stDBResultLine);
-		}
 		refstDBResult = stDBResult;
 	}
 	else if (dwRequest == E_PROTO_REQ_SELECTED_MENU) {
-		ST_PROTOCOL_REQ_301_SELECTED_STORE *pstProto301 = (ST_PROTOCOL_REQ_301_SELECTED_STORE *)pProtoRoot;
+		ST_PROTOCOL_REQ_302_SELECTED_MENU *pstProto302 = (ST_PROTOCOL_REQ_302_SELECTED_MENU *)pProtoRoot;
 		/*
 			Collecting Sequence
 			1. menu_evaluation
@@ -408,12 +370,11 @@ DWORD CAYWorkerThread::RequestToDataBase(VOID *pProtoRoot, ST_DB_RESULT &refstDB
 		*/
 
 		stDBSQLQuery.strSQL = "SELECT "
-			"menu_evaluation, "
-			"menu_name, "
-			"menu_id, "
+			"menu_id "
 			"FROM "
-			"WHERE store_id=" + std::to_string(pstProto301->dwStoreID) +
-			"menu";
+			"menu ";
+			"WHERE store_id = \'" + std::to_string(pstProto302->dwStoreID) + "\'"
+			;
 
 		dwRet = QueryFromDB(hDataBase, stDBSQLQuery, stDBResult);
 		if (dwRet != E_RET_SUCCESS) {
@@ -933,7 +894,7 @@ DWORD CAYWorkerThread::PROTO_301_OPERATION_SELECTED_STORE(char *pRecvedBuf, ST_S
 		return dwRet;
 	}
 
-	DWORD dwProtocolNumber = E_PROTO_REQ_RECOMMENDED_MENU;
+	DWORD dwProtocolNumber = E_PROTO_REQ_SELECTED_STORE;
 	dwRet = MakeSendPacket(dwProtocolNumber, stDBResult, refstSendData);
 	if (dwRet != E_RET_SUCCESS) {
 		return dwRet;
@@ -1035,7 +996,7 @@ DWORD CAYWorkerThread::PROTO_302_OPERATION_SELECTED_MENU(char *pRecvedBuf, ST_SE
 		return dwRet;
 	}
 
-	DWORD dwProtocolNumber = E_PROTO_REQ_RECOMMENDED_MENU;
+	DWORD dwProtocolNumber = E_PROTO_REQ_SELECTED_MENU;
 	dwRet = MakeSendPacket(dwProtocolNumber, stDBResult, refstSendData);
 	if (dwRet != E_RET_SUCCESS) {
 		return dwRet;
@@ -1403,17 +1364,17 @@ DWORD CAYWorkerThread::MakeSendPacket_202_Data(ST_DB_RESULT &refstDBResult, ST_S
 	Json::Value JsonMenus;
 
 	std::vector<ST_DB_RESULT_LINE>::iterator iterstDBResultLine;
-	for (iterstDBResultLine = refstDBResult.vecstDBResultLines.begin(); iterstDBResultLine != refstDBResult.vecstDBResultLines.end(); iterstDBResultLine) {
+	for (iterstDBResultLine = refstDBResult.vecstDBResultLines.begin(); iterstDBResultLine != refstDBResult.vecstDBResultLines.end(); iterstDBResultLine++) {
 		/*
 			Collecting Sequence
 			1. menu_evaluation
 			2. store_id
 			3. menu_id
 			4. menu_name
-			5. menu_price
 		*/
+
 		ST_DB_RESULT_LINE stDBResultLine = (*iterstDBResultLine);
-		if (stDBResultLine.vecstrResult.size() != 5) {
+		if (stDBResultLine.vecstrResult.size() != 4) {
 			break;
 		}
 
@@ -1422,17 +1383,17 @@ DWORD CAYWorkerThread::MakeSendPacket_202_Data(ST_DB_RESULT &refstDBResult, ST_S
 		stProtoRes202RecommendedMenu.dwStoreID			= ::atoi(stDBResultLine.vecstrResult[1].c_str());
 		stProtoRes202RecommendedMenu.dwMenuID			= ::atoi(stDBResultLine.vecstrResult[2].c_str());
 		stProtoRes202RecommendedMenu.strMenuName		= stDBResultLine.vecstrResult[3];
-		stProtoRes202RecommendedMenu.dwMenuPrice		= ::atoi(stDBResultLine.vecstrResult[4].c_str());
 
 		Json::Value JsonMenuStore;
-		JsonMenuStore["store_id"] = std::to_string(stProtoRes202RecommendedMenu.dwStoreID);
+		JsonMenuStore["store_id"]		= static_cast<int>(stProtoRes202RecommendedMenu.dwStoreID);
+		
 		// to do ...
-		JsonMenuStore["store_location"] = "";
+		JsonMenuStore["store_location"] = static_cast<int>(1);
 
 		Json::Value JsonMenu;
-		JsonMenu["menu_id"]				= std::to_string(stProtoRes202RecommendedMenu.dwStoreID);
+		JsonMenu["menu_id"]				= static_cast<int>(stProtoRes202RecommendedMenu.dwStoreID);
 		JsonMenu["menu_name"]			= stProtoRes202RecommendedMenu.strMenuName;
-		JsonMenu["menu_evaluation"]		= std::to_string(stProtoRes202RecommendedMenu.dwMenuEvaluation);
+		JsonMenu["menu_evaluation"]		= static_cast<int>(stProtoRes202RecommendedMenu.dwMenuEvaluation);
 		JsonMenu["store"]				= JsonMenuStore;
 
 		JsonMenus.append(JsonMenu);
@@ -1442,16 +1403,16 @@ DWORD CAYWorkerThread::MakeSendPacket_202_Data(ST_DB_RESULT &refstDBResult, ST_S
 	Json::Value JsonRetNumber;
 	Json::Value JsonMenusArray;
 
-	JsonRetNumber["ret_number"] = std::to_string(dwRetNumber);
+	JsonRetNumber["ret_number"] = static_cast<int>(dwRetNumber);
 	JsonMenusArray["menus"] = JsonMenus;
 
-	JsonResData["res"] = std::to_string(E_PROTO_RES_FINISH);
+	JsonResData["res"] = static_cast<int>(E_PROTO_RES_FINISH);
 	JsonResData["data"] = JsonRetNumber;
 	JsonResData["data"] = JsonMenusArray;
 
 	Json::StyledWriter JsonWriter;
 	std::string strSendData;
-	strSendData = JsonWriter.write(JsonRoot);
+	strSendData = JsonWriter.write(JsonResData);
 
 	refstSendData.strSendData = strSendData;
 	return E_RET_SUCCESS;
@@ -1460,72 +1421,52 @@ DWORD CAYWorkerThread::MakeSendPacket_202_Data(ST_DB_RESULT &refstDBResult, ST_S
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 DWORD CAYWorkerThread::MakeSendPacket_301_Data(ST_DB_RESULT &refstDBResult, ST_SEND_DATA &refstSendData)
 {
-	Json::Value JsonRoot;
 	Json::Value JsonResData;
-	Json::Value JsonMenus;
-
-	BOOL bStore = TRUE;
-	BOOL bUser = TRUE;
+	Json::Value JsonMenuArray;
 
 	std::vector<ST_DB_RESULT_LINE>::iterator iterstDBResultLine;
 	DWORD dwMenuCount = 0;
-	for (iterstDBResultLine = refstDBResult.vecstDBResultLines.begin(); iterstDBResultLine != refstDBResult.vecstDBResultLines.end(); iterstDBResultLine) {
-		if (bStore == TRUE) {
-			ST_DB_RESULT_LINE stDBResultLine = (*iterstDBResultLine);
-
-			Json::Value JsonStoreInfo;
-			JsonStoreInfo["store_address"] = stDBResultLine.vecstrResult[0];
-			JsonStoreInfo["store_tel"] = stDBResultLine.vecstrResult[1];
-
-			std::string strStoreTime = stDBResultLine.vecstrResult[2] + " ~ " + stDBResultLine.vecstrResult[3];
-			JsonStoreInfo["store_time"] = strStoreTime;
-			JsonResData["data"] = JsonStoreInfo;
+	for (iterstDBResultLine = refstDBResult.vecstDBResultLines.begin(); iterstDBResultLine != refstDBResult.vecstDBResultLines.end(); iterstDBResultLine++) {
+		if (dwMenuCount >= 3) {
+			// only add menu count
+			dwMenuCount++;
 			continue;
 		}
-		else if (bUser == TRUE) {
-			ST_DB_RESULT_LINE stDBResultLine = (*iterstDBResultLine);
-
-			Json::Value JsonUserInfo;
-			JsonUserInfo["store_like"] = stDBResultLine.vecstrResult[0];
-			JsonResData["data"] = JsonUserInfo;
-			continue;
-		}
-
-
+		
 		ST_DB_RESULT_LINE stDBResultLine = (*iterstDBResultLine);
-		if (stDBResultLine.vecstrResult.size() != 5) {
-			break;
-		}
 
 		ST_PROTOCOL_RES_301_SELECT_STORE stProtoRes301SelectedStore;
 		stProtoRes301SelectedStore.dwMenuEvaluation = ::atoi(stDBResultLine.vecstrResult[0].c_str());
-		stProtoRes301SelectedStore.dwMenuID			= ::atoi(stDBResultLine.vecstrResult[1].c_str());
-		stProtoRes301SelectedStore.dwMenuPrice		= ::atoi(stDBResultLine.vecstrResult[2].c_str());
-		stProtoRes301SelectedStore.strMenuName		= stDBResultLine.vecstrResult[3];
+		stProtoRes301SelectedStore.strMenuName		= stDBResultLine.vecstrResult[1];
+		stProtoRes301SelectedStore.dwMenuID			= ::atoi(stDBResultLine.vecstrResult[2].c_str());
+		stProtoRes301SelectedStore.dwMenuPrice		= ::atoi(stDBResultLine.vecstrResult[3].c_str());
+		
 
 		Json::Value JsonMenu;
-		JsonMenu["menu_id"]			= std::to_string(stProtoRes301SelectedStore.dwMenuID);
+		JsonMenu["menu_id"]			= static_cast<int>(stProtoRes301SelectedStore.dwMenuID);
 		JsonMenu["menu_name"]		= stProtoRes301SelectedStore.strMenuName;
-		JsonMenu["menu_evaluation"] = std::to_string(stProtoRes301SelectedStore.dwMenuEvaluation);
-		JsonMenu["menu_price"]		= std::to_string(stProtoRes301SelectedStore.dwMenuPrice);
+		JsonMenu["menu_evaluation"] = static_cast<int>(stProtoRes301SelectedStore.dwMenuEvaluation);
+		JsonMenu["menu_price"]		= static_cast<int>(stProtoRes301SelectedStore.dwMenuPrice);
 
-		JsonMenus.append(JsonMenu);
+		JsonMenuArray.append(JsonMenu);
 		dwMenuCount++;
 	}
 
 	Json::Value JsonRetNumber;
-	Json::Value JsonMenusArray;
+	Json::Value JsonMenu;
+	Json::Value JsonMenus;
 
-	JsonRetNumber["ret_number"] = std::to_string(dwMenuCount);
-	JsonMenusArray["menus"] = JsonMenus;
+	JsonMenu["menu"] = JsonMenuArray;
+	JsonMenu["menu_total_count"] = static_cast<int>(dwMenuCount);
 
-	JsonResData["res"] = std::to_string(E_PROTO_RES_FINISH);
-	JsonResData["data"] = JsonRetNumber;
-	JsonResData["data"] = JsonMenusArray;
+	JsonMenus["menus"] = JsonMenu;
+
+	JsonResData["res"] = static_cast<int>(E_PROTO_RES_FINISH);
+	JsonResData["data"] = JsonMenus;
 
 	Json::StyledWriter JsonWriter;
 	std::string strSendData;
-	strSendData = JsonWriter.write(JsonRoot);
+	strSendData = JsonWriter.write(JsonResData);
 
 	refstSendData.strSendData = strSendData;
 	return E_RET_SUCCESS;
@@ -1534,51 +1475,18 @@ DWORD CAYWorkerThread::MakeSendPacket_301_Data(ST_DB_RESULT &refstDBResult, ST_S
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 DWORD CAYWorkerThread::MakeSendPacket_302_Data(ST_DB_RESULT &refstDBResult, ST_SEND_DATA &refstSendData)
 {
-	Json::Value JsonRoot;
 	Json::Value JsonResData;
-	Json::Value JsonMenus;
-
-	std::vector<ST_DB_RESULT_LINE>::iterator iterstDBResultLine;
-	for (iterstDBResultLine = refstDBResult.vecstDBResultLines.begin(); iterstDBResultLine != refstDBResult.vecstDBResultLines.end(); iterstDBResultLine) {
-		/*
-			Collecting Sequence
-			1. menu_evaluation
-			2. menu_name
-			3. menu_id
-		*/
-
-		ST_DB_RESULT_LINE stDBResultLine = (*iterstDBResultLine);
-		if (stDBResultLine.vecstrResult.size() != 3) {
-			break;
-		}
-
-		ST_PROTOCOL_RES_302_SELECT_MENU stProtoRes302SelectedMenu;
-		stProtoRes302SelectedMenu.dwMenuEvaluation	= ::atoi(stDBResultLine.vecstrResult[0].c_str());
-		stProtoRes302SelectedMenu.dwMenuID			= ::atoi(stDBResultLine.vecstrResult[1].c_str());
-		stProtoRes302SelectedMenu.strMenuName		= stDBResultLine.vecstrResult[2];
-
-		Json::Value JsonMenu;
-		JsonMenu["menu_id"]							= std::to_string(stProtoRes302SelectedMenu.dwMenuID);
-		JsonMenu["menu_name"]						= stProtoRes302SelectedMenu.strMenuName;
-		JsonMenu["menu_evaluation"]					= std::to_string(stProtoRes302SelectedMenu.dwMenuEvaluation);
-
-		JsonMenus.append(JsonMenu);
-	}
-
-	Json::Value JsonRetNumber;
-	Json::Value JsonMenusArray;
+	Json::Value JsonMenu;
 
 	DWORD dwMenuCount = refstDBResult.vecstDBResultLines.size();
-	JsonRetNumber["ret_number"] = std::to_string(dwMenuCount);
-	JsonMenusArray["menus"] = JsonMenus;
+	JsonMenu["menu"] = static_cast<int>(dwMenuCount);
 
-	JsonResData["res"] = std::to_string(E_PROTO_RES_FINISH);
-	JsonResData["data"] = JsonRetNumber;
-	JsonResData["data"] = JsonMenusArray;
+	JsonResData["res"] = static_cast<int>(E_PROTO_RES_FINISH);
+	JsonResData["data"] = JsonMenu;
 
 	Json::StyledWriter JsonWriter;
 	std::string strSendData;
-	strSendData = JsonWriter.write(JsonRoot);
+	strSendData = JsonWriter.write(JsonResData);
 
 	refstSendData.strSendData = strSendData;
 	return E_RET_SUCCESS;
@@ -1643,7 +1551,7 @@ DWORD CAYWorkerThread::StartWorkerThread(char *pReceiveBuf, DWORD dwByteTransfer
 	try
 	{
 		/*
-			Protocol documentation is wrote in excel file.
+			Protocol documentation is written in excel file.
 			To see protocol in detail, it's good for me to open and check the file
 		*/
 		std::string strReceivedData;
@@ -1659,10 +1567,6 @@ DWORD CAYWorkerThread::StartWorkerThread(char *pReceiveBuf, DWORD dwByteTransfer
 			throw std::exception("Fail to analyze received data by json");
 		}
 
-		dwRet = CheckFirstRequestNumber(stRecvHeaderData);
-		if (dwRet != E_RET_SUCCESS) {
-			throw std::exception("Invalid first connection protocol");
-		}
 		dwRet = BranchByRequestNumber(stRecvHeaderData);
 		if (dwRet != E_RET_SUCCESS) {
 			throw std::exception("Invalid next protocol");
